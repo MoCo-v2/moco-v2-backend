@@ -17,8 +17,8 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import java.util.Map;
 
 @Controller

@@ -4,7 +4,7 @@ import com.board.board.domain.Board;
 import com.board.board.domain.User;
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;

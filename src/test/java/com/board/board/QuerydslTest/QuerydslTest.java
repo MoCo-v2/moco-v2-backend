@@ -1,11 +1,12 @@
 package com.board.board.QuerydslTest;
 
 import com.board.board.domain.Board;
-import com.board.board.domain.QBoard;
 import com.board.board.dto.BoardListVo;
 import com.board.board.dto.QBoardListVo;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +17,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import java.util.List;
 
 import static com.board.board.domain.QBoard.board;

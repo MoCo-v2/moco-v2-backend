@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,14 +16,13 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
-
+@Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
-@ConditionalOnDefaultWebSecurity
-@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 public class SecurityConfig{
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomUserDetailsService customUserDetailsService;
@@ -38,7 +38,7 @@ public class SecurityConfig{
     }
 
     @Bean
-    public BCryptPasswordEncoder encoder() {
+    public PasswordEncoder encoder(){
         return new BCryptPasswordEncoder();
     }
 
@@ -50,20 +50,19 @@ public class SecurityConfig{
     @Order(SecurityProperties.BASIC_AUTH_ORDER)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .headers().frameOptions().disable()
-                .and()
-                    .authorizeRequests()
-                    .antMatchers("/","/actuator/health").permitAll()
-                    .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                    .antMatchers("/admin","/admin/**").hasRole("MASTER")
-                    .antMatchers("/login","/confirm-email/**").permitAll()
-                    .antMatchers("/css/**", "/img/**", "/js/**", "/json/**", "/favicon.ico","/error/**").permitAll()
-                    .antMatchers("/earth","/earth/**").permitAll()
-                    .antMatchers("/board/write").authenticated()
-                    .antMatchers("/board/**").permitAll()
-                    .antMatchers("/signup","/login/signup").permitAll()
-                    .antMatchers("/id/check","/name/check").permitAll()
+            .csrf().disable()
+            .headers().frameOptions().disable()
+            .and().authorizeHttpRequests()
+                    .requestMatchers("/","/actuator/health").permitAll()
+                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                    .requestMatchers("/admin","/admin/**").hasRole("MASTER")
+                    .requestMatchers("/login","/confirm-email/**").permitAll()
+                    .requestMatchers("/css/**", "/img/**", "/js/**", "/json/**", "/favicon.ico","/error/**").permitAll()
+                    .requestMatchers("/earth","/earth/**").permitAll()
+                    .requestMatchers("/board/write").authenticated()
+                    .requestMatchers("/board/**").permitAll()
+                    .requestMatchers("/signup","/login/signup").permitAll()
+                    .requestMatchers("/id/check","/name/check").permitAll()
                     .anyRequest().authenticated()
                 .and()
                     .logout().logoutSuccessUrl("/")
