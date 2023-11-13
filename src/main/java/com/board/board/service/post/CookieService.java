@@ -1,16 +1,16 @@
-package com.board.board.service.board;
+package com.board.board.service.post;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RequiredArgsConstructor
 @Service
 public class CookieService {
-    private final BoardService boardService;
+    private final PostService postService;
 
     public void cookieAndView(HttpServletRequest request, HttpServletResponse response, Long boardId) {
         /* 쿠키 관련 */
@@ -25,7 +25,7 @@ public class CookieService {
         }
         if (oldCookie != null) {
             if (!oldCookie.getValue().contains("[" + boardId.toString() + "]")) {
-                boardService.updateView(boardId); /* 조회수++ */
+                postService.updateView(boardId); /* 조회수++ */
                 oldCookie.setValue(oldCookie.getValue() + "[" + boardId + "]");
                 oldCookie.setPath("/");
                 oldCookie.setMaxAge(60 * 60 * 24); /* 유효시간 */
@@ -36,7 +36,7 @@ public class CookieService {
             newCookie.setPath("/");
             newCookie.setMaxAge(60 * 60 * 2);
             response.addCookie(newCookie);
-            boardService.updateView(boardId); /* 조회수++ */
+            postService.updateView(boardId); /* 조회수++ */
         }
     }
 }

@@ -7,7 +7,9 @@ import com.board.board.repository.BoardRepository;
 import com.board.board.repository.UserRepository;
 import com.board.board.service.mail.ConfirmationTokenService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
@@ -21,14 +23,14 @@ import java.util.Map;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder encoder;
+    private final PasswordEncoder passwordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
     private final BoardRepository boardRepository;
 
     /* 회원가입 */
     @Transactional
     public User join(UserDto.Request userDto){
-        userDto.setPassword(encoder.encode(userDto.getPassword()));
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         return userRepository.save(userDto.toEntity());
     }
     /* 회원가입 시 input 유효성 체크 */

@@ -2,7 +2,7 @@ package com.board.board.domain;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Builder
 @Entity @AllArgsConstructor

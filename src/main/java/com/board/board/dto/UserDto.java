@@ -4,8 +4,8 @@ import com.board.board.domain.Role;
 import com.board.board.domain.User;
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 
 public class UserDto { //홈페이지로 가입하는 사용자

@@ -1,4 +1,4 @@
-package com.board.board.service.board;
+package com.board.board.service.post;
 
 import com.board.board.domain.Board;
 import com.board.board.domain.User;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @Service
-public class BoardService {
+public class PostService {
 
     private UserRepository userRepository;
     private BoardRepository boardRepository;
@@ -35,11 +35,10 @@ public class BoardService {
 
     /* 모든 게시글 가져오기 */
     @Transactional(readOnly = true)
-    public List<BoardListVo> getBoardList(Integer pageNum) {
-        PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT, Sort.by(Sort.Direction.DESC, "created_date"));
-        List<BoardListVo> boardList = boardRepositoryCustom.getAllBoardList(pageRequest);
+    public List<BoardListVo> getBoards(Integer offset, Integer limit) {
+        PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
 
-        return boardList;
+        return boardRepositoryCustom.getAllBoardList(pageRequest);
     }
 
     /* 내가 쓴글 가져오기 */

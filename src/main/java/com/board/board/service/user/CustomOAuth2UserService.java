@@ -14,8 +14,8 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpSession;
-import javax.transaction.Transactional;
+import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import java.util.Collections;
 
 @RequiredArgsConstructor

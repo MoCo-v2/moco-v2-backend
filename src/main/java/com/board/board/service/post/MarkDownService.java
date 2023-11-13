@@ -1,4 +1,4 @@
-package com.board.board.service.board;
+package com.board.board.service.post;
 
 import io.github.furstenheim.CopyDown;
 import org.springframework.stereotype.Service;

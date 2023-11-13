@@ -4,15 +4,15 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 @Setter
 @Getter
 @Entity
 @Table(name = "user") @DynamicInsert
-@NoArgsConstructor(access = AccessLevel.PROTECTED) //외부에서의 생성을 열어 둘 필요가 없을 때 , 보안적으로 권장됨
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends Time {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
