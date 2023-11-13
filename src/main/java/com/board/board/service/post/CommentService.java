@@ -1,4 +1,4 @@
-package com.board.board.service.board;
+package com.board.board.service.post;
 
 
 import com.board.board.domain.Board;

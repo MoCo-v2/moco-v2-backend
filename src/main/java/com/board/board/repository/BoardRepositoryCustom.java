@@ -38,6 +38,7 @@ public class BoardRepositoryCustom {
 
     /* 모든 게시글 리스트 가져오기 */
     public List<BoardListVo> getAllBoardList(Pageable pageable) {
+        System.out.println(pageable.getPageSize());
         return  queryFactory
                 .select(new QBoardListVo(board.id, board.createdDate, board.title, board.writer, board.content, user.id, board.view, board.thumbnail, board.subcontent, board.likecnt, board.commentcnt, user.picture, board.hashTag, board.isfull))
                 .from(board)

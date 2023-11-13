@@ -60,7 +60,7 @@ public class SecurityConfig{
                     .requestMatchers("/css/**", "/img/**", "/js/**", "/json/**", "/favicon.ico","/error/**").permitAll()
                     .requestMatchers("/earth","/earth/**").permitAll()
                     .requestMatchers("/board/write").authenticated()
-                    .requestMatchers("/board/**").permitAll()
+                    .requestMatchers("/boards/**").permitAll()
                     .requestMatchers("/signup","/login/signup").permitAll()
                     .requestMatchers("/id/check","/name/check").permitAll()
                     .anyRequest().authenticated()
