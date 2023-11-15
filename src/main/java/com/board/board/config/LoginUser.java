@@ -1,6 +1,5 @@
 package com.board.board.config;
 
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

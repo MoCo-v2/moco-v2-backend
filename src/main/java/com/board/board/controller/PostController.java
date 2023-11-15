@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.board.board.config.LoginUser;
 import com.board.board.config.auth.SessionUser;
-import com.board.board.dto.BoardDto;
-import com.board.board.dto.BoardListVo;
 import com.board.board.dto.CommentDto;
+import com.board.board.dto.PostDto;
+import com.board.board.dto.PostListVo;
 import com.board.board.dto.RecruitDto;
 import com.board.board.service.post.CommentService;
 import com.board.board.service.post.CookieService;
@@ -86,7 +86,7 @@ public class PostController {
 		@Parameter(description = "현재 로그인된 사용자를 식별") @LoginUser SessionUser sessionUser, Model model,
 		@Parameter(description = "조회수 중복 방지를 위해 쿠키값을 가져오기 위한 파라미터입니다. ") HttpServletRequest request,
 		@Parameter(description = "조회수 중복 방지를 위해 쿠키값을 가져오기 위한 파라미터입니다. ") HttpServletResponse response) {
-		BoardDto.Response boardDTO = postService.findById(boardId);
+		PostDto.Response boardDTO = postService.findById(boardId);
 		List<CommentDto.Response> comments = commentService.convertNestedStructure(boardDTO.getComments());
 
 		/* 조회수 */
@@ -139,7 +139,7 @@ public class PostController {
 	@GetMapping("/edit/{boardId}")
 	public String edit(@Parameter(description = "해당 번호를 가진 게시글을 수정합니다.") @PathVariable("boardId") Long boardId,
 		Model model, @Parameter(description = "현재 로그인된 사용자를 식별") @LoginUser SessionUser sessionUser) {
-		BoardDto.Response boardDTO = postService.getPost(boardId);
+		PostDto.Response boardDTO = postService.getPost(boardId);
 
 		if (!boardDTO.getUserId().equals(sessionUser.getId())) {
 			return "error/404error";
@@ -165,7 +165,7 @@ public class PostController {
 	public ResponseEntity listJson(
 		@Parameter(description = "가져올 게시글들의 페이지 번호입니다.") @PathVariable("page") Integer pageNum,
 		@Parameter(description = "모집중인 게시글을 구분하기 위한 파라미터입니다.") @PathVariable("isRecruitOn") Boolean isRecruitOn) {
-		List<BoardListVo> boardList = new ArrayList<>();
+		List<PostListVo> boardList = new ArrayList<>();
 		if (isRecruitOn) { /* 모집중만 */
 			boardList = postService.getBoardListOnRecruit(pageNum);
 		} else {           /* 전체 게시글 */
@@ -177,7 +177,7 @@ public class PostController {
 	/* CREATE - 글작성 */
 	@Operation(summary = "게시글 작성", description = "신규 게시글을 등록합니다.")
 	@PostMapping("/write")
-	public String write(@Parameter(description = "게시글의 정보가 담긴 Request 객체입니다.") @Valid BoardDto.Request boardDto,
+	public String write(@Parameter(description = "게시글의 정보가 담긴 Request 객체입니다.") @Valid PostDto.Request boardDto,
 		Errors errors, @Parameter(description = "현재 로그인된 사용자를 식별") @LoginUser SessionUser sessionUser, Model model,
 		@Parameter(description = "해시태그의 정보를 String 으로 받습니다. 후에 문자열 파싱을 통해 DB에 저장합니다.") @RequestParam(value = "tags", required = false) String tags) {
 		/* 글작성 유효성 검사 */
@@ -210,7 +210,7 @@ public class PostController {
 	@Operation(summary = "게시글 수정", description = "게시글을 수정 합니다. 수정 성공시 모집하기 페이지로 리다이렉트 됩니다.")
 	@PutMapping("/edit/{boardId}")
 	public String update(@Parameter(description = "해당 번호를 가진 게시글을 수정합니다.") @PathVariable("boardId") Long boardId,
-		@Parameter(description = "수정된 게시글의 정보가 담긴 Request 객체 입니다.") @Valid BoardDto.Request boardDto,
+		@Parameter(description = "수정된 게시글의 정보가 담긴 Request 객체 입니다.") @Valid PostDto.Request boardDto,
 		@Parameter(description = "해시태그의 정보를 String 으로 받습니다. 후에 문자열 파싱을 통해 DB에 저장합니다.") @RequestParam(value = "tags", required = false) String tags,
 		@LoginUser SessionUser sessionUser) {
 		if (!sessionUser.getId().equals(postService.getPost(boardId).getUserId())) {
@@ -248,7 +248,7 @@ public class PostController {
 	public String search(
 		@Parameter(description = "검색한 게시글들의 페이지 번호입니다. 기본값으로는 1 입니다.") @RequestParam(value = "page", defaultValue = "1") Integer pageNum,
 		@Parameter(description = "검색할 키워드가 담긴 파라미터입니다.") @RequestParam(value = "keyword") String keyword, Model model) {
-		List<BoardListVo> boardDtoList = postService.searchPosts(pageNum, keyword);
+		List<PostListVo> boardDtoList = postService.searchPosts(pageNum, keyword);
 		model.addAttribute("boardList", boardDtoList);
 		return "board/list";
 	}
@@ -272,7 +272,7 @@ public class PostController {
 		if (isDuplicate) {
 			return ResponseEntity.badRequest().body("이미 신청하였습니다.");
 		}
-		return ResponseEntity.ok(recruitService.Join(boardId, userId, dto));
+		return ResponseEntity.ok(recruitService.join(boardId, userId, dto));
 	}
 
 	/* DELETE - 모집 마감 취소 */
