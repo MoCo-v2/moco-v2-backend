@@ -1,15 +1,11 @@
 package com.board.board.controller;
 
-import java.util.Map;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.board.board.config.LoginUser;
@@ -18,19 +14,16 @@ import com.board.board.config.auth.CustomAuthFailureHandler;
 import com.board.board.config.auth.SessionUser;
 import com.board.board.domain.User;
 import com.board.board.dto.UserDto;
-import com.board.board.service.mail.ConfirmationTokenService;
 import com.board.board.service.user.UserService;
 
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Controller
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SignupController {
 	private final UserService userService;
 	private final CheckUseremailValidator checkUseremailValidator;
-	private final ConfirmationTokenService confirmationTokenService;
 	private final HttpSession httpSession;
 
 	/* 커스텀 유효성 검증을 위해 추가 */
@@ -69,30 +62,6 @@ public class SignupController {
 		return ResponseEntity.ok("사용 가능한 별명 입니다.");
 	}
 
-	/* 일반사용자 회원가입 처리 */
-	@PostMapping("/login/signup")
-	public String execSignup(@Valid UserDto.Request userDto, Errors errors, Model model) {
-		if (errors.hasErrors()) {
-			/* 회원가입 실패시 입력 데이터 값을 유지 */
-			model.addAttribute("userDto", userDto);
-
-			/* 유효성 통과 못한 필드와 메세지를 핸들링 */
-			Map<String, String> validatorResult = userService.validateHandling(errors);
-			for (String key : validatorResult.keySet()) {
-				model.addAttribute(key, validatorResult.get(key));
-			}
-
-			/* 회원가입 페이지로 다시 리턴 */
-			return "login/signup";
-		}
-		/* 회원저장 */
-		userService.join(userDto);
-		/* 이메일 발송 */
-		confirmationTokenService.createEmailConfirmationToken(userDto.getEmail(), userDto.getEmail());
-
-		return "redirect:/login";
-	}
-
 	/* SNS로그인 사용자 회원가입 처리 (실제로는 이름만 Update) */
 	@GetMapping("/signup/name/edit")
 	public String nickNameUpdate(@RequestParam String name, @LoginUser SessionUser sessionUser, Model model) {
@@ -112,13 +81,4 @@ public class SignupController {
 
 		return "redirect:/";
 	}
-
-	/* 이메일 인증관련 */
-	@GetMapping("/confirm-email")
-	public String viewConfirmEmail(@Valid @RequestParam String token) {
-		/* 이메일 인증 컬럼 Update */
-		userService.confirmEmail(token);
-		return "redirect:/login";
-	}
-
 }
