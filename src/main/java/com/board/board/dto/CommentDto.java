@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.board.board.domain.Board;
 import com.board.board.domain.Comment;
+import com.board.board.domain.Post;
 import com.board.board.domain.User;
 
 import lombok.AllArgsConstructor;
@@ -26,12 +26,12 @@ public class CommentDto {
 		private LocalDateTime createdDate;
 		private LocalDateTime modifiedDate;
 		private User user;
-		private Board board;
+		private Post post;
 		private Comment parent;
 
 		/* DTO -> Entity */
 		public Comment toEntity() {
-			Comment comments = Comment.builder().id(id).comment(comment).user(user).board(board).parent(parent).build();
+			Comment comments = Comment.builder().id(id).comment(comment).user(user).post(post).parent(parent).build();
 			return comments;
 		}
 	}
@@ -44,7 +44,7 @@ public class CommentDto {
 		private LocalDateTime modifiedDate;
 		private String name;
 		private Long userId;
-		private Long boardId;
+		private Long postId;
 		private Comment parent;
 		private List<CommentDto.Response> childList;
 		private boolean isRemoved;
@@ -57,7 +57,7 @@ public class CommentDto {
 			this.modifiedDate = comment.getModifiedDate();
 			this.name = comment.getUser().getName();
 			this.userId = comment.getUser().getId();
-			this.boardId = comment.getBoard().getId();
+			this.postId = comment.getPost().getId();
 			this.parent = comment.getParent();
 			this.childList = new ArrayList<>();
 			this.isRemoved = comment.isRemoved();

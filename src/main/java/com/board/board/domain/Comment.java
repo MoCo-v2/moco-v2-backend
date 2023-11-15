@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Table(name = "comments")
+@Table(name = "comment")
 @Entity
 public class Comment extends Time {
 
@@ -33,8 +33,8 @@ public class Comment extends Time {
 	private String comment; //댓글 내용
 
 	@ManyToOne
-	@JoinColumn(name = "board_id")
-	private Board board;   //게시글 id
+	@JoinColumn(name = "post_id")
+	private Post post;   //게시글 id
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")

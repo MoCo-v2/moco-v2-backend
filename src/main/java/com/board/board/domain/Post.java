@@ -1,6 +1,6 @@
 package com.board.board.domain;
 
-//Board : 실제 DB와 매칭될 클래스 (Entity Class)
+//Post : 실제 DB와 매칭될 클래스 (Entity Class)
 
 //JPA에서는 프록시 생성을 위해 기본 생성자를 반드시 하난 생성해야 한다.
 //생성자 자동 생성 : NoArgsConstructor, AllArgsConstructor
@@ -34,8 +34,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED) //외부에서 생성을 열어 둘 필요가 없을 때 , 보안적으로 권장함
 @Getter
 @Entity
-@Table(name = "board")
-public class Board extends Time {
+@Table(name = "post")
+public class Post extends Time {
 	@Id //Primary Key Field
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //PK 생성 규칙
 	private Long id;
@@ -80,17 +80,17 @@ public class Board extends Time {
 
 	/* 댓글 */
 	@OrderBy("id asc") //댓글 정렬
-	@JsonIgnoreProperties({"board"})
-	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@JsonIgnoreProperties({"post"})
+	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private List<Comment> comments;
 
 	/* 좋아요 */
-	@JsonIgnoreProperties({"board"})
-	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@JsonIgnoreProperties({"post"})
+	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private Set<Like> likes;
 
 	/* 모집된 인원 */
-	@OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private Set<Recruit> recruits;
 
 	public void update(String title, String hashTag, String content, String subcontent, String thumbnail,

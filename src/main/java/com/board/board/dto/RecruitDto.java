@@ -1,6 +1,6 @@
 package com.board.board.dto;
 
-import com.board.board.domain.Board;
+import com.board.board.domain.Post;
 import com.board.board.domain.Recruit;
 import com.board.board.domain.User;
 
@@ -19,12 +19,11 @@ public class RecruitDto {
 	public static class Request {
 		private Long id;
 		private User user;
-		private Board board;
+		private Post post;
 
 		/* DTO -> Entity */
 		public Recruit toEntity() {
-			Recruit recruit = Recruit.builder().id(id).user(user).board(board).build();
-			return recruit;
+			return Recruit.builder().id(id).user(user).post(post).build();
 		}
 	}
 
@@ -32,13 +31,13 @@ public class RecruitDto {
 	public static class Response {
 		private Long id;
 		private Long userId;
-		private Long boardId;
+		private Long postId;
 
 		/* Entity -> DTO */
 		public Response(Recruit recruit) {
 			this.id = recruit.getId();
 			this.userId = recruit.getUser().getId();
-			this.boardId = recruit.getBoard().getId();
+			this.postId = recruit.getPost().getId();
 		}
 	}
 }

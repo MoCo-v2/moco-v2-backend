@@ -11,7 +11,7 @@ import org.springframework.validation.FieldError;
 
 import com.board.board.domain.User;
 import com.board.board.dto.UserDto;
-import com.board.board.repository.BoardRepository;
+import com.board.board.repository.PostRepository;
 import com.board.board.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final BoardRepository boardRepository;
+	private final PostRepository boardRepository;
 
 	/* 회원가입 */
 	@Transactional

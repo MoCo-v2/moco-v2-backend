@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.board.board.config.LoginUser;
 import com.board.board.config.auth.SessionUser;
-import com.board.board.dto.BoardListVo;
+import com.board.board.dto.PostListVo;
 import com.board.board.service.post.PostService;
 import com.board.board.service.profile.ProfileService;
 import com.board.board.service.user.UserService;
@@ -58,7 +58,7 @@ public class ProfileController {
 	@GetMapping("/mypost")
 	public String mypost(@RequestParam(value = "page", defaultValue = "1") Integer pageNum,
 		@LoginUser SessionUser sessionUser, Model model) {
-		List<BoardListVo> boardList = postService.getMyBoardList(pageNum, sessionUser.getId());
+		List<PostListVo> boardList = postService.getMyBoardList(pageNum, sessionUser.getId());
 		Integer totalPage = postService.getPageList(pageNum);
 
 		model.addAttribute("boardList", boardList);
@@ -70,7 +70,7 @@ public class ProfileController {
 	/* 무한스크롤 AJAX */
 	@GetMapping("/MyListJson/{page}/{userId}")
 	public ResponseEntity listJson(@PathVariable("page") Integer pageNum, @PathVariable("userId") Long userId) {
-		List<BoardListVo> boardList = postService.getMyBoardList(pageNum, userId);
+		List<PostListVo> boardList = postService.getMyBoardList(pageNum, userId);
 		return ResponseEntity.ok(boardList);
 	}
 }

@@ -7,7 +7,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 @Getter
-public class BoardListVo {
+public class PostListVo {
 	private Long id;
 	private LocalDateTime created_date;
 	private String title;
@@ -24,7 +24,7 @@ public class BoardListVo {
 	private Boolean isfull;
 
 	@QueryProjection
-	public BoardListVo(Long id, LocalDateTime created_date, String title, String writer, String content, Long userId,
+	public PostListVo(Long id, LocalDateTime created_date, String title, String writer, String content, Long userId,
 		Integer view, String thumbnail, String subcontent, Integer likecnt, Integer commentcnt, String picture,
 		String hashTag, Boolean isfull) {
 		this.id = id;

@@ -7,12 +7,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.board.board.domain.Board;
+import com.board.board.domain.Post;
 import com.board.board.domain.User;
-import com.board.board.dto.BoardDto;
-import com.board.board.dto.BoardListVo;
-import com.board.board.repository.BoardRepository;
-import com.board.board.repository.BoardRepositoryCustom;
+import com.board.board.dto.PostDto;
+import com.board.board.dto.PostListVo;
+import com.board.board.repository.PostRepository;
+import com.board.board.repository.PostRepositoryCustom;
 import com.board.board.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -22,64 +22,64 @@ import lombok.AllArgsConstructor;
 public class PostService {
 
 	private UserRepository userRepository;
-	private BoardRepository boardRepository;
-	private BoardRepositoryCustom boardRepositoryCustom;
+	private PostRepository boardRepository;
+	private PostRepositoryCustom boardRepositoryCustom;
 
 	private static final int PAGE_POST_COUNT = 9; // 한 페이지에 존재하는 게시글 수
 
 	/* 모집중인 게시글 가져오기 */
 	@Transactional(readOnly = true)
-	public List<BoardListVo> getBoardListOnRecruit(Integer pageNum) {
+	public List<PostListVo> getBoardListOnRecruit(Integer pageNum) {
 		PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
 			Sort.by(Sort.Direction.DESC, "created_date"));
-		List<BoardListVo> boardList = boardRepositoryCustom.getBoardList(pageRequest);
+		List<PostListVo> boardList = boardRepositoryCustom.getPostsOnRecruit(pageRequest);
 		return boardList;
 	}
 
 	/* 모든 게시글 가져오기 */
 	@Transactional(readOnly = true)
-	public List<BoardListVo> getBoards(Integer offset, Integer limit) {
+	public List<PostListVo> getBoards(Integer offset, Integer limit) {
 		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
 
-		return boardRepositoryCustom.getAllBoardList(pageRequest);
+		return boardRepositoryCustom.getPosts(pageRequest);
 	}
 
 	/* 내가 쓴글 가져오기 */
 	@Transactional(readOnly = true)
-	public List<BoardListVo> getMyBoardList(Integer pageNum, Long userId) {
+	public List<PostListVo> getMyBoardList(Integer pageNum, Long userId) {
 		PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
 			Sort.by(Sort.Direction.DESC, "created_date"));
-		List<BoardListVo> boardList = boardRepositoryCustom.getMyBoardList(pageRequest, userId);
+		List<PostListVo> boardList = boardRepositoryCustom.getMyPosts(pageRequest, userId);
 		return boardList;
 	}
 
 	/* 게시글 검색 */
 	@Transactional
-	public List<BoardListVo> searchPosts(Integer pageNum, String keyword) {
+	public List<PostListVo> searchPosts(Integer pageNum, String keyword) {
 		PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
 			Sort.by(Sort.Direction.DESC, "created_date"));
-		List<BoardListVo> boardList = boardRepositoryCustom.getSearchBoard(pageRequest, keyword);
+		List<PostListVo> boardList = boardRepositoryCustom.getSearchPost(pageRequest, keyword);
 		return boardList;
 	}
 
 	/* 게시글 수정페이지 */
 	@Transactional(readOnly = true)
-	public BoardDto.Response getPost(Long BoardId) {
-		Board board = boardRepository.findById(BoardId)
+	public PostDto.Response getPost(Long BoardId) {
+		Post board = boardRepository.findById(BoardId)
 			.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-		return new BoardDto.Response(board);
+		return new PostDto.Response(board);
 	}
 
 	/* 게시글 상세 */
 	@Transactional(readOnly = true)
-	public BoardDto.Response findById(Long BoardId) {
-		Board board = boardRepository.findByIdWithFetchJoin(BoardId);
-		return new BoardDto.Response(board);
+	public PostDto.Response findById(Long BoardId) {
+		Post board = boardRepository.findByIdWithFetchJoin(BoardId);
+		return new PostDto.Response(board);
 	}
 
 	/* 게시글 저장 */
 	@Transactional
-	public Long savePost(String name, BoardDto.Request boardDto) {
+	public Long savePost(String name, PostDto.Request boardDto) {
 		User user = userRepository.findByName(name);
 		boardDto.setUser(user);
 		return boardRepository.save(boardDto.toEntity()).getId();
@@ -87,8 +87,8 @@ public class PostService {
 
 	/* 게시글 수정 */
 	@Transactional
-	public Long updatePost(Long board_id, BoardDto.Request boardDto) {
-		Board board = boardRepository.findById(board_id)
+	public Long updatePost(Long board_id, PostDto.Request boardDto) {
+		Post board = boardRepository.findById(board_id)
 			.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
 		board.update(boardDto.getTitle(), boardDto.getHashtag(), boardDto.getContent(), boardDto.getSubcontent(),
 			boardDto.getThumbnail(), boardDto.getLocation());
@@ -98,7 +98,7 @@ public class PostService {
 	/* UPDATE -  모집 마감 */
 	@Transactional
 	public boolean updateFull(Long boardId) {
-		Board board = boardRepository.findById(boardId)
+		Post board = boardRepository.findById(boardId)
 			.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
 		return board.close();
 	}

@@ -8,14 +8,14 @@ import org.springframework.data.repository.query.Param;
 import com.board.board.domain.Recruit;
 
 public interface RecruitRepositoey extends JpaRepository<Recruit, Long> {
-	@Query("SELECT count(r)>0 from Recruit r WHERE r.board.id = :boardId AND  r.user.id = :userId")
+	@Query("SELECT count(r)>0 from Recruit r WHERE r.post.id = :boardId AND  r.user.id = :userId")
 	boolean existsByBoardIdAndUserId(@Param("boardId") Long boardId, @Param("userId") Long userId);
 
-	@Query("select  count(r) from Recruit  r where r.board.id = :boardId")
+	@Query("select  count(r) from Recruit  r where r.post.id = :boardId")
 	Long countByBoardId(@Param("boardId") Long boardId);
 
 	@Modifying
-	@Query("delete from Recruit r where r.board.id = :boardId AND r.user.id = :userId")
+	@Query("delete from Recruit r where r.post.id = :boardId AND r.user.id = :userId")
 	int joinUserCancel(@Param("boardId") Long boardId, @Param("userId") Long userId);
 
 }

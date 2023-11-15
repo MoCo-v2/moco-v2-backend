@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.board.board.dto.BoardDto;
-import com.board.board.dto.BoardListVo;
 import com.board.board.dto.CommentDto;
+import com.board.board.dto.PostDto;
+import com.board.board.dto.PostListVo;
 import com.board.board.service.post.CommentService;
 import com.board.board.service.post.PostService;
 import com.board.board.service.post.RecruitService;
@@ -32,7 +32,7 @@ public class AdminController {
 	@Operation(summary = "페이지 반환", description = "관리자 페이지를 반환합니다. 관리자만 요청이 가능합니다.")
 	@GetMapping({"", "/"})
 	public String adminPage(Model model, @RequestParam(value = "page", defaultValue = "1") Integer pageNum) {
-		List<BoardListVo> boardList = postService.getBoardListOnRecruit(pageNum);
+		List<PostListVo> boardList = postService.getBoardListOnRecruit(pageNum);
 		Integer pageList = postService.getPageList(pageNum);
 
 		model.addAttribute("boardList", boardList);
@@ -45,7 +45,7 @@ public class AdminController {
 	@Operation(summary = "페이지 반환", description = "관리자용 게시글 읽기 페이지를 반환합니다.")
 	@GetMapping("/{boardId}")
 	public String adminDetail(@PathVariable("boardId") Long boardId, Model model) {
-		BoardDto.Response boardDto = postService.findById(boardId);
+		PostDto.Response boardDto = postService.findById(boardId);
 		List<CommentDto.Response> comments = commentService.convertNestedStructure(boardDto.getComments());
 
 		/* 댓글 리스트 */

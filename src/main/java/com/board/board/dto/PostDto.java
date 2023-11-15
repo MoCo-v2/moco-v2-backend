@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.board.board.domain.Board;
+import com.board.board.domain.Post;
 import com.board.board.domain.User;
 
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-public class BoardDto {
+public class PostDto {
 
 	@Data
 	@NoArgsConstructor //인자 없이 객체 생성 가능
@@ -37,8 +37,8 @@ public class BoardDto {
 		private User user;
 
 		/* Dto -> Entity */
-		public Board toEntity() {
-			Board board = Board.builder()
+		public Post toEntity() {
+			Post post = Post.builder()
 				.id(id)
 				.writer(writer)
 				.hashTag(hashtag)
@@ -50,7 +50,7 @@ public class BoardDto {
 				.location(location)
 				.user(user)
 				.build();
-			return board;
+			return post;
 		}
 	}
 
@@ -74,22 +74,22 @@ public class BoardDto {
 		private boolean isfull;
 
 		/* Entity -> Dto */
-		public Response(Board board) {
-			this.id = board.getId();
-			this.title = board.getTitle();
-			this.writer = board.getWriter();
-			this.content = board.getContent();
-			this.hashtag = board.getHashTag();
-			this.subcontent = board.getSubcontent();
-			this.thumbnail = board.getThumbnail();
-			this.view = board.getView();
-			this.location = board.getLocation();
-			this.createdDate = board.getCreatedDate();
-			this.modifiedDate = board.getModifiedDate();
-			this.userId = board.getUser().getId();
-			this.userImg = board.getUser().getPicture();
-			this.comments = board.getComments().stream().map(CommentDto.Response::new).collect(Collectors.toList());
-			this.isfull = board.isIsfull();
+		public Response(Post post) {
+			this.id = post.getId();
+			this.title = post.getTitle();
+			this.writer = post.getWriter();
+			this.content = post.getContent();
+			this.hashtag = post.getHashTag();
+			this.subcontent = post.getSubcontent();
+			this.thumbnail = post.getThumbnail();
+			this.view = post.getView();
+			this.location = post.getLocation();
+			this.createdDate = post.getCreatedDate();
+			this.modifiedDate = post.getModifiedDate();
+			this.userId = post.getUser().getId();
+			this.userImg = post.getUser().getPicture();
+			this.comments = post.getComments().stream().map(CommentDto.Response::new).collect(Collectors.toList());
+			this.isfull = post.isIsfull();
 		}
 	}
 }

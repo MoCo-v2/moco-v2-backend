@@ -3,10 +3,10 @@ package com.board.board.service.post;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.board.board.domain.Board;
+import com.board.board.domain.Post;
 import com.board.board.domain.User;
 import com.board.board.dto.RecruitDto;
-import com.board.board.repository.BoardRepository;
+import com.board.board.repository.PostRepository;
 import com.board.board.repository.RecruitRepositoey;
 import com.board.board.repository.UserRepository;
 
@@ -16,18 +16,18 @@ import lombok.AllArgsConstructor;
 @Service
 public class RecruitService {
 	private RecruitRepositoey recruitRepositoey;
-	private BoardRepository boardRepository;
+	private PostRepository postRepository;
 	private UserRepository userRepository;
 
 	/* 모집참가 */
 	@Transactional
-	public Long Join(Long boardid, Long userId, RecruitDto.Request recruitDto) {
-		Board board = boardRepository.findById(boardid)
+	public Long join(Long boardid, Long userId, RecruitDto.Request recruitDto) {
+		Post post = postRepository.findById(boardid)
 			.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을수 없습니다."));
 		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저를 찾을수 없습니다."));
 		;
 
-		recruitDto.setBoard(board);
+		recruitDto.setPost(post);
 		recruitDto.setUser(user);
 		recruitRepositoey.save(recruitDto.toEntity());
 		return recruitDto.getId();

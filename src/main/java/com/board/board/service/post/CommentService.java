@@ -9,13 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.board.board.domain.Board;
 import com.board.board.domain.Comment;
+import com.board.board.domain.Post;
 import com.board.board.domain.User;
 import com.board.board.dto.CommentDto;
-import com.board.board.repository.BoardRepository;
-import com.board.board.repository.BoardRepositoryCustom;
 import com.board.board.repository.CommentRepository;
+import com.board.board.repository.PostRepository;
+import com.board.board.repository.PostRepositoryCustom;
 import com.board.board.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -26,40 +26,40 @@ import lombok.RequiredArgsConstructor;
 public class CommentService {
 	private final CommentRepository commentRepository;
 	private final UserRepository userRepository;
-	private final BoardRepository boardRepository;
-	private final BoardRepositoryCustom boardRepositoryCustom;
+	private final PostRepository postRepository;
+	private final PostRepositoryCustom postRepositoryCustom;
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
 	/* CREATE */
 	@Transactional
-	public Long commentSave(Long userId, Long boardId, CommentDto.Request commentDto) {
+	public Long commentSave(Long userId, Long postId, CommentDto.Request commentDto) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저를 찾을수 없습니다."));
-		Board board = boardRepository.findById(boardId).orElseThrow(() ->
-			new IllegalArgumentException("댓글 작성 실패 : 해당 게시글이 존재하지 않습니다." + boardId));
+		Post post = postRepository.findById(postId).orElseThrow(() ->
+			new IllegalArgumentException("댓글 작성 실패 : 해당 게시글이 존재하지 않습니다." + postId));
 
 		commentDto.setUser(user);
-		commentDto.setBoard(board);
+		commentDto.setPost(post);
 		commentRepository.save(commentDto.toEntity());
-		boardRepositoryCustom.updateCommentCountPlus(boardId);
+		postRepositoryCustom.updateCommentCountPlus(postId);
 
 		return commentDto.getId();
 	}
 
 	/* CREATE */
 	@Transactional
-	public Long recommentSave(Long userId, Long boardId, Long parentId, CommentDto.Request commentDto) {
+	public Long recommentSave(Long userId, Long postId, Long parentId, CommentDto.Request commentDto) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저를 찾을수 없습니다."));
-		Board board = boardRepository.findById(boardId).orElseThrow(() ->
-			new IllegalArgumentException("댓글 작성 실패 : 해당 게시글이 존재하지 않습니다." + boardId));
+		Post post = postRepository.findById(postId).orElseThrow(() ->
+			new IllegalArgumentException("댓글 작성 실패 : 해당 게시글이 존재하지 않습니다." + postId));
 		commentRepository.findById(parentId)
 			.ifPresentOrElse(parent -> commentDto.setParent(parent), () -> commentDto.setParent(null));
 
 		commentDto.setUser(user);
-		commentDto.setBoard(board);
+		commentDto.setPost(post);
 
 		commentRepository.save(commentDto.toEntity());
-		boardRepositoryCustom.updateCommentCountPlus(boardId);
+		postRepositoryCustom.updateCommentCountPlus(postId);
 
 		return commentDto.getId();
 
@@ -75,7 +75,7 @@ public class CommentService {
 
 	/* DELETE */
 	@Transactional
-	public void commentDelete(Long boardId, Long id) {
+	public void commentDelete(Long postId, Long id) {
 		Comment comment = commentRepository.findById(id).orElseThrow(() ->
 			new IllegalArgumentException("해당 댓글이 존재하지 않습니다." + id));
 
@@ -91,7 +91,7 @@ public class CommentService {
 				commentRepository.delete(comment.getParent());
 			}
 		}
-		boardRepositoryCustom.updateCommentCountMinus(boardId);
+		postRepositoryCustom.updateCommentCountMinus(postId);
 
 	}
 

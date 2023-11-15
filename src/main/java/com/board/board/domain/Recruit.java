@@ -29,6 +29,6 @@ public class Recruit {
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "board_id", nullable = false)
-	private Board board;
+	@JoinColumn(name = "post_id", nullable = false)
+	private Post post;
 }
