@@ -22,15 +22,15 @@ public class CustomUserDetails implements UserDetails {
 		return collectors;
 	}
 
+	@Override
+	public String getPassword() {
+		return null;
+	}
+
 	/* 사용자의 id를 반환 (email) */
 	@Override
 	public String getUsername() {
 		return user.getEmail();
-	}
-
-	@Override
-	public String getPassword() {
-		return user.getPassword();
 	}
 
 	/* 계정 만료 여부 true : 만료 안됨 , false : 만료 */
@@ -42,9 +42,6 @@ public class CustomUserDetails implements UserDetails {
 	/* 계정 잠김 여부 true : 잠기지 않음, false : 잠김 */
 	@Override
 	public boolean isAccountNonLocked() {
-		if (!user.isEmailcheck()) {
-			return false;
-		}
 		return true;
 	}
 
