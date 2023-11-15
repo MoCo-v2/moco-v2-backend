@@ -33,9 +33,6 @@ public class User extends Time {
 	@Column(nullable = false, unique = true)
 	private String email;
 
-	@Column(nullable = true)
-	private String password;
-
 	@NotBlank @Length(min = 2, max = 10)
 	@Pattern(regexp = "^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,10}$") //한글, 영문, 숫자만 가능하며 2-10자리 가능
 	@Column(nullable = false)
@@ -47,22 +44,17 @@ public class User extends Time {
 	@Column(nullable = false)
 	private boolean namecheck = false;
 
-	@Column(nullable = false)
-	private boolean emailcheck = false;
-
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Role role;
 
 	@Builder
-	public User(String name, String password, String email, String picture, boolean namecheck, boolean emailcheck,
+	public User(String name, String email, String picture, boolean namecheck,
 		Role role) {
 		this.name = name;
-		this.password = password;
 		this.email = email;
 		this.picture = picture;
 		this.namecheck = namecheck;
-		this.emailcheck = emailcheck;
 		this.role = role;
 	}
 
@@ -88,8 +80,4 @@ public class User extends Time {
 		return this.role.getKey();
 	}
 
-	/* 유저이메일 인증 성공 */
-	public void emailVerifiedSuccess() {
-		this.emailcheck = true;
-	}
 }

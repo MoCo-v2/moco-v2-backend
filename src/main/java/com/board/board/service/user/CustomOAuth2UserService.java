@@ -68,8 +68,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 	private User saveOrUpdate(OAuthAttributes attributes) {
 
 		User user = userRepository.findByEmail(attributes.getEmail()).orElse(attributes.toEntity());
-		/* SNS 로그인은 이메일 인증 패스 */
-		user.emailVerifiedSuccess();
 		return userRepository.save(user);
 	}
 
