@@ -1,11 +1,5 @@
 package com.board.board.config;
 
-import com.board.board.config.auth.OauthSuccessHandler;
-import com.board.board.service.user.CustomOAuth2UserService;
-import com.board.board.service.user.CustomUserDetailsService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,68 +14,74 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
+import com.board.board.config.auth.OauthSuccessHandler;
+import com.board.board.service.user.CustomOAuth2UserService;
+import com.board.board.service.user.CustomUserDetailsService;
+
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
-public class SecurityConfig{
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final CustomUserDetailsService customUserDetailsService;
+public class SecurityConfig {
+	private final CustomOAuth2UserService customOAuth2UserService;
+	private final CustomUserDetailsService customUserDetailsService;
 
+	/* 로그인 실패 핸들러 의존성 주입 */
+	private final AuthenticationFailureHandler customFailureHandler;
 
-    /* 로그인 실패 핸들러 의존성 주입 */
-    private final AuthenticationFailureHandler  customFailureHandler;
+	/* 인증매니저 Bean 등록 */
+	@Bean
+	public AuthenticationManager authenticationManagerBean(
+		AuthenticationConfiguration authenticationConfiguration) throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
 
-    /* 인증매니저 Bean 등록 */
-    @Bean
-    public AuthenticationManager authenticationManagerBean(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+	@Bean
+	public PasswordEncoder encoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    public PasswordEncoder encoder(){
-        return new BCryptPasswordEncoder();
-    }
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(customUserDetailsService).passwordEncoder(encoder());
+	}
 
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception{
-        auth.userDetailsService(customUserDetailsService).passwordEncoder(encoder());
-    }
+	@Bean
+	@Order(SecurityProperties.BASIC_AUTH_ORDER)
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http
+			.csrf().disable()
+			.headers().frameOptions().disable()
+			.and().authorizeHttpRequests()
+			.requestMatchers("/", "/actuator/health").permitAll()
+			.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+			.requestMatchers("/admin", "/admin/**").hasRole("MASTER")
+			.requestMatchers("/login", "/confirm-email/**").permitAll()
+			.requestMatchers("/css/**", "/img/**", "/js/**", "/json/**", "/favicon.ico", "/error/**").permitAll()
+			.requestMatchers("/earth", "/earth/**").permitAll()
+			.requestMatchers("/board/write").authenticated()
+			.requestMatchers("/boards/**").permitAll()
+			.requestMatchers("/signup", "/login/signup").permitAll()
+			.requestMatchers("/id/check", "/name/check").permitAll()
+			.anyRequest().authenticated()
+			.and()
+			.logout().logoutSuccessUrl("/")
+			.and()
+			.formLogin()
+			.loginPage("/login")                  /* form 기반으로 인증 진입점 */
+			.loginProcessingUrl("/loginProcess")
+			.failureHandler(customFailureHandler).usernameParameter("username") /* 로그인 실패 핸들러 */
+			.defaultSuccessUrl("/")
+			.usernameParameter("username")
+			.and()
+			.oauth2Login()/* Oauth 로그인 진입점 */
+			.loginPage("/login")
+			.successHandler(new OauthSuccessHandler()) /* 로그인 성공시 진입점 */
+			.userInfoEndpoint()
+			.userService(customOAuth2UserService);
 
-    @Bean
-    @Order(SecurityProperties.BASIC_AUTH_ORDER)
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf().disable()
-            .headers().frameOptions().disable()
-            .and().authorizeHttpRequests()
-                    .requestMatchers("/","/actuator/health").permitAll()
-                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                    .requestMatchers("/admin","/admin/**").hasRole("MASTER")
-                    .requestMatchers("/login","/confirm-email/**").permitAll()
-                    .requestMatchers("/css/**", "/img/**", "/js/**", "/json/**", "/favicon.ico","/error/**").permitAll()
-                    .requestMatchers("/earth","/earth/**").permitAll()
-                    .requestMatchers("/board/write").authenticated()
-                    .requestMatchers("/boards/**").permitAll()
-                    .requestMatchers("/signup","/login/signup").permitAll()
-                    .requestMatchers("/id/check","/name/check").permitAll()
-                    .anyRequest().authenticated()
-                .and()
-                    .logout().logoutSuccessUrl("/")
-                .and()
-                    .formLogin()
-                    .loginPage("/login")                  /* form 기반으로 인증 진입점 */
-                    .loginProcessingUrl("/loginProcess")
-                    .failureHandler(customFailureHandler).usernameParameter("username") /* 로그인 실패 핸들러 */
-                    .defaultSuccessUrl("/")
-                    .usernameParameter("username")
-                .and()
-                    .oauth2Login()/* Oauth 로그인 진입점 */
-                    .loginPage("/login")
-                    .successHandler(new OauthSuccessHandler()) /* 로그인 성공시 진입점 */
-                    .userInfoEndpoint()
-                    .userService(customOAuth2UserService);
-
-        return http.build();
-    }
+		return http.build();
+	}
 }
 
 /*
