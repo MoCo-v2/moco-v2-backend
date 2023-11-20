@@ -60,8 +60,8 @@ public class PostController {
 	@Operation(summary = "모든 게시글 페이지 반환", description = "전체 게시글 리스트 데이터를 담아 페이지를 반환합니다.")
 	@GetMapping("")
 	public ResponseEntity<JSONObject> getBoards(@Parameter(description = "반환할 게시글의 페이지번호")
-	@RequestParam(value = "offset", defaultValue = "1") Integer offset,
-		@RequestParam(value = "limit", required = false, defaultValue = "1") Integer limit) {
+	@RequestParam(value = "offset", defaultValue = "0") Integer offset,
+		@RequestParam(value = "limit", required = false, defaultValue = "8") Integer limit) {
 
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("list", postService.getBoards(offset, limit));
