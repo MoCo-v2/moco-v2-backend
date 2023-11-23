@@ -8,19 +8,13 @@ import com.board.board.domain.Post;
 import com.board.board.domain.User;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class PostDto {
 
-	@Data
-	@NoArgsConstructor //인자 없이 객체 생성 가능
-	@AllArgsConstructor
-	@Builder
+	@Setter
+	@Getter
 	public static class Request {
 		private Long id;
 		private String writer;
@@ -92,5 +86,23 @@ public class PostDto {
 			this.isfull = post.isIsfull();
 		}
 	}
+
+	@Getter
+	@Setter
+	public static class PostDetailDto {
+		private PostDto.Response postDto;
+		private List<CommentDto.Response> comments;
+		private Long likeCount;
+		private Long joinUsersCount;
+
+		public PostDetailDto(PostDto.Response postDto, List<CommentDto.Response> comments, Long likeCount,
+			Long joinUsersCount) {
+			this.postDto = postDto;
+			this.comments = comments;
+			this.likeCount = likeCount;
+			this.joinUsersCount = joinUsersCount;
+		}
+	}
+
 }
 

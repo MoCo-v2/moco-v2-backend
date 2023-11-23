@@ -96,9 +96,9 @@ public class CommentService {
 	}
 
 	/* 댓글 계층 정렬 */
-	public List<CommentDto.Response> convertNestedStructure(List<CommentDto.Response> comments) {
+	public List<CommentDto.Response> convertNestedStructure(List<Comment> comments) {
 		List<CommentDto.Response> result = new ArrayList<>();
-		Map<Long, CommentDto.Response> map = new HashMap<>();
+		Map<Long, Comment> map = new HashMap<>();
 
 		comments.stream().forEach(comment -> {
 			map.put(comment.getId(), comment);
@@ -107,7 +107,7 @@ public class CommentService {
 			if (comment.getParent() != null) {
 				map.get(comment.getParent().getId()).getChildList().add(comment);
 			} else
-				result.add(comment);
+				result.add(new CommentDto.Response(comment));
 		});
 		return result;
 	}

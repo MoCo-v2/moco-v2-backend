@@ -18,7 +18,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	List<Post> findMyPostList(Pageable pageable, @Param("userId") Long userId);
 
 	/* 게시글 상세보기 [댓글로 인한 FetchJoin] */
-	@Query(value = "select b from Post b left join fetch b.comments c where b.id = :postId")
+	@Query(value = "select b from Post b left join fetch b.comments where b.id = :postId")
 	Post findByIdWithFetchJoin(@Param("postId") Long postId);
 
 	/* 게시글 작성자 변경 */

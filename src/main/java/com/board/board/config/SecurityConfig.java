@@ -61,6 +61,7 @@ public class SecurityConfig {
 			.requestMatchers("/earth", "/earth/**").permitAll()
 			.requestMatchers("/board/write").authenticated()
 			.requestMatchers("/boards/**").permitAll()
+			.requestMatchers("/posts/**").permitAll()
 			.requestMatchers("/signup", "/login/signup").permitAll()
 			.requestMatchers("/id/check", "/name/check").permitAll()
 			.anyRequest().authenticated()
