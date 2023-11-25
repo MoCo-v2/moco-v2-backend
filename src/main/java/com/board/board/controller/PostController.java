@@ -37,17 +37,17 @@ public class PostController {
 	private final RecruitService recruitService;
 	private final Logger log = LoggerFactory.getLogger(PostController.class);
 
-	private final String offset = "0";
-	private final String limit = "8";
+	private final String OFFSET = "0";
+	private final String LIMIT = "8";
 
 	/* ----- Post 📋 ----- */
 	@Operation(summary = "Return posts", description = "특정 조건의 posts를 반환합니다.")
 	@GetMapping("")
 	public ResponseEntity<PostDto.Posts> getPosts(
 		@Parameter(description = "어디서 부터 가져올지 요청하는 파라미터입니다. 기본값은 0으로 첫번째 게시글부터 가져옵니다.")
-		@RequestParam(value = "offset", required = false, defaultValue = offset) Integer offset,
+		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
 		@Parameter(description = "어디까지 가져올지의 요청하는 파라미터입니다. 기본값은 8입니다.")
-		@RequestParam(value = "limit", required = false, defaultValue = limit) Integer limit) {
+		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit) {
 
 		return ResponseEntity.ok().body(postService.getPosts(offset, limit));
 	}
@@ -57,9 +57,9 @@ public class PostController {
 	@GetMapping("/search")
 	public ResponseEntity<PostDto.Posts> search(
 		@Parameter(description = "어디서 부터 가져올지 요청하는 파라미터입니다. 기본값은 0으로 첫번째 게시글부터 가져옵니다.")
-		@RequestParam(value = "offset", required = false, defaultValue = offset) Integer offset,
+		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
 		@Parameter(description = "어디까지 가져올지의 요청하는 파라미터입니다. 기본값은 8입니다.")
-		@RequestParam(value = "limit", required = false, defaultValue = limit) Integer limit,
+		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
 		@Parameter(description = "검색할 키워드가 담긴 파라미터입니다.")
 		@RequestParam(value = "keyword") String keyword, Model model) {
 		return ResponseEntity.ok().body(postService.searchPosts(offset, limit, keyword));
