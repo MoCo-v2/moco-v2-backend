@@ -16,8 +16,6 @@ import com.board.board.repository.PostRepository;
 import com.board.board.repository.PostRepositoryCustom;
 import com.board.board.repository.UserRepository;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -26,7 +24,7 @@ public class PostService {
 
 	private UserRepository userRepository;
 	private PostRepository postRepository;
-	private PostRepositoryCustom boardRepositoryCustom;
+	private PostRepositoryCustom postRepositoryCustom;
 
 	private CommentService commentService;
 	private LikeService likeService;
@@ -36,42 +34,43 @@ public class PostService {
 
 	/* 모집중인 게시글 가져오기 */
 	@Transactional(readOnly = true)
-	public List<PostListVo> getBoardListOnRecruit(Integer pageNum) {
+	public List<PostListVo> getPostListOnRecruit(Integer pageNum) {
 		PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
 			Sort.by(Sort.Direction.DESC, "created_date"));
-		List<PostListVo> boardList = boardRepositoryCustom.getPostsOnRecruit(pageRequest);
-		return boardList;
+		List<PostListVo> postList = postRepositoryCustom.getPostsOnRecruit(pageRequest);
+		return postList;
 	}
 
 	/* 모든 게시글 가져오기 */
 	@Transactional(readOnly = true)
-	public List<PostListVo> getBoards(Integer offset, Integer limit) {
+	public PostDto.Posts getPosts(Integer offset, Integer limit) {
 		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
+		List<PostListVo> posts = postRepositoryCustom.getPosts(pageRequest);
+		Long total = getPostCount();
 
-		return boardRepositoryCustom.getPosts(pageRequest);
-	}
-
-	/* 내가 쓴글 가져오기 */
-	@Transactional(readOnly = true)
-	public List<PostListVo> getMyBoardList(Integer pageNum, Long userId) {
-		PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
-			Sort.by(Sort.Direction.DESC, "created_date"));
-		List<PostListVo> boardList = boardRepositoryCustom.getMyPosts(pageRequest, userId);
-		return boardList;
+		return new PostDto.Posts(posts, total);
 	}
 
 	/* 게시글 검색 */
 	@Transactional
-	public List<PostListVo> searchPosts(Integer pageNum, String keyword) {
+	public PostDto.Posts searchPosts(Integer offset, Integer limit, String keyword) {
+		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
+		List<PostListVo> posts = postRepositoryCustom.getSearchPost(pageRequest, keyword);
+		Long total = getPostCount();
+		return new PostDto.Posts(posts, total);
+	}
+
+	/* 내가 쓴글 가져오기 */
+	@Transactional(readOnly = true)
+	public List<PostListVo> getMyPosts(Integer pageNum, Long userId) {
 		PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
 			Sort.by(Sort.Direction.DESC, "created_date"));
-		List<PostListVo> boardList = boardRepositoryCustom.getSearchPost(pageRequest, keyword);
-		return boardList;
+		return postRepositoryCustom.getMyPosts(pageRequest, userId);
 	}
 
 	/* 게시글 상세 */
 	@Transactional
-	public PostDto.PostDetailDto getPost(Long postId, HttpServletRequest request, HttpServletResponse response) {
+	public PostDto.PostDetailDto getPost(Long postId) {
 		Post post = postRepository.findByIdWithFetchJoin(postId);
 		PostDto.Response postDto = new PostDto.Response(post);
 
@@ -97,28 +96,30 @@ public class PostService {
 
 	/* 게시글 저장 */
 	@Transactional
-	public Long savePost(String name, PostDto.Request boardDto) {
-		User user = userRepository.findByName(name);
-		boardDto.setUser(user);
-		return postRepository.save(boardDto.toEntity()).getId();
+	public Long savePost(Long userId, PostDto.Request postDto) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+		postDto.setUser(user);
+
+		return postRepository.save(postDto.toEntity()).getId();
 	}
 
 	/* 게시글 수정 */
 	@Transactional
-	public Long updatePost(Long board_id, PostDto.Request boardDto) {
-		Post board = postRepository.findById(board_id)
+	public Long updatePost(Long postId, PostDto.Request postDto) {
+		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-		board.update(boardDto.getTitle(), boardDto.getHashtag(), boardDto.getContent(), boardDto.getSubcontent(),
-			boardDto.getThumbnail(), boardDto.getLocation());
-		return board.getId();
+		post.update(postDto.getTitle(), postDto.getHashtag(), postDto.getContent(), postDto.getSubcontent(),
+			postDto.getThumbnail(), postDto.getLocation());
+		return post.getId();
 	}
 
 	/* UPDATE -  모집 마감 */
 	@Transactional
-	public boolean updateFull(Long boardId) {
-		Post board = postRepository.findById(boardId)
+	public boolean updateFull(Long postId) {
+		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-		return board.close();
+		return post.close();
 	}
 
 	/* DELETE - 게시글 삭제 */
@@ -129,17 +130,16 @@ public class PostService {
 
 	/* 페이징 */
 	@Transactional
-	public Long getBoardCount() {
+	public Long getPostCount() {
 		return postRepository.count();
 	}
 
 	public Integer getPageList(Integer curPageNum) {
 		// 총 게시글 갯수
-		Double postsTotalCount = Double.valueOf(this.getBoardCount());
+		Double postsTotalCount = Double.valueOf(this.getPostCount());
 
 		// 총 게시글 기준으로 계산한 마지막 페이지 번호 계산 (올림으로 계산)
-		Integer totalLastPageNum = (int)(Math.ceil((postsTotalCount / PAGE_POST_COUNT)));
-		return totalLastPageNum;
+		return (Integer)(int)(Math.ceil((postsTotalCount / PAGE_POST_COUNT)));
 	}
 
 	/* 조회수 */
