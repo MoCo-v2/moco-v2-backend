@@ -56,9 +56,9 @@ public class ProfileController {
 
 	@Operation(summary = "게시글 리스트 요청", description = "자신이 작성한 게시글들을 반환합니다.")
 	@GetMapping("/mypost")
-	public String mypost(@RequestParam(value = "page", defaultValue = "1") Integer pageNum,
+	public String myPost(@RequestParam(value = "page", defaultValue = "1") Integer pageNum,
 		@LoginUser SessionUser sessionUser, Model model) {
-		List<PostListVo> boardList = postService.getMyBoardList(pageNum, sessionUser.getId());
+		List<PostListVo> boardList = postService.getMyPosts(pageNum, sessionUser.getId());
 		Integer totalPage = postService.getPageList(pageNum);
 
 		model.addAttribute("boardList", boardList);
@@ -70,7 +70,7 @@ public class ProfileController {
 	/* 무한스크롤 AJAX */
 	@GetMapping("/MyListJson/{page}/{userId}")
 	public ResponseEntity listJson(@PathVariable("page") Integer pageNum, @PathVariable("userId") Long userId) {
-		List<PostListVo> boardList = postService.getMyBoardList(pageNum, userId);
+		List<PostListVo> boardList = postService.getMyPosts(pageNum, userId);
 		return ResponseEntity.ok(boardList);
 	}
 }

@@ -32,7 +32,7 @@ public class PostDto {
 
 		/* Dto -> Entity */
 		public Post toEntity() {
-			Post post = Post.builder()
+			return Post.builder()
 				.id(id)
 				.writer(writer)
 				.hashTag(hashtag)
@@ -44,7 +44,6 @@ public class PostDto {
 				.location(location)
 				.user(user)
 				.build();
-			return post;
 		}
 	}
 
@@ -101,6 +100,18 @@ public class PostDto {
 			this.comments = comments;
 			this.likeCount = likeCount;
 			this.joinUsersCount = joinUsersCount;
+		}
+	}
+
+	@Getter
+	@Setter
+	public static class Posts {
+		private List<PostListVo> posts;
+		private Long total;
+
+		public Posts(List<PostListVo> posts, Long total) {
+			this.posts = posts;
+			this.total = total;
 		}
 	}
 
