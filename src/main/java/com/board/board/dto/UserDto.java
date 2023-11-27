@@ -7,16 +7,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class UserDto { //홈페이지로 가입하는 사용자
+public class UserDto {
 
-	@Data
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Builder
+	@Getter
 	public static class Request {
 		@NotBlank(message = "아이디는 필수 입력 값입니다.")
 		private String email;
@@ -34,7 +33,6 @@ public class UserDto { //홈페이지로 가입하는 사용자
 				.email(email)
 				.picture(picture)
 				.role(Role.USER)
-				.namecheck(true)
 				.build();
 		}
 	}
@@ -44,14 +42,12 @@ public class UserDto { //홈페이지로 가입하는 사용자
 		private String email;
 		private String name;
 		private String picture;
-		private Role role;
 
 		/* Entity -> Dto */
 		public Response(User user) {
 			this.email = user.getEmail();
 			this.name = user.getName();
 			this.picture = user.getPicture();
-			this.role = user.getRole();
 		}
 	}
 }
