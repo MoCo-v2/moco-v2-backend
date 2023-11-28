@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import com.board.board.config.auth.SessionUser;
 import com.board.board.domain.User;
 import com.board.board.repository.UserRepository;
 
@@ -24,9 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String email) throws AuthenticationException {
 		User user = userRepository.findByEmail(email).orElseThrow(() ->
 			new UsernameNotFoundException("해당 사용자가 존재하지 않습니다. : " + email));
-
-		httpSession.setAttribute("user", new SessionUser(user));
-
 		return new CustomUserDetails(user);
 	}
 
