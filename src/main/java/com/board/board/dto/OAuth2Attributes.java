@@ -1,5 +1,6 @@
 package com.board.board.dto;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.board.board.domain.Role;
@@ -11,7 +12,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class OAuthAttributes {
+public class OAuth2Attributes {
 	private Map<String, Object> attributes;
 	private String nameAttributeKey;
 	private String name;
@@ -19,7 +20,7 @@ public class OAuthAttributes {
 	private String picture;
 
 	@Builder
-	public OAuthAttributes(Map<String, Object> attributes,
+	public OAuth2Attributes(Map<String, Object> attributes,
 		String nameAttributeKey,
 		String name,
 		String email,
@@ -31,12 +32,10 @@ public class OAuthAttributes {
 		this.picture = picture;
 	}
 
-	public static OAuthAttributes of(String registrationId, String userNameAttributeName,
+	public static OAuth2Attributes of(String registrationId, String userNameAttributeName,
 		Map<String, Object> attributes) {
 
 		switch (registrationId) {
-			case "naver":
-				return ofNaver("id", attributes);
 			case "kakao":
 				return ofKakao("id", attributes);
 			case "github":
@@ -45,8 +44,8 @@ public class OAuthAttributes {
 		return ofGoogle(userNameAttributeName, attributes);
 	}
 
-	public static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
-		return OAuthAttributes.builder()
+	public static OAuth2Attributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
+		return OAuth2Attributes.builder()
 			.name((String)attributes.get("name"))
 			.email((String)attributes.get("email"))
 			.picture("/img/userIcon.png")
@@ -55,8 +54,8 @@ public class OAuthAttributes {
 			.build();
 	}
 
-	public static OAuthAttributes ofGithub(String userNameAttributeName, Map<String, Object> attributes) {
-		return OAuthAttributes.builder()
+	public static OAuth2Attributes ofGithub(String userNameAttributeName, Map<String, Object> attributes) {
+		return OAuth2Attributes.builder()
 			.name((String)attributes.get("name"))
 			.email((String)attributes.get("name") + "@github.com")
 			.picture("/img/userIcon.png")
@@ -65,24 +64,12 @@ public class OAuthAttributes {
 			.build();
 	}
 
-	public static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
-		Map<String, Object> response = (Map<String, Object>)attributes.get("response");
-
-		return OAuthAttributes.builder()
-			.name((String)response.get("name"))
-			.email((String)response.get("email"))
-			.picture("/img/userIcon.png")
-			.attributes(response)
-			.nameAttributeKey(userNameAttributeName)
-			.build();
-	}
-
-	public static OAuthAttributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
+	public static OAuth2Attributes ofKakao(String userNameAttributeName, Map<String, Object> attributes) {
 		//kakao는 kakao_account에 유저정보가 있다(email)
 		Map<String, Object> kakaoAcount = (Map<String, Object>)attributes.get("kakao_account");
 		//kakao_account안에 또 profile이라는 JSON객체가 있다. (nickname, profile_image,)
 		Map<String, Object> kakaoProfile = (Map<String, Object>)kakaoAcount.get("profile");
-		return OAuthAttributes.builder()
+		return OAuth2Attributes.builder()
 			.name((String)kakaoProfile.get("nickname"))
 			.email((String)kakaoAcount.get("email"))
 			.picture("/img/userIcon.png")
@@ -97,8 +84,17 @@ public class OAuthAttributes {
 			.name(name)
 			.email(email)
 			.picture(picture)
-			.namecheck(false)
-			.role(Role.SNS)
+			.role(Role.USER)
 			.build();
+	}
+
+	public Map<String, Object> convertToMap() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("id", nameAttributeKey);
+		map.put("key", nameAttributeKey);
+		map.put("email", email);
+		map.put("name", name);
+		map.put("picture", picture);
+		return map;
 	}
 }

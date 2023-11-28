@@ -1,30 +1,36 @@
 package com.board.board.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
-@Controller
+import com.board.board.dto.TokenDto;
+
+@RestController
 public class LoginController {
 
-	//loginPage 경로 설정
-	@GetMapping("/login")
-	public String getLoginPage(@RequestParam(value = "error", required = false) String error,
-		@RequestParam(value = "exception", required = false) String exception,
-		@RequestParam(value = "id", required = false) String id,
-		Model model) throws Exception {
+	private final RestTemplate restTemplate = new RestTemplate();
+	private final String GOOGLE_USERINFO_REQUEST_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
 
-		model.addAttribute("error", error);
-		model.addAttribute("exception", exception);
-		model.addAttribute("id", id);
-		return "login/login";
-	}
+	@PostMapping("/login")
+	public ResponseEntity<String> login(@RequestBody TokenDto.OauthRequest accessTokenDto) {
+		System.out.println(accessTokenDto.getAccessToken());
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer " + accessTokenDto.getAccessToken());
+		HttpEntity entity = new HttpEntity(headers);
 
-	@GetMapping("/OauthNameCheck")
-	public String nameCheck() {
-		return "login/OauthNameCheck";
+		ResponseEntity<String> exchange = restTemplate.exchange(
+			GOOGLE_USERINFO_REQUEST_URL,
+			HttpMethod.GET,
+			entity,
+			String.class);
 
+		return exchange;
 	}
 
 }

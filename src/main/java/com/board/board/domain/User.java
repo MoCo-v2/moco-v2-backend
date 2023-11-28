@@ -17,9 +17,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Setter
 @Getter
 @Entity
 @Table(name = "user")
@@ -41,20 +39,16 @@ public class User extends Time {
 	@Column(nullable = true)
 	private String picture;
 
-	@Column(nullable = false)
-	private boolean namecheck = false;
-
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Role role;
 
 	@Builder
-	public User(String name, String email, String picture, boolean namecheck,
+	public User(String name, String email, String picture,
 		Role role) {
 		this.name = name;
 		this.email = email;
 		this.picture = picture;
-		this.namecheck = namecheck;
 		this.role = role;
 	}
 

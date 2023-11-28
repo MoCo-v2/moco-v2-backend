@@ -8,11 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.board.board.config.LoginUser;
 import com.board.board.config.auth.CheckUseremailValidator;
 import com.board.board.config.auth.CustomAuthFailureHandler;
-import com.board.board.config.auth.SessionUser;
-import com.board.board.domain.User;
 import com.board.board.dto.UserDto;
 import com.board.board.service.user.UserService;
 
@@ -62,23 +59,23 @@ public class SignupController {
 		return ResponseEntity.ok("사용 가능한 별명 입니다.");
 	}
 
-	/* SNS로그인 사용자 회원가입 처리 (실제로는 이름만 Update) */
-	@GetMapping("/signup/name/edit")
-	public String nickNameUpdate(@RequestParam String name, @LoginUser SessionUser sessionUser, Model model) {
-		String email = sessionUser.getEmail();
-		String picture = sessionUser.getPicture();
-
-		/* 별명 중복 가능성 */
-		if (userService.checkUsernameDuplication(name)) {
-			model.addAttribute("error", "이미 존재하는 별명입니다.");
-			model.addAttribute("email", email);
-			model.addAttribute("nickname", name);
-			return "login/OauthNameCheck";
-		}
-
-		User user = userService.nameUpdate(email, name, picture);
-		httpSession.setAttribute("user", new SessionUser(user)); // SessionUser (직렬화된 dto 클래스 사용)
-
-		return "redirect:/";
-	}
+	// /* SNS로그인 사용자 회원가입 처리 (실제로는 이름만 Update) */
+	// @GetMapping("/signup/name/edit")
+	// public String nickNameUpdate(@RequestParam String name, @LoginUser SessionUser sessionUser, Model model) {
+	// 	String email = sessionUser.getEmail();
+	// 	String picture = sessionUser.getPicture();
+	//
+	// 	/* 별명 중복 가능성 */
+	// 	if (userService.checkUsernameDuplication(name)) {
+	// 		model.addAttribute("error", "이미 존재하는 별명입니다.");
+	// 		model.addAttribute("email", email);
+	// 		model.addAttribute("nickname", name);
+	// 		return "login/OauthNameCheck";
+	// 	}
+	//
+	// 	User user = userService.nameUpdate(email, name, picture);
+	// 	httpSession.setAttribute("user", new SessionUser(user)); // SessionUser (직렬화된 dto 클래스 사용)
+	//
+	// 	return "redirect:/";
+	// }
 }

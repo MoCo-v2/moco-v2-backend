@@ -3,7 +3,6 @@ package com.board.board.service.user;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
@@ -21,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
 	private final UserRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
 	private final PostRepository boardRepository;
 
 	/* 회원가입 */
@@ -58,18 +56,6 @@ public class UserService {
 		boolean usernameDuplication = userRepository.existsByName(name);
 
 		return usernameDuplication;
-	}
-
-	/* SNS 로그인시 별명 검사 완료 */
-	@Transactional
-	public User nameUpdate(String email, String name, String picture) {
-		User user = userRepository.findByEmail(email)
-			.map(entity -> entity.updateName(name, picture))
-			.orElseThrow(() -> new IllegalArgumentException("해당 회원이 존재하지 않습니다."));
-
-		user.setNamecheck(true);
-
-		return user;
 	}
 
 	/* 설정에서 별명 바꾸기 */

@@ -3,6 +3,8 @@ package com.board.board.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,7 +50,8 @@ public class PostController {
 		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
 		@Parameter(description = "어디까지 가져올지의 요청하는 파라미터입니다. 기본값은 8입니다.")
 		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit) {
-
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println(authentication.getPrincipal().toString());
 		return ResponseEntity.ok().body(postService.getPosts(offset, limit));
 	}
 
