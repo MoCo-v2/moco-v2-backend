@@ -3,15 +3,28 @@ package com.board.board.service.user;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
+import org.springframework.web.client.RestTemplate;
 
 import com.board.board.domain.User;
 import com.board.board.dto.UserDto;
+import com.board.board.dto.auth.OauthUserInfoDto;
+import com.board.board.dto.auth.TokenDto;
+import com.board.board.exception.CustomAuthenticationException;
+import com.board.board.exception.ErrorCode;
 import com.board.board.repository.PostRepository;
 import com.board.board.repository.UserRepository;
+import com.board.board.service.token.JwtTokenService;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +34,42 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PostRepository boardRepository;
+
+	private final JwtTokenService tokenService;
+	private final RestTemplate restTemplate = new RestTemplate();
+	private final String GOOGLE_USERINFO_REQUEST_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
+
+	public TokenDto.Response authenticateAndGenerateToken(TokenDto.OauthRequest tokenDto) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer " + tokenDto.getAccessToken());
+		HttpEntity entity = new HttpEntity(headers);
+
+		try {
+			ResponseEntity<String> response = restTemplate.exchange(
+				GOOGLE_USERINFO_REQUEST_URL,
+				HttpMethod.GET,
+				entity,
+				String.class);
+			Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+
+			OauthUserInfoDto.Google userInfo = gson.fromJson(response.getBody(), OauthUserInfoDto.Google.class);
+			System.out.println(userInfo.getEmail());
+
+			String accessToken = tokenService.generateAccessToken(userInfo.getEmail());
+			String refreshToken = tokenService.generateRefreshToken(userInfo.getEmail());
+
+			return TokenDto.Response.builder()
+				.accessToken(accessToken)
+				.refreshToken(refreshToken)
+				.email(null)
+				.result(true)
+				.build();
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			throw new CustomAuthenticationException(ErrorCode.INVALID_AUTH_TOKEN);
+		}
+	}
 
 	/* 회원가입 */
 	@Transactional
@@ -41,13 +90,9 @@ public class UserService {
 		return validatorResult;
 	}
 
-	/* 회원가입시 이메일 중복 여부 */
 	@Transactional(readOnly = true)
-	public boolean checkUseremailDuplication(String email) {
-		boolean useremailDuplication = userRepository.existsByEmail(email);
-
-		//중복 = true
-		return useremailDuplication;
+	public boolean emailExists(String email) {
+		return userRepository.existsByEmail(email);
 	}
 
 	/* 회원가입시 별명 중복 여부 */

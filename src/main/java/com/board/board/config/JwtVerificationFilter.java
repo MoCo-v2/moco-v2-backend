@@ -57,6 +57,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 			log.info("만료된 토큰", JwtVerificationFilter.class);
 			setErrorResponse(response, ErrorCode.INVALID_AUTH_TOKEN);
 		} catch (Exception e) {
+			log.info("토큰 예외 발생", JwtVerificationFilter.class);
 			setErrorResponse(response, ErrorCode.INVALID_REQUEST);
 		}
 
@@ -66,8 +67,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 	// 필터를 통과시킬 url 패턴
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
-		//http://localhost:8080/oauth2/authorization/google
-		String[] excludePath = {"/oauth2", "/oauth2/authorization/google", "/api/v1/login"};
+		String[] excludePath = {"/api/v1/login"};
 		String path = request.getRequestURI();
 		return Arrays.stream(excludePath).anyMatch(path::startsWith);
 	}
@@ -100,7 +100,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 	private Map<String, Object> verifyJws(HttpServletRequest request) {
 		String jws = request.getHeader("Authorization").replace("Bearer ", "");
 		String base64EncodedSecretKey = jwtTokenService.encodeBase64SecretKey(jwtTokenService.getSecretKey());
-		Map<String, Object> claims = jwtTokenService.getClaims(jws, base64EncodedSecretKey).getBody();
+		Map<String, Object> claims = jwtTokenService.getClaims(jws).getBody();
 
 		return claims;
 	}

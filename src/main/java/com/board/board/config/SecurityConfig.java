@@ -14,13 +14,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.board.board.config.auth.OauthSuccessHandler;
 import com.board.board.service.token.JwtTokenService;
-import com.board.board.service.user.CustomOAuth2UserService;
 import com.board.board.service.user.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,9 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
-	private final CustomOAuth2UserService customOAuth2UserService;
 	private final CustomUserDetailsService customUserDetailsService;
-	private final OauthSuccessHandler oauthSuccessHandler;
 	private final JwtTokenService jwtTokenService;
 
 	@Bean
@@ -52,16 +48,20 @@ public class SecurityConfig {
 	@Bean
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.
+		http
 			// cors 설정
-				cors().and()
+			.cors().and()
 			.formLogin().disable()
 			.httpBasic().disable()
+
 			// token을 사용하는 방식이기 때문에 csrf를 disable
 			.csrf().disable()
+
 			// token 방식이기 때문에 session stateless로 설정
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
 			.and()
+
 			.authorizeHttpRequests()
 			.requestMatchers("", "/", "/actuator/health").permitAll()
 			.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
@@ -75,15 +75,10 @@ public class SecurityConfig {
 
 			// Filter 등록 및 예외처리
 			.apply(new CustomFilterConfigurer())
+
 			.and()
 			.exceptionHandling()
 			.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));//인증 예외가 발생했을때 처리
-		// .and()
-		// // Oauth 로그인 설정
-		// .oauth2Login()
-		// .successHandler(oauthSuccessHandler) //Oauth2 로그인 성공시 호출할 handler
-		// .userInfoEndpoint() //Provider로 부터 획득한 유저정보를 다룰 Service Class를 지정
-		// .userService(customOAuth2UserService);
 
 		return http.build();
 	}
@@ -94,7 +89,7 @@ public class SecurityConfig {
 		public void configure(HttpSecurity builder) throws Exception {
 			JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenService);
 			// OAuth 필터 추가
-			builder.addFilterBefore(jwtVerificationFilter, OAuth2LoginAuthenticationFilter.class);
+			builder.addFilterBefore(jwtVerificationFilter, UsernamePasswordAuthenticationFilter.class);
 		}
 	}
 }

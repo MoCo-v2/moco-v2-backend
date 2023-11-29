@@ -37,17 +37,6 @@ public class SignupController {
 		return "login/signup";
 	}
 
-	/* 회원가입화면 아이디 중복확인 (email) */
-	@GetMapping("/id/check")
-	public ResponseEntity<?> checkEmailDuplication(@RequestParam(value = "email") String email) throws
-		CustomAuthFailureHandler.BadRequestExection {
-		if (userService.checkUseremailDuplication(email)) {
-			throw new CustomAuthFailureHandler.BadRequestExection("이미 사용중인 아이디 입니다.");
-		}
-
-		return ResponseEntity.ok("사용 가능한 아이디 입니다.");
-	}
-
 	/* 별명 중복 체크 */
 	@GetMapping("/name/check")
 	public ResponseEntity<?> checkNameDupulication(@RequestParam(value = "nickname") String name) throws
