@@ -4,7 +4,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
@@ -26,50 +26,55 @@ public class JwtTokenService {
 	private String secretKey;
 
 	@Getter
-	@Value("${jwt.access-token-expiration-minutes}")
-	private int accessTokenExpirationMinutes;
+	@Value("${jwt.access-token-expiration-millisecond}")
+	private int accessTokenExpirationMillisecond;
 
 	@Getter
-	@Value("${jwt.refresh-token-expiration-minutes}")
-	private int refreshTokenExpirationMinutes;
+	@Value("${jwt.refresh-token-expiration-millisecond}")
+	private int refreshTokenExpirationMillisecond;
 
 	public String encodeBase64SecretKey(String secretKey) {
 		return Encoders.BASE64.encode(secretKey.getBytes(StandardCharsets.UTF_8));
 	}
 
 	//accessToken 생성
-	public String generateAccessToken(Map<String, Object> claims,
-		String subject,
-		Date expiration,
-		String base64EncodedSecretKey) {
-		Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
+	public String generateAccessToken(String email) {
+		Claims claims = Jwts.claims();
+		claims.put("email", email);
+
 		return Jwts.builder()
 			.setClaims(claims)
-			.setSubject(subject)
-			.setIssuedAt(Calendar.getInstance().getTime())
-			.setExpiration(expiration)
-			.signWith(key)
+			.setIssuedAt(new Date(System.currentTimeMillis()))
+			.setExpiration(new Date(System.currentTimeMillis() + accessTokenExpirationMillisecond))
+			.signWith(SignatureAlgorithm.HS256, secretKey)
 			.compact();
 	}
 
 	//refreshToken 생성
-	public String generateRefreshToken(String subject, Date expiration, String base64EncodedSecretKey) {
-		Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
+	public String generateRefreshToken(String email) {
+		Claims claims = Jwts.claims();
+		claims.put("email", email);
 
 		return Jwts.builder()
-			.setSubject(subject)
 			.setIssuedAt(Calendar.getInstance().getTime())
-			.setExpiration(expiration)
-			.signWith(key)
+			.setIssuedAt(new Date(System.currentTimeMillis()))
+			.setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMillisecond))
+			.signWith(SignatureAlgorithm.HS256, secretKey)
 			.compact();
 	}
 
-	// 검증 후, Claims 반환
-	public Jws<Claims> getClaims(String jws, String base64EncodedSecretKey) {
-		Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
+	// 토큰 검증
+	public boolean isExpired(String token) {
+		return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token)
+			.getBody().getExpiration().before(new Date());
+	}
+
+	// email 가져오기
+	public Jws<Claims> getClaims(String jws) {
+		//Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
 
 		Jws<Claims> claims = Jwts.parserBuilder()
-			.setSigningKey(key)
+			.setSigningKey(secretKey)
 			.build()
 			.parseClaimsJws(jws);
 
@@ -77,9 +82,9 @@ public class JwtTokenService {
 	}
 
 	//토큰 만료 시간 가져오기
-	public Date getTokenExpiration(int expirationMinutes) {
+	public Date getTokenExpiration(int expirationMillisecond) {
 		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.MINUTE, expirationMinutes);
+		calendar.add(Calendar.MILLISECOND, expirationMillisecond);
 		Date expiration = calendar.getTime();
 
 		return expiration;
