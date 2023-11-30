@@ -1,6 +1,9 @@
 package com.board.board.service.user;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpEntity;
@@ -21,7 +24,7 @@ import com.board.board.exception.CustomAuthenticationException;
 import com.board.board.exception.ErrorCode;
 import com.board.board.repository.PostRepository;
 import com.board.board.repository.UserRepository;
-import com.board.board.service.token.JwtTokenService;
+import com.board.board.service.token.JwTokenService;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -35,7 +38,7 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final PostRepository boardRepository;
 
-	private final JwtTokenService tokenService;
+	private final JwTokenService tokenService;
 	private final RestTemplate restTemplate = new RestTemplate();
 	private final String GOOGLE_USERINFO_REQUEST_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
 
@@ -53,10 +56,22 @@ public class UserService {
 			Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
 			OauthUserInfoDto.Google userInfo = gson.fromJson(response.getBody(), OauthUserInfoDto.Google.class);
-			System.out.println(userInfo.getEmail());
 
-			String accessToken = tokenService.generateAccessToken(userInfo.getEmail());
-			String refreshToken = tokenService.generateRefreshToken(userInfo.getEmail());
+			//Refactoring 필요 👨🏻‍🔧
+			Map<String, Object> claims = new HashMap<>();
+			claims.put("email", userInfo.getEmail());
+			claims.put("roles", List.of("USER"));
+			String subject = "test access token";
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.MINUTE, 10);
+			Date expiration = calendar.getTime();
+
+			String secretKey = tokenService.encodeBase64SecretKey(tokenService.getSecretKey());
+
+			String accessToken = tokenService.generateAccessToken(claims, subject, expiration, secretKey);
+
+			calendar.add(Calendar.DAY_OF_WEEK, 2);
+			String refreshToken = tokenService.generateRefreshToken(subject, expiration, secretKey);
 
 			return TokenDto.Response.builder()
 				.accessToken(accessToken)

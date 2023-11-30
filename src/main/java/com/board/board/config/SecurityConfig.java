@@ -4,21 +4,19 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.board.board.service.token.JwtTokenService;
+import com.board.board.exception.CustomAuthenticationEntryPoint;
+import com.board.board.service.token.JwTokenService;
 import com.board.board.service.user.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 public class SecurityConfig {
 	private final CustomUserDetailsService customUserDetailsService;
-	private final JwtTokenService jwtTokenService;
+	private final JwTokenService jwtTokenService;
 
 	@Bean
 	public AuthenticationManager authenticationManagerBean(
@@ -67,29 +65,18 @@ public class SecurityConfig {
 			.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 			.requestMatchers("/admin", "/admin/**").hasRole("MASTER")
 			.requestMatchers("/login").permitAll()
-			.requestMatchers("/posts/**").permitAll()
+			.requestMatchers("/posts/**").authenticated()
 			.requestMatchers("/signup", "/login/signup").permitAll()
 			.requestMatchers("/id/check", "/name/check").permitAll()
 			.anyRequest().authenticated() // 그 외 인증 없이 접근 X
 			.and()
+			.exceptionHandling()
+			.authenticationEntryPoint(new CustomAuthenticationEntryPoint())//인증 예외가 발생했을때 처리
+			.and()
 
 			// Filter 등록 및 예외처리
-			.apply(new CustomFilterConfigurer())
-
-			.and()
-			.exceptionHandling()
-			.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));//인증 예외가 발생했을때 처리
+			.addFilterBefore(new JwtVerificationFilter(jwtTokenService), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
-	}
-
-	public class CustomFilterConfigurer extends AbstractHttpConfigurer<CustomFilterConfigurer, HttpSecurity> {
-
-		@Override
-		public void configure(HttpSecurity builder) throws Exception {
-			JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenService);
-			// OAuth 필터 추가
-			builder.addFilterBefore(jwtVerificationFilter, UsernamePasswordAuthenticationFilter.class);
-		}
 	}
 }
