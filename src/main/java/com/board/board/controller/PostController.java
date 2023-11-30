@@ -51,7 +51,7 @@ public class PostController {
 		@Parameter(description = "어디까지 가져올지의 요청하는 파라미터입니다. 기본값은 8입니다.")
 		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		System.out.println(authentication.getPrincipal().toString());
+		System.out.println(authentication.getName());
 		return ResponseEntity.ok().body(postService.getPosts(offset, limit));
 	}
 
