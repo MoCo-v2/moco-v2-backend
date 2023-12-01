@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,8 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.board.board.exception.ErrorCode;
-import com.board.board.service.token.JwtTokenService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.board.board.service.token.JwTokenService;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -22,7 +20,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,25 +39,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtVerificationFilter extends OncePerRequestFilter {
-	private final JwtTokenService jwtTokenService;
+	private final JwTokenService jwtTokenService;
+	private final String EXCEPTION_KET = "exception";
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 		try {
-			Map<String, Object> claims = verifyJws(request);
+			Map<String, Object> claims = getTokenInHeaderAndVerify(request);
 			setAuthenticationToContext(claims);
 		} catch (SignatureException se) {
-			log.info("토큰 검증 실패", JwtVerificationFilter.class);
-			setErrorResponse(response, ErrorCode.INVALID_AUTH_TOKEN);
+			log.info("검증되지 않은 토큰으로 요청", JwtVerificationFilter.class);
+			request.setAttribute(EXCEPTION_KET, ErrorCode.INVALID_REQUEST);
 		} catch (ExpiredJwtException ee) {
-			log.info("만료된 토큰", JwtVerificationFilter.class);
-			setErrorResponse(response, ErrorCode.INVALID_AUTH_TOKEN);
+			log.info("만료된 토큰으로 요청", JwtVerificationFilter.class);
+			request.setAttribute(EXCEPTION_KET, ErrorCode.INVALID_AUTH_TOKEN);
 		} catch (Exception e) {
-			log.info("토큰 예외 발생", JwtVerificationFilter.class);
-			setErrorResponse(response, ErrorCode.INVALID_REQUEST);
+			log.info("필터 예외 발생", JwtVerificationFilter.class);
+			request.setAttribute(EXCEPTION_KET, ErrorCode.INVALID_AUTH_TOKEN);
 		}
-
 		filterChain.doFilter(request, response);
 	}
 
@@ -72,35 +69,13 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 		return Arrays.stream(excludePath).anyMatch(path::startsWith);
 	}
 
-	//토큰 검증에 대한 에러처리를 한다.
-	private void setErrorResponse(
-		HttpServletResponse response,
-		ErrorCode errorCode
-	) {
-		response.setStatus(errorCode.getHttpStatus().value());
-		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		response.setCharacterEncoding("UTF-8");
-		ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INVALID_AUTH_TOKEN, errorCode.getMessage());
-		try {
-			String jsonResponse = new ObjectMapper().writeValueAsString(errorResponse);
-			response.getWriter().write(jsonResponse);
-		} catch (IOException e) {
-			log.error(e.getMessage());
-			e.printStackTrace();
-		}
-	}
-
-	@Data
-	public static class ErrorResponse {
-		private final ErrorCode errorCode;
-		private final String message;
-	}
-
 	// jwt 토큰을 검증한다.
-	private Map<String, Object> verifyJws(HttpServletRequest request) {
+	private Map<String, Object> getTokenInHeaderAndVerify(HttpServletRequest request) {
 		String jws = request.getHeader("Authorization").replace("Bearer ", "");
-		String base64EncodedSecretKey = jwtTokenService.encodeBase64SecretKey(jwtTokenService.getSecretKey());
-		Map<String, Object> claims = jwtTokenService.getClaims(jws).getBody();
+
+		String secretKey = jwtTokenService.encodeBase64SecretKey(jwtTokenService.getSecretKey());
+
+		Map<String, Object> claims = jwtTokenService.verifySignature(jws, secretKey);
 
 		return claims;
 	}
