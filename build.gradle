@@ -10,7 +10,7 @@ jar {
     enabled = false
 }
 
-group = 'com.board'
+group = 'com.moco'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
