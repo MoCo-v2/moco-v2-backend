@@ -9,8 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import com.moco.moco.config.auth.UserInfo;
+
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
@@ -87,17 +91,26 @@ public class JwTokenService {
 	// SignatureException : 서명 오류
 	// MalformedJwtException : JWT 구조 오류
 	// ExpiredJwtException : 만료 기간이 지난 토큰
-	public Map<String, Object> verifySignature(String jws, String base64EncodedSecretKey) {
+	public UserInfo verifySignature(String jws, String base64EncodedSecretKey) {
 		Key key = getKeyFromBase64EncodedKey(base64EncodedSecretKey);
 
-		return Jwts.parserBuilder()
+		Claims claimsBody = Jwts.parserBuilder()
 			.setSigningKey(key) // 서명에 사용된 Secret Key를 설정
 			.build()
 			.parseClaimsJws(jws).getBody(); // JWT를 파싱해서 Claims를 얻음
+		List<GrantedAuthority> authorities = (List)claimsBody.get("roles");
+		System.out.println(authorities.get(0));
+		return UserInfo
+			.builder()
+			.id(Long.valueOf((Integer)claimsBody.get("id")))
+			.email(claimsBody.get("email").toString())
+			.roles((List)claimsBody.get("roles"))
+			.build();
 	}
 
-	public Map<String, Object> generateClaims(String email) {
+	public Map<String, Object> generateClaims(Long userId, String email) {
 		Map<String, Object> claims = new HashMap<>();
+		claims.put("id", userId);
 		claims.put("email", email);
 		claims.put("roles", List.of("USER"));
 

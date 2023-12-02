@@ -3,6 +3,7 @@ package com.moco.moco.service.user;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -61,9 +62,9 @@ public class UserService {
 			OauthUserInfoDto.Google userInfo = gson.fromJson(response.getBody(), OauthUserInfoDto.Google.class);
 
 			//기존 회원 or 새로운 사용자인지 검증한다.
-			boolean newUser = !userRepository.existsByEmail(userInfo.getEmail());
+			Optional<User> user = userRepository.findByEmail(userInfo.getEmail());
 
-			if (newUser) {
+			if (user.isEmpty()) {
 				return TokenDto.Response.builder()
 					.accessToken("null")
 					.refreshToken("null")
@@ -71,9 +72,9 @@ public class UserService {
 					.result(false)
 					.build();
 			}
-			
-			//Refactoring 필요 👨🏻‍🔧
-			Map<String, Object> claims = tokenService.generateClaims(userInfo.getEmail());
+
+			Map<String, Object> claims = tokenService.generateClaims(user.get().getId(), user.get().getEmail());
+
 			String subject = "access token";
 
 			String secretKey = tokenService.encodeBase64SecretKey(tokenService.getSecretKey());

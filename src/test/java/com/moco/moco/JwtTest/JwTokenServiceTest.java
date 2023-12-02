@@ -39,7 +39,7 @@ public class JwTokenServiceTest {
 	@Autowired
 	private JwTokenService jwTokenService;
 
-	private String secretKey = "pqkamxkqmwkexckzucizusilqkwjewksjkdjasm";
+	private String secretKey = "quswowlsquswowlsquswowlsquswowlsquswasasasowasdasdls";
 	private String EMAIL = "test@github.com";
 	private String base64EncodedSecretKey;
 
@@ -65,6 +65,7 @@ public class JwTokenServiceTest {
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("email", EMAIL);
 		claims.put("roles", List.of("USER"));
+		claims.put("id", 2);
 		String subject = "access token";
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.MINUTE, 10);
@@ -104,6 +105,7 @@ public class JwTokenServiceTest {
 		//given
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("email", EMAIL);
+		claims.put("id", 1);
 		claims.put("roles", List.of("USER"));
 		String subject = "test access token";
 		Calendar calendar = Calendar.getInstance();
@@ -123,6 +125,7 @@ public class JwTokenServiceTest {
 		//given
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("email", EMAIL);
+		claims.put("id", 1);
 		claims.put("roles", List.of("USER"));
 		String subject = "test access token";
 		Calendar calendar = Calendar.getInstance();
