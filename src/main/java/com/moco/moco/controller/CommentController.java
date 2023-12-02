@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.moco.moco.config.LoginUser;
-import com.moco.moco.config.auth.SessionUser;
+import com.moco.moco.config.LoginUserInfo;
+import com.moco.moco.config.auth.UserInfo;
 import com.moco.moco.dto.CommentDto;
 import com.moco.moco.service.post.CommentService;
 
@@ -31,7 +31,7 @@ public class CommentController {
 	@PostMapping("/{boardId}")
 	public ResponseEntity commentSave(@Parameter(description = "해당 번호를 가진 게시글에 댓글을 작성합니다.") @PathVariable Long boardId,
 		@Parameter(description = "댓글의 정보가 담긴 Request 객체입니다.") @RequestBody CommentDto.Request commentDto,
-		@LoginUser SessionUser sessionUser) {
+		@LoginUserInfo UserInfo sessionUser) {
 		return ResponseEntity.ok(commentService.commentSave(sessionUser.getId(), boardId, commentDto));
 	}
 
@@ -42,7 +42,7 @@ public class CommentController {
 		@Parameter(description = "해당 번호를 가진 게시글에 달린 댓글에 답글을 작성합니다.") @PathVariable Long boardId,
 		@Parameter(description = "답글을 달기 위한 부모댓글의 번호입니다.") @PathVariable Long parentId,
 		@Parameter(description = "대댓글의 정보가 담긴 Request 객체입니다.") @RequestBody CommentDto.Request commentDto,
-		@LoginUser SessionUser sessionUser) {
+		@LoginUserInfo UserInfo sessionUser) {
 		return ResponseEntity.ok(commentService.recommentSave(sessionUser.getId(), boardId, parentId, commentDto));
 	}
 
@@ -51,7 +51,8 @@ public class CommentController {
 	@PutMapping("/{commentId}/{userId}")
 	public ResponseEntity commentUpdate(@Parameter(description = "해당번호를 가진 댓글을 수정합니다.") @PathVariable Long commentId,
 		@Parameter(description = "댓글 작성자의 번호입니다.") @PathVariable Long userId,
-		@Parameter(description = "") @RequestBody CommentDto.Request commentDto, @LoginUser SessionUser sessionUser) {
+		@Parameter(description = "") @RequestBody CommentDto.Request commentDto,
+		@LoginUserInfo UserInfo sessionUser) {
 		if (!sessionUser.getId().equals(userId)) {
 			return ResponseEntity.badRequest().build();
 		}
