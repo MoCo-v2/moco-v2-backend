@@ -65,7 +65,7 @@ public class JwTokenServiceTest {
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("email", EMAIL);
 		claims.put("roles", List.of("USER"));
-		String subject = "test access token";
+		String subject = "access token";
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.MINUTE, 10);
 		Date expiration = calendar.getTime();

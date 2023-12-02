@@ -1,9 +1,7 @@
 package com.moco.moco.service.user;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpEntity;
@@ -16,6 +14,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.moco.moco.domain.User;
 import com.moco.moco.dto.UserDto;
 import com.moco.moco.dto.auth.OauthUserInfoDto;
@@ -25,9 +26,6 @@ import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.repository.PostRepository;
 import com.moco.moco.repository.UserRepository;
 import com.moco.moco.service.token.JwTokenService;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,6 +40,11 @@ public class UserService {
 	private final RestTemplate restTemplate = new RestTemplate();
 	private final String GOOGLE_USERINFO_REQUEST_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
 
+	/**
+	 * 유저 정보를 구글, 카카오, 깃허브 서버로 요청한다.
+	 * @param tokenDto
+	 * @return
+	 */
 	public TokenDto.Response authenticateAndGenerateToken(TokenDto.OauthRequest tokenDto) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer " + tokenDto.getAccessToken());
@@ -57,21 +60,29 @@ public class UserService {
 
 			OauthUserInfoDto.Google userInfo = gson.fromJson(response.getBody(), OauthUserInfoDto.Google.class);
 
+			//기존 회원 or 새로운 사용자인지 검증한다.
+			boolean newUser = !userRepository.existsByEmail(userInfo.getEmail());
+
+			if (newUser) {
+				return TokenDto.Response.builder()
+					.accessToken("null")
+					.refreshToken("null")
+					.email(userInfo.getEmail())
+					.result(false)
+					.build();
+			}
+			
 			//Refactoring 필요 👨🏻‍🔧
-			Map<String, Object> claims = new HashMap<>();
-			claims.put("email", userInfo.getEmail());
-			claims.put("roles", List.of("USER"));
-			String subject = "test access token";
-			Calendar calendar = Calendar.getInstance();
-			calendar.add(Calendar.MINUTE, 10);
-			Date expiration = calendar.getTime();
+			Map<String, Object> claims = tokenService.generateClaims(userInfo.getEmail());
+			String subject = "access token";
 
 			String secretKey = tokenService.encodeBase64SecretKey(tokenService.getSecretKey());
 
-			String accessToken = tokenService.generateAccessToken(claims, subject, expiration, secretKey);
+			Date accessTokenExpiration = tokenService.getTimeAfterMinutes(60);
+			String accessToken = tokenService.generateAccessToken(claims, subject, accessTokenExpiration, secretKey);
 
-			calendar.add(Calendar.DAY_OF_WEEK, 2);
-			String refreshToken = tokenService.generateRefreshToken(subject, expiration, secretKey);
+			Date refreshTokenExpiration = tokenService.getTimeAfterWeeks(2);
+			String refreshToken = tokenService.generateRefreshToken(subject, refreshTokenExpiration, secretKey);
 
 			return TokenDto.Response.builder()
 				.accessToken(accessToken)
@@ -81,7 +92,6 @@ public class UserService {
 				.build();
 
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			throw new CustomAuthenticationException(ErrorCode.INVALID_AUTH_TOKEN);
 		}
 	}

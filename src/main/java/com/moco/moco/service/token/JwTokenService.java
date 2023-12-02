@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -93,4 +95,28 @@ public class JwTokenService {
 			.build()
 			.parseClaimsJws(jws).getBody(); // JWT를 파싱해서 Claims를 얻음
 	}
+
+	public Map<String, Object> generateClaims(String email) {
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("email", email);
+		claims.put("roles", List.of("USER"));
+
+		return claims;
+	}
+
+	//입력받은 minutes이 지난 시간을 가져온다.
+	public Date getTimeAfterMinutes(int minute) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.MINUTE, minute);
+		return calendar.getTime();
+	}
+
+	//입력받은 weeks 지난 시간을 가져온다.
+	public Date getTimeAfterWeeks(int weeks) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.DAY_OF_WEEK, weeks);
+		return calendar.getTime();
+	}
+
+	//
 }
