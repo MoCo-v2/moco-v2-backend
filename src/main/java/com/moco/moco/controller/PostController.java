@@ -3,8 +3,6 @@ package com.moco.moco.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.moco.moco.config.LoginUser;
-import com.moco.moco.config.auth.SessionUser;
+import com.moco.moco.config.LoginUserInfo;
+import com.moco.moco.config.auth.UserInfo;
 import com.moco.moco.dto.PostDto;
 import com.moco.moco.dto.RecruitDto;
 import com.moco.moco.service.post.PostService;
@@ -49,9 +47,15 @@ public class PostController {
 		@Parameter(description = "어디서 부터 가져올지 요청하는 파라미터입니다. 기본값은 0으로 첫번째 게시글부터 가져옵니다.")
 		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
 		@Parameter(description = "어디까지 가져올지의 요청하는 파라미터입니다. 기본값은 8입니다.")
-		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		System.out.println(authentication.getName());
+		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
+		@LoginUserInfo UserInfo userInfo) {
+
+		log.info("### -------- API를 호출한 유저 정보 --------- ###");
+		log.info("userInfo Email:" + userInfo.getEmail());
+		log.info("userInfo Id:" + userInfo.getId());
+		log.info("userInfo Roles:" + userInfo.getRoles().get(0));
+		log.info("### ------------------------------------- ###");
+
 		return ResponseEntity.ok().body(postService.getPosts(offset, limit));
 	}
 
@@ -110,7 +114,7 @@ public class PostController {
 	@Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다. 삭제 성공시 모집하기 페이지로 리다이렉트 됩니다.")
 	@DeleteMapping("/{boardId}")
 	public String delete(@Parameter(description = "해당 번호를 가진 게시글을 삭제합니다.") @PathVariable("boardId") Long boardId,
-		@LoginUser SessionUser sessionUser) {
+		@LoginUserInfo UserInfo sessionUser) {
 		// if (!sessionUser.getId().equals(postService.getPost(boardId).getUserId())) {
 		// 	return "/error/404error";
 		// }
@@ -127,7 +131,8 @@ public class PostController {
 	})
 	@PostMapping("/recruit/{boardId}/{userId}")
 	public ResponseEntity recruitSave(@Parameter(description = "참가하는 게시글 번호입니다.") @PathVariable Long boardId,
-		@Parameter(description = "참가하는 사용자의 번호입니다.") @PathVariable Long userId, @LoginUser SessionUser sessionUser) {
+		@Parameter(description = "참가하는 사용자의 번호입니다.") @PathVariable Long userId,
+		@LoginUserInfo UserInfo sessionUser) {
 		if (!sessionUser.getId().equals(userId)) {
 			return ResponseEntity.badRequest().build();
 		}
@@ -146,7 +151,7 @@ public class PostController {
 	@Operation(summary = "모각코 모집 마감 취소", description = "모집 마감을 취소합니다. 게시글 작성자만 호출할수 있습니다.")
 	public ResponseEntity recruitDelete(@Parameter(description = "모집 마감을 취소할 게시글의 번호입니다.") @PathVariable Long boardId,
 		@Parameter(description = "모집 취소를 누른 사용자의 번호입니다.") @PathVariable Long userId,
-		@LoginUser SessionUser sessionUser) {
+		@LoginUserInfo UserInfo sessionUser) {
 		if (!sessionUser.getId().equals(userId)) {
 			return ResponseEntity.badRequest().build();
 		}
@@ -160,7 +165,7 @@ public class PostController {
 	@Operation(summary = "모각코 모집을 마감", description = "모각코 모집을 마감합니다. 게시글 작성자만 호출할수 있습니다.")
 	@PatchMapping("/recruit-off/{boardId}")
 	public ResponseEntity recruitClose(@Parameter(description = "해당 번호를 가진 게시글에 대해 요청합니다.") @PathVariable Long boardId,
-		@LoginUser SessionUser sessionUser) {
+		@LoginUserInfo UserInfo sessionUser) {
 		// if (!sessionUser.getId().equals(postService.getPost(boardId))) {
 		// 	ResponseEntity.badRequest().build();
 		// }

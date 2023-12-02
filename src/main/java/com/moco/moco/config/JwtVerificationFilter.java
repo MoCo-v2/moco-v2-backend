@@ -3,14 +3,16 @@ package com.moco.moco.config;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.moco.moco.config.auth.UserInfo;
 import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.service.token.JwTokenService;
 
@@ -46,8 +48,8 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 		try {
-			Map<String, Object> claims = getTokenInHeaderAndVerify(request);
-			setAuthenticationToContext(claims);
+			UserInfo userInfo = getTokenInHeaderAndVerify(request);
+			setAuthenticationToContext(userInfo);
 		} catch (SignatureException se) {
 			log.info("검증되지 않은 토큰으로 요청", JwtVerificationFilter.class);
 			request.setAttribute(EXCEPTION_KET, ErrorCode.INVALID_REQUEST.getMessage());
@@ -56,6 +58,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 			request.setAttribute(EXCEPTION_KET, ErrorCode.INVALID_AUTH_TOKEN.getMessage());
 		} catch (Exception e) {
 			log.info("필터 예외 발생", JwtVerificationFilter.class);
+			log.info(e.getMessage());
 			request.setAttribute(EXCEPTION_KET, ErrorCode.INVALID_AUTH_TOKEN.getMessage());
 		}
 		filterChain.doFilter(request, response);
@@ -70,21 +73,21 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 	}
 
 	// jwt 토큰을 검증한다.
-	private Map<String, Object> getTokenInHeaderAndVerify(HttpServletRequest request) {
+	private UserInfo getTokenInHeaderAndVerify(HttpServletRequest request) {
 		String jws = request.getHeader("Authorization").replace("Bearer ", "");
 
 		String secretKey = jwtTokenService.encodeBase64SecretKey(jwtTokenService.getSecretKey());
 
-		Map<String, Object> claims = jwtTokenService.verifySignature(jws, secretKey);
-
-		return claims;
+		return jwtTokenService.verifySignature(jws, secretKey);
 	}
 
 	// 인증객체에 정보를 토큰의 정보를 담는다.
-	private void setAuthenticationToContext(Map<String, Object> claims) {
-		String email = (String)claims.get("email");
-		List<GrantedAuthority> authorities = (List)claims.get("role");
-		Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, authorities);
+	private void setAuthenticationToContext(UserInfo userInfo) {
+		List<GrantedAuthority> authorities = userInfo.getRoles().stream()
+			.map(role -> new SimpleGrantedAuthority(role))
+			.collect(Collectors.toList());
+		
+		Authentication authentication = new UsernamePasswordAuthenticationToken(userInfo, null, authorities);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 }
