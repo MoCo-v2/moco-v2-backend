@@ -7,8 +7,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
@@ -25,8 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends Time {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private String id;
 
 	@Column(nullable = false, unique = true)
 	private String email;
@@ -56,13 +53,6 @@ public class User extends Time {
 	/* Oauth 로그인 갱신 날짜 갱신 */
 	public void updateProfile(String pictureURL) {
 		this.picture = pictureURL;
-	}
-
-	/* 첫 소셜 로그인시 별명 중복검사 시키기 */
-	public User updateName(String name, String picture) {
-		this.name = name;
-		this.picture = picture;
-		return this;
 	}
 
 	/* 설정 에서 별명 바꾸기 */

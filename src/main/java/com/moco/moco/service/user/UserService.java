@@ -5,27 +5,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
-import org.springframework.web.client.RestTemplate;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.moco.moco.domain.User;
 import com.moco.moco.dto.UserDto;
-import com.moco.moco.dto.auth.OauthUserInfoDto;
 import com.moco.moco.dto.auth.TokenDto;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.repository.PostRepository;
 import com.moco.moco.repository.UserRepository;
+import com.moco.moco.service.oauth.OauthService;
 import com.moco.moco.service.token.JwTokenService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,41 +30,38 @@ public class UserService {
 	private final PostRepository boardRepository;
 
 	private final JwTokenService tokenService;
-	private final RestTemplate restTemplate = new RestTemplate();
-	private final String GOOGLE_USERINFO_REQUEST_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
+	private final OauthService oauthService;
 
-	/**
-	 * 유저 정보를 구글, 카카오, 깃허브 서버로 요청한다.
-	 * @param tokenDto
-	 * @return
-	 */
 	public TokenDto.Response authenticateAndGenerateToken(TokenDto.OauthRequest tokenDto) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer " + tokenDto.getAccessToken());
-		HttpEntity entity = new HttpEntity(headers);
+		String id = "";
 
 		try {
-			ResponseEntity<String> response = restTemplate.exchange(
-				GOOGLE_USERINFO_REQUEST_URL,
-				HttpMethod.GET,
-				entity,
-				String.class);
-			Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
-			OauthUserInfoDto.Google userInfo = gson.fromJson(response.getBody(), OauthUserInfoDto.Google.class);
+			switch (tokenDto.getProvider()) {
+				case GOOGLE:
+					id = oauthService.requestGoogleUserInfo(tokenDto.getAccessToken());
+					break;
+				case KAKAO:
+					id = oauthService.requestKaKaoUserInfo(tokenDto.getAccessToken());
+					break;
+				case GITHUB:
+					id = oauthService.requestGithubUserInfo(tokenDto.getAccessToken());
+					break;
+				default:
+					throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);
+			}
 
-			//기존 회원 or 새로운 사용자인지 검증한다.
-			Optional<User> user = userRepository.findByEmail(userInfo.getEmail());
+			Optional<User> user = userRepository.findById(id);
 
+			//새로운 사용자라면 유저 ID를 반환하여 회원가입을 진행한다.
 			if (user.isEmpty()) {
-				return TokenDto.Response.builder()
-					.accessToken("null")
-					.refreshToken("null")
-					.email(userInfo.getEmail())
+				return TokenDto.IdResponse.builder()
+					.id(id)
 					.result(false)
 					.build();
 			}
 
+			//기존 사용자라면 JWT 발급한다.
 			Map<String, Object> claims = tokenService.generateClaims(user.get().getId(), user.get().getEmail());
 
 			String subject = "access token";
@@ -85,14 +74,14 @@ public class UserService {
 			Date refreshTokenExpiration = tokenService.getTimeAfterWeeks(2);
 			String refreshToken = tokenService.generateRefreshToken(subject, refreshTokenExpiration, secretKey);
 
-			return TokenDto.Response.builder()
+			return TokenDto.JwtResponse.builder()
 				.accessToken(accessToken)
 				.refreshToken(refreshToken)
-				.email(null)
 				.result(true)
 				.build();
 
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			throw new CustomAuthenticationException(ErrorCode.INVALID_AUTH_TOKEN);
 		}
 	}
@@ -131,7 +120,7 @@ public class UserService {
 
 	/* 설정에서 별명 바꾸기 */
 	@Transactional
-	public User nameUpdateInSetting(Long userid, String name) {
+	public User nameUpdateInSetting(String userid, String name) {
 		User user = userRepository.findById(userid).orElseThrow(() ->
 			new IllegalArgumentException("유저를 찾을수 없습니다."));
 		user.updateNameInSetting(name);
@@ -142,7 +131,7 @@ public class UserService {
 
 	/* 설정에서 프로필 사진 변경 */
 	@Transactional
-	public User profileUpdateInSetting(Long userId, String imgURL) {
+	public User profileUpdateInSetting(String userId, String imgURL) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 		user.updateProfile(imgURL);
 		return user;
@@ -150,7 +139,7 @@ public class UserService {
 
 	/* 회원탈퇴 */
 	@Transactional
-	public void deleteUser(Long userId) {
+	public void deleteUser(String userId) {
 		userRepository.deleteById(userId);
 	}
 }

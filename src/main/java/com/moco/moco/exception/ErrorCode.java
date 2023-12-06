@@ -9,7 +9,8 @@ import lombok.Getter;
 @Getter
 public enum ErrorCode {
 	// 400 BAD_REQUEST : 잘못된 요청
-	INVALID_REQUEST(HttpStatus.UNAUTHORIZED, "잘못된 요청입니다."),
+	BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+	INVALID_REQUEST(HttpStatus.UNAUTHORIZED, "유효하지 않은 인증 요청입니다."),
 
 	// 401 UNAUTHORIZED : 인증되지 않은 사용자
 	INVALID_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "권한 정보가 없는 토큰입니다."),

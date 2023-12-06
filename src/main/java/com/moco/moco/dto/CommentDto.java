@@ -43,7 +43,7 @@ public class CommentDto {
 		private LocalDateTime createdDate;
 		private LocalDateTime modifiedDate;
 		private String name;
-		private Long userId;
+		private String userId;
 		private Long postId;
 		private Comment parent;
 		private List<CommentDto.Response> childList;

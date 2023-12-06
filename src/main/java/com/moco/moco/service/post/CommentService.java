@@ -33,7 +33,7 @@ public class CommentService {
 
 	/* CREATE */
 	@Transactional
-	public Long commentSave(Long userId, Long postId, CommentDto.Request commentDto) {
+	public Long commentSave(String userId, Long postId, CommentDto.Request commentDto) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저를 찾을수 없습니다."));
 		Post post = postRepository.findById(postId).orElseThrow(() ->
 			new IllegalArgumentException("댓글 작성 실패 : 해당 게시글이 존재하지 않습니다." + postId));
@@ -48,7 +48,7 @@ public class CommentService {
 
 	/* CREATE */
 	@Transactional
-	public Long recommentSave(Long userId, Long postId, Long parentId, CommentDto.Request commentDto) {
+	public Long recommentSave(String userId, Long postId, Long parentId, CommentDto.Request commentDto) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저를 찾을수 없습니다."));
 		Post post = postRepository.findById(postId).orElseThrow(() ->
 			new IllegalArgumentException("댓글 작성 실패 : 해당 게시글이 존재하지 않습니다." + postId));

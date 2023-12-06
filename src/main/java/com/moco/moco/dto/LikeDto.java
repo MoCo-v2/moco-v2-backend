@@ -30,7 +30,7 @@ public class LikeDto {
 	@Getter
 	public static class Response {
 		private Long id;
-		private Long userId;
+		private String userId;
 		private Long postId;
 
 		/* Entity -> DTO */

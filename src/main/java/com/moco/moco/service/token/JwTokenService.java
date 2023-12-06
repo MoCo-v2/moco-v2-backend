@@ -108,7 +108,7 @@ public class JwTokenService {
 			.build();
 	}
 
-	public Map<String, Object> generateClaims(Long userId, String email) {
+	public Map<String, Object> generateClaims(String userId, String email) {
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("id", userId);
 		claims.put("email", email);

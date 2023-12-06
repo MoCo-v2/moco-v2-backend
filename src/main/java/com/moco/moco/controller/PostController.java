@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.moco.moco.config.LoginUserInfo;
 import com.moco.moco.config.auth.UserInfo;
 import com.moco.moco.dto.PostDto;
-import com.moco.moco.dto.RecruitDto;
 import com.moco.moco.service.post.PostService;
 import com.moco.moco.service.post.RecruitService;
 
@@ -84,7 +83,7 @@ public class PostController {
 	@PostMapping("/{userId}")
 	public ResponseEntity<Long> createPost(
 		@Parameter(description = "게시글의 정보가 담긴 Request 객체입니다.") @Valid PostDto.Request boardDto,
-		@Parameter(description = "게시글 작성을 요청한 유저 ID") @PathVariable("userId") Long userId) {
+		@Parameter(description = "게시글 작성을 요청한 유저 ID") @PathVariable("userId") String userId) {
 		return ResponseEntity.ok().body(postService.savePost(userId, boardDto));
 	}
 
@@ -129,26 +128,25 @@ public class PostController {
 		@ApiResponse(responseCode = "200", description = "참가 성공의 경우 응답입니다."),
 		@ApiResponse(responseCode = "400", description = "참가 실패의 경우 응답입니다."),
 	})
-	@PostMapping("/recruit/{boardId}/{userId}")
-	public ResponseEntity recruitSave(@Parameter(description = "참가하는 게시글 번호입니다.") @PathVariable Long boardId,
-		@Parameter(description = "참가하는 사용자의 번호입니다.") @PathVariable Long userId,
-		@LoginUserInfo UserInfo sessionUser) {
-		if (!sessionUser.getId().equals(userId)) {
-			return ResponseEntity.badRequest().build();
-		}
-
-		RecruitDto.Request dto = new RecruitDto.Request();
-
-		boolean isDuplicate = recruitService.isDuplicate(boardId, userId);
-		if (isDuplicate) {
-			return ResponseEntity.badRequest().body("이미 신청하였습니다.");
-		}
-		return ResponseEntity.ok(recruitService.join(boardId, userId, dto));
-	}
+	// @PostMapping("/recruit/{boardId}/{userId}")
+	// public ResponseEntity recruitSave(@Parameter(description = "참가하는 게시글 번호입니다.") @PathVariable Long boardId,
+	// 	@Parameter(description = "참가하는 사용자의 번호입니다.") @PathVariable Long userId,
+	// 	@LoginUserInfo UserInfo sessionUser) {
+	// 	if (!sessionUser.getId().equals(userId)) {
+	// 		return ResponseEntity.badRequest().build();
+	// 	}
+	//
+	// 	RecruitDto.Request dto = new RecruitDto.Request();
+	//
+	// 	boolean isDuplicate = recruitService.isDuplicate(boardId, userId);
+	// 	if (isDuplicate) {
+	// 		return ResponseEntity.badRequest().body("이미 신청하였습니다.");
+	// 	}
+	// 	return ResponseEntity.ok(recruitService.join(boardId, userId, dto));
+	// }
 
 	/* DELETE - 모집 마감 취소 */
 	@DeleteMapping("/recruit-cancel/{boardId}/{userId}")
-	@Operation(summary = "모각코 모집 마감 취소", description = "모집 마감을 취소합니다. 게시글 작성자만 호출할수 있습니다.")
 	public ResponseEntity recruitDelete(@Parameter(description = "모집 마감을 취소할 게시글의 번호입니다.") @PathVariable Long boardId,
 		@Parameter(description = "모집 취소를 누른 사용자의 번호입니다.") @PathVariable Long userId,
 		@LoginUserInfo UserInfo sessionUser) {

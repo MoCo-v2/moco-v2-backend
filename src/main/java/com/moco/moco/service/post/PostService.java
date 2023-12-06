@@ -96,7 +96,7 @@ public class PostService {
 
 	/* 게시글 저장 */
 	@Transactional
-	public Long savePost(Long userId, PostDto.Request postDto) {
+	public Long savePost(String userId, PostDto.Request postDto) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 		postDto.setUser(user);
