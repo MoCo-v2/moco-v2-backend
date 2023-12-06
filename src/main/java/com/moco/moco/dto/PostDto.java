@@ -61,7 +61,7 @@ public class PostDto {
 		private String location;
 		private LocalDateTime createdDate;
 		private LocalDateTime modifiedDate;
-		private Long userId;
+		private String userId;
 		private String userImg;
 		private List<CommentDto.Response> comments;
 		private boolean isfull;

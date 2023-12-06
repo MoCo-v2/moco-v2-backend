@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,12 +44,12 @@ public class ProfileController {
 	// 	return status == 200L ? ResponseEntity.ok("ok") : ResponseEntity.badRequest().build();
 	// }
 
-	@Operation(summary = "회원 탈퇴 요청", description = "회원 탈퇴를 요청합니다.")
-	@DeleteMapping("/delete")
-	public ResponseEntity deleteUser(@LoginUserInfo UserInfo sessionUser) {
-		userService.deleteUser(sessionUser.getId());
-		return ResponseEntity.ok("탈퇴완료");
-	}
+	// @Operation(summary = "회원 탈퇴 요청", description = "회원 탈퇴를 요청합니다.")
+	// @DeleteMapping("/delete")
+	// public ResponseEntity deleteUser(@LoginUserInfo UserInfo sessionUser) {
+	// 	userService.deleteUser(sessionUser.getId());
+	// 	return ResponseEntity.ok("탈퇴완료");
+	// }
 
 	@Operation(summary = "게시글 리스트 요청", description = "자신이 작성한 게시글들을 반환합니다.")
 	@GetMapping("/mypost")

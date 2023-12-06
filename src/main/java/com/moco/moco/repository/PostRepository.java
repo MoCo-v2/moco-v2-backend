@@ -24,7 +24,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	/* 게시글 작성자 변경 */
 	@Modifying
 	@Query("UPDATE Post set writer = :writer  WHERE user.id = :userId")
-	void updateWriter(@Param("writer") String name, @Param("userId") Long userId);
+	void updateWriter(@Param("writer") String name, @Param("userId") String userId);
 
 	/* 조회수 */
 	@Modifying

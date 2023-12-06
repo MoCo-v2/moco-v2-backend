@@ -25,19 +25,35 @@ public class TokenDto {
 		}
 	}
 
+	public abstract static class Response {
+
+	}
+
 	@Getter
-	public static class Response {
+	public static class JwtResponse extends Response {
 		private String accessToken;
 		private String refreshToken;
-		private String email;
 		private Boolean result;
 
 		@Builder
-		public Response(String accessToken, String refreshToken, String email, Boolean result) {
+		public JwtResponse(String accessToken, String refreshToken, Boolean result) {
 			this.accessToken = accessToken;
 			this.refreshToken = refreshToken;
-			this.email = email;
 			this.result = result;
 		}
+
+	}
+
+	@Getter
+	public static class IdResponse extends Response {
+		private String id;
+		private Boolean result;
+
+		@Builder
+		public IdResponse(String id, Boolean result) {
+			this.id = id;
+			this.result = result;
+		}
+
 	}
 }

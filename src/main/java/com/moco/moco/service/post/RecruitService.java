@@ -21,7 +21,7 @@ public class RecruitService {
 
 	/* 모집참가 */
 	@Transactional
-	public Long join(Long boardid, Long userId, RecruitDto.Request recruitDto) {
+	public Long join(Long boardid, String userId, RecruitDto.Request recruitDto) {
 		Post post = postRepository.findById(boardid)
 			.orElseThrow(() -> new IllegalArgumentException("게시글을 찾을수 없습니다."));
 		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저를 찾을수 없습니다."));

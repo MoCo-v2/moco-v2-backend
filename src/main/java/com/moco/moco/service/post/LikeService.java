@@ -40,7 +40,7 @@ public class LikeService {
 
 	/* READ */
 	@Transactional(readOnly = true)
-	public boolean findLike(Long userId, Long boardId) {
+	public boolean findLike(String userId, Long boardId) {
 		return likeRepository.existsByUser_IdAndPost_Id(userId, boardId);
 	}
 
