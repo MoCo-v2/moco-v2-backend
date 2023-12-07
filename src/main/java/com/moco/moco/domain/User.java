@@ -25,9 +25,6 @@ public class User extends Time {
 	@Id
 	private String id;
 
-	@Column(nullable = false, unique = true)
-	private String email;
-
 	@NotBlank
 	@Length(min = 2, max = 10)
 	@Pattern(regexp = "^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,10}$") //한글, 영문, 숫자만 가능하며 2-10자리 가능
@@ -45,7 +42,6 @@ public class User extends Time {
 	public User(String name, String email, String picture,
 		Role role) {
 		this.name = name;
-		this.email = email;
 		this.picture = picture;
 		this.role = role;
 	}

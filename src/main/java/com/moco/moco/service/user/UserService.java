@@ -61,24 +61,7 @@ public class UserService {
 					.build();
 			}
 
-			//기존 사용자라면 JWT 발급한다.
-			Map<String, Object> claims = tokenService.generateClaims(user.get().getId(), user.get().getEmail());
-
-			String subject = "access token";
-
-			String secretKey = tokenService.encodeBase64SecretKey(tokenService.getSecretKey());
-
-			Date accessTokenExpiration = tokenService.getTimeAfterMinutes(60);
-			String accessToken = tokenService.generateAccessToken(claims, subject, accessTokenExpiration, secretKey);
-
-			Date refreshTokenExpiration = tokenService.getTimeAfterWeeks(2);
-			String refreshToken = tokenService.generateRefreshToken(subject, refreshTokenExpiration, secretKey);
-
-			return TokenDto.JwtResponse.builder()
-				.accessToken(accessToken)
-				.refreshToken(refreshToken)
-				.result(true)
-				.build();
+			return getUserIdAndGenerateToken(user.get().getId());
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -88,8 +71,9 @@ public class UserService {
 
 	/* 회원가입 */
 	@Transactional
-	public User join(UserDto.Request userDto) {
-		return userRepository.save(userDto.toEntity());
+	public TokenDto.JwtResponse join(UserDto.Request userDto) {
+		User user = userRepository.save(userDto.toEntity());
+		return getUserIdAndGenerateToken(user.getId());
 	}
 
 	/* 회원가입 시 input 유효성 체크 */
@@ -105,17 +89,10 @@ public class UserService {
 		return validatorResult;
 	}
 
-	@Transactional(readOnly = true)
-	public boolean emailExists(String email) {
-		return userRepository.existsByEmail(email);
-	}
-
 	/* 회원가입시 별명 중복 여부 */
 	@Transactional(readOnly = true)
-	public boolean checkUsernameDuplication(String name) {
-		boolean usernameDuplication = userRepository.existsByName(name);
-
-		return usernameDuplication;
+	public boolean checkNameDuplication(String name) {
+		return userRepository.existsByName(name);
 	}
 
 	/* 설정에서 별명 바꾸기 */
@@ -141,5 +118,26 @@ public class UserService {
 	@Transactional
 	public void deleteUser(String userId) {
 		userRepository.deleteById(userId);
+	}
+
+	private TokenDto.JwtResponse getUserIdAndGenerateToken(String userId) {
+		//기존 사용자라면 JWT 발급한다.
+		Map<String, Object> claims = tokenService.generateClaims(userId);
+
+		String subject = "access token";
+
+		String secretKey = tokenService.encodeBase64SecretKey(tokenService.getSecretKey());
+
+		Date accessTokenExpiration = tokenService.getTimeAfterMinutes(60);
+		String accessToken = tokenService.generateAccessToken(claims, subject, accessTokenExpiration, secretKey);
+
+		Date refreshTokenExpiration = tokenService.getTimeAfterWeeks(2);
+		String refreshToken = tokenService.generateRefreshToken(subject, refreshTokenExpiration, secretKey);
+
+		return TokenDto.JwtResponse.builder()
+			.accessToken(accessToken)
+			.refreshToken(refreshToken)
+			.result(true)
+			.build();
 	}
 }
