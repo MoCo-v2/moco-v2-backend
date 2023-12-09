@@ -27,8 +27,6 @@ public class PostService {
 	private PostRepositoryCustom postRepositoryCustom;
 
 	private CommentService commentService;
-	private LikeService likeService;
-	private RecruitService recruitService;
 
 	private static final int PAGE_POST_COUNT = 9; // 한 페이지에 존재하는 게시글 수
 
@@ -77,16 +75,10 @@ public class PostService {
 		/* get comment to NestedStructure */
 		List<CommentDto.Response> comments = commentService.convertNestedStructure(post.getComments());
 
-		/* get like count */
-		Long likeCount = likeService.findLikeCount(postId);
-
-		/* get Number of currently registered users  */
-		Long joinUsers = recruitService.countToJoinUsers(postId);
-
 		/* view update +1 */
 		postRepository.updateView(postId);
 
-		return new PostDto.PostDetailDto(postDto, comments, likeCount, joinUsers);
+		return new PostDto.PostDetailDto(postDto, comments);
 	}
 
 	@Transactional(readOnly = true)
@@ -105,22 +97,14 @@ public class PostService {
 	}
 
 	/* 게시글 수정 */
-	@Transactional
-	public Long updatePost(Long postId, PostDto.Request postDto) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-		post.update(postDto.getTitle(), postDto.getHashtag(), postDto.getContent(), postDto.getSubcontent(),
-			postDto.getThumbnail(), postDto.getLocation());
-		return post.getId();
-	}
-
-	/* UPDATE -  모집 마감 */
-	@Transactional
-	public boolean updateFull(Long postId) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-		return post.close();
-	}
+	// @Transactional
+	// public Long updatePost(Long postId, PostDto.Request postDto) {
+	// 	Post post = postRepository.findById(postId)
+	// 		.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+	// 	post.update(postDto.getTitle(), postDto.getHashtag(), postDto.getContent(), postDto.getSubcontent(),
+	// 		postDto.getThumbnail(), postDto.getLocation());
+	// 	return post.getId();
+	// }
 
 	/* DELETE - 게시글 삭제 */
 	@Transactional

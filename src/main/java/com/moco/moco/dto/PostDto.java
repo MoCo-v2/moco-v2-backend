@@ -16,16 +16,19 @@ public class PostDto {
 	@Setter
 	@Getter
 	public static class Request {
-		private Long id;
-		private String writer;
 		@NotBlank(message = "제목을 입력해주세요.")
 		private String title;
 		private String content;
-		private String hashtag;
-		private String subcontent;
-		private String thumbnail;
+		private String type;
+		private String capacity;
+		private String mode;
+		private String duration;
+		private String techStack;
+		private LocalDateTime deadLine;
+		private String recruitmentPosition;
+		private String contact_method;
+		private String link;
 		private int view;
-		private String location;
 		private LocalDateTime createdDate;
 		private LocalDateTime modifiedDate;
 		private User user;
@@ -33,18 +36,22 @@ public class PostDto {
 		/* Dto -> Entity */
 		public Post toEntity() {
 			return Post.builder()
-				.id(id)
-				.writer(writer)
-				.hashTag(hashtag)
 				.title(title)
 				.content(content)
-				.subcontent(subcontent)
-				.thumbnail(thumbnail)
+				.type(type)
+				.capacity(capacity)
+				.mode(mode)
+				.duration(duration)
+				.techStack(techStack)
+				.deadLine(deadLine)
+				.recruitmentPosition(recruitmentPosition)
+				.contact_method(contact_method)
+				.link(link)
 				.view(0)
-				.location(location)
 				.user(user)
 				.build();
 		}
+
 	}
 
 	@Setter
@@ -70,19 +77,13 @@ public class PostDto {
 		public Response(Post post) {
 			this.id = post.getId();
 			this.title = post.getTitle();
-			this.writer = post.getWriter();
 			this.content = post.getContent();
-			this.hashtag = post.getHashTag();
-			this.subcontent = post.getSubcontent();
-			this.thumbnail = post.getThumbnail();
 			this.view = post.getView();
-			this.location = post.getLocation();
 			this.createdDate = post.getCreatedDate();
 			this.modifiedDate = post.getModifiedDate();
 			this.userId = post.getUser().getId();
 			this.userImg = post.getUser().getPicture();
 			this.comments = post.getComments().stream().map(CommentDto.Response::new).collect(Collectors.toList());
-			this.isfull = post.isIsfull();
 		}
 	}
 
@@ -91,15 +92,10 @@ public class PostDto {
 	public static class PostDetailDto {
 		private PostDto.Response postDto;
 		private List<CommentDto.Response> comments;
-		private Long likeCount;
-		private Long joinUsersCount;
 
-		public PostDetailDto(PostDto.Response postDto, List<CommentDto.Response> comments, Long likeCount,
-			Long joinUsersCount) {
+		public PostDetailDto(PostDto.Response postDto, List<CommentDto.Response> comments) {
 			this.postDto = postDto;
 			this.comments = comments;
-			this.likeCount = likeCount;
-			this.joinUsersCount = joinUsersCount;
 		}
 	}
 

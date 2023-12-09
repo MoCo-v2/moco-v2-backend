@@ -26,17 +26,17 @@ public class OauthService {
 
 	public String requestGoogleUserInfo(String accessToken) {
 		ResponseEntity<String> response = requestUserInfo(GOOGLE_USERINFO_REQUEST_URL, "Bearer " + accessToken);
-		return parseUserInfo(response);
+		return "google" + parseUserInfo(response);
 	}
 
 	public String requestKaKaoUserInfo(String accessToken) {
 		ResponseEntity<String> response = requestUserInfo(KAKAO_USERINFO_REQUEST_URL, "Bearer " + accessToken);
-		return parseUserInfo(response);
+		return "kakao" + parseUserInfo(response);
 	}
 
 	public String requestGithubUserInfo(String accessToken) {
 		ResponseEntity<String> response = requestUserInfo(GITHUB_USERINFO_REQUEST_URL, "token " + accessToken);
-		return parseUserInfo(response);
+		return "github" + parseUserInfo(response);
 	}
 
 	// 유저정보를 얻기위해 HTTP 요청한다.

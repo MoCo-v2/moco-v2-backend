@@ -21,11 +21,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	@Query(value = "select b from Post b left join fetch b.comments where b.id = :postId")
 	Post findByIdWithFetchJoin(@Param("postId") Long postId);
 
-	/* 게시글 작성자 변경 */
-	@Modifying
-	@Query("UPDATE Post set writer = :writer  WHERE user.id = :userId")
-	void updateWriter(@Param("writer") String name, @Param("userId") String userId);
-
 	/* 조회수 */
 	@Modifying
 	@Query("update Post b set b.view = b.view + 1 where b.id = :id")

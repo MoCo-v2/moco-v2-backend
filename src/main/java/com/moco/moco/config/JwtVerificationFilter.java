@@ -67,7 +67,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 	// 필터를 통과시킬 url 패턴
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
-		String[] excludePath = {"/api/v1/login"};
+		String[] excludePath = {"/api/v1/auth"};
 		String path = request.getRequestURI();
 		return Arrays.stream(excludePath).anyMatch(path::startsWith);
 	}
@@ -86,7 +86,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 		List<GrantedAuthority> authorities = userInfo.getRoles().stream()
 			.map(role -> new SimpleGrantedAuthority(role))
 			.collect(Collectors.toList());
-		
+
 		Authentication authentication = new UsernamePasswordAuthenticationToken(userInfo, null, authorities);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}

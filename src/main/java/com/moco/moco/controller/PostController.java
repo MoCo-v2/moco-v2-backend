@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,12 +17,9 @@ import com.moco.moco.config.LoginUserInfo;
 import com.moco.moco.config.auth.UserInfo;
 import com.moco.moco.dto.PostDto;
 import com.moco.moco.service.post.PostService;
-import com.moco.moco.service.post.RecruitService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
@@ -33,7 +29,6 @@ import lombok.AllArgsConstructor;
 @RequestMapping("posts")
 public class PostController {
 	private final PostService postService;
-	private final RecruitService recruitService;
 	private final Logger log = LoggerFactory.getLogger(PostController.class);
 
 	private final String OFFSET = "0";
@@ -123,11 +118,11 @@ public class PostController {
 	}
 
 	/* CREATE - 스터디 참가 */
-	@Operation(summary = "스터디 참가", description = "스터디에 참가합니다. 응답으로는 200 , 400 입니다.")
-	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "참가 성공의 경우 응답입니다."),
-		@ApiResponse(responseCode = "400", description = "참가 실패의 경우 응답입니다."),
-	})
+	// @Operation(summary = "스터디 참가", description = "스터디에 참가합니다. 응답으로는 200 , 400 입니다.")
+	// @ApiResponses({
+	// 	@ApiResponse(responseCode = "200", description = "참가 성공의 경우 응답입니다."),
+	// 	@ApiResponse(responseCode = "400", description = "참가 실패의 경우 응답입니다."),
+	// })
 	// @PostMapping("/recruit/{boardId}/{userId}")
 	// public ResponseEntity recruitSave(@Parameter(description = "참가하는 게시글 번호입니다.") @PathVariable Long boardId,
 	// 	@Parameter(description = "참가하는 사용자의 번호입니다.") @PathVariable Long userId,
@@ -144,32 +139,6 @@ public class PostController {
 	// 	}
 	// 	return ResponseEntity.ok(recruitService.join(boardId, userId, dto));
 	// }
-
-	/* DELETE - 모집 마감 취소 */
-	@DeleteMapping("/recruit-cancel/{boardId}/{userId}")
-	public ResponseEntity recruitDelete(@Parameter(description = "모집 마감을 취소할 게시글의 번호입니다.") @PathVariable Long boardId,
-		@Parameter(description = "모집 취소를 누른 사용자의 번호입니다.") @PathVariable Long userId,
-		@LoginUserInfo UserInfo sessionUser) {
-		if (!sessionUser.getId().equals(userId)) {
-			return ResponseEntity.badRequest().build();
-		}
-
-		int rows = recruitService.joinCancel(boardId, userId);
-		int status = rows == 1 ? 200 : 400;
-		return ResponseEntity.status(status).build();
-	}
-
-	/* UPDATE - 모집 마감 */
-	@Operation(summary = "모각코 모집을 마감", description = "모각코 모집을 마감합니다. 게시글 작성자만 호출할수 있습니다.")
-	@PatchMapping("/recruit-off/{boardId}")
-	public ResponseEntity recruitClose(@Parameter(description = "해당 번호를 가진 게시글에 대해 요청합니다.") @PathVariable Long boardId,
-		@LoginUserInfo UserInfo sessionUser) {
-		// if (!sessionUser.getId().equals(postService.getPost(boardId))) {
-		// 	ResponseEntity.badRequest().build();
-		// }
-		return ResponseEntity.ok(postService.updateFull(boardId));
-	}
-
 }
 
 
