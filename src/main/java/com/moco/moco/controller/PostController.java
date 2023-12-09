@@ -3,13 +3,11 @@ package com.moco.moco.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +24,6 @@ import lombok.AllArgsConstructor;
 /* 게시판 */
 @AllArgsConstructor
 @RestController
-@RequestMapping("posts")
 public class PostController {
 	private final PostService postService;
 	private final Logger log = LoggerFactory.getLogger(PostController.class);
@@ -35,36 +32,21 @@ public class PostController {
 	private final String LIMIT = "8";
 
 	/* ----- Post 📋 ----- */
-	@Operation(summary = "Return posts", description = "특정 조건의 posts를 반환합니다.")
-	@GetMapping("")
+	@GetMapping("/public/posts")
 	public ResponseEntity<PostDto.Posts> getPosts(
-		@Parameter(description = "어디서 부터 가져올지 요청하는 파라미터입니다. 기본값은 0으로 첫번째 게시글부터 가져옵니다.")
 		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
-		@Parameter(description = "어디까지 가져올지의 요청하는 파라미터입니다. 기본값은 8입니다.")
-		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
-		@LoginUserInfo UserInfo userInfo) {
-
-		log.info("### -------- API를 호출한 유저 정보 --------- ###");
-		log.info("userInfo Email:" + userInfo.getEmail());
-		log.info("userInfo Id:" + userInfo.getId());
-		log.info("userInfo Roles:" + userInfo.getRoles().get(0));
-		log.info("### ------------------------------------- ###");
-
+		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit) {
 		return ResponseEntity.ok().body(postService.getPosts(offset, limit));
 	}
 
 	/* READ - 검색 */
-	@Operation(summary = "게시글 검색", description = "게시글을 검색합니다. 모집중인 게시글만 반환합니다.")
-	@GetMapping("/search")
-	public ResponseEntity<PostDto.Posts> search(
-		@Parameter(description = "어디서 부터 가져올지 요청하는 파라미터입니다. 기본값은 0으로 첫번째 게시글부터 가져옵니다.")
-		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
-		@Parameter(description = "어디까지 가져올지의 요청하는 파라미터입니다. 기본값은 8입니다.")
-		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
-		@Parameter(description = "검색할 키워드가 담긴 파라미터입니다.")
-		@RequestParam(value = "keyword") String keyword, Model model) {
-		return ResponseEntity.ok().body(postService.searchPosts(offset, limit, keyword));
-	}
+	// @GetMapping("/public/search")
+	// public ResponseEntity<PostDto.Posts> search(
+	// 	@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
+	// 	@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
+	// 	@RequestParam(value = "keyword") String keyword) {
+	// 	return ResponseEntity.ok().body(postService.searchPosts(offset, limit, keyword));
+	// }
 
 	@Operation(summary = "return post data", description = "특정 id를 가진 post를 반환합니다.")
 	@GetMapping("/{postId}")

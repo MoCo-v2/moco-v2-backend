@@ -56,11 +56,8 @@ public class SecurityConfig {
 			.authorizeHttpRequests()
 			.requestMatchers("", "/", "/actuator/health").permitAll()
 			.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-			.requestMatchers("/admin", "/admin/**").hasRole("MASTER")
-			.requestMatchers("/auth/**").permitAll()
-			.requestMatchers("/posts/**").authenticated()
-			.requestMatchers("/signup", "/login/signup").permitAll()
-			.requestMatchers("/id/check", "/name/check").permitAll()
+			.requestMatchers("/public/**").permitAll()
+			.requestMatchers("/private/**").authenticated()
 			.anyRequest().authenticated() // 그 외 인증 없이 접근 X
 			.and()
 			.exceptionHandling()

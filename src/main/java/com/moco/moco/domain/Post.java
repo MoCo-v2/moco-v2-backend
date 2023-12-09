@@ -56,10 +56,10 @@ public class Post extends Time {
 	private String techStack;
 
 	@Column
-	private LocalDateTime deadLine;
+	private String recruitmentPosition;
 
 	@Column
-	private String recruitmentPosition;
+	private LocalDateTime deadLine;
 
 	@Column
 	private String contact_method;
@@ -67,15 +67,21 @@ public class Post extends Time {
 	@Column
 	private String link;
 
+	@Column
+	private boolean isRemoved = false;
+
+	@Column
+	private boolean isFull = false;
+
+	@Column(columnDefinition = "integer default 0", nullable = false)
+	private int commentCnt;
+
 	@Column(columnDefinition = "integer default 0", nullable = false)
 	private int view;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
-
-	@Column(columnDefinition = "integer default 0", nullable = false)
-	private int commentCnt;
 
 	/* 댓글 */
 	@OrderBy("id asc") //댓글 정렬
@@ -85,9 +91,8 @@ public class Post extends Time {
 
 	@Builder
 	public Post(Long id, String title, String content, String type, String capacity, String mode, String duration,
-		String techStack, LocalDateTime deadLine, String recruitmentPosition, String contact_method, String link,
-		int view,
-		User user, int commentCnt, List<Comment> comments) {
+		String techStack, String recruitmentPosition, LocalDateTime deadLine, String contact_method, String link,
+		boolean isRemoved, boolean isFull, int commentCnt, int view, User user, List<Comment> comments) {
 		this.id = id;
 		this.title = title;
 		this.content = content;
@@ -96,13 +101,15 @@ public class Post extends Time {
 		this.mode = mode;
 		this.duration = duration;
 		this.techStack = techStack;
-		this.deadLine = deadLine;
 		this.recruitmentPosition = recruitmentPosition;
+		this.deadLine = deadLine;
 		this.contact_method = contact_method;
 		this.link = link;
+		this.isRemoved = isRemoved;
+		this.isFull = isFull;
+		this.commentCnt = commentCnt;
 		this.view = view;
 		this.user = user;
-		this.commentCnt = commentCnt;
 		this.comments = comments;
 	}
 }
