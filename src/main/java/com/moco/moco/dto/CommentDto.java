@@ -31,7 +31,14 @@ public class CommentDto {
 
 		/* DTO -> Entity */
 		public Comment toEntity() {
-			Comment comments = Comment.builder().id(id).comment(comment).user(user).post(post).parent(parent).build();
+			Comment comments = Comment.builder()
+				.id(id)
+				.comment(comment)
+				.user(user)
+				.isRemoved(false)
+				.post(post)
+				.parent(parent)
+				.build();
 			return comments;
 		}
 	}

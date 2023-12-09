@@ -1,13 +1,10 @@
 package com.moco.moco.domain;
 
-//Post : 실제 DB와 매칭될 클래스 (Entity Class)
+// JPA에서는 프록시 객체 생성을 위해 파라미터가 없는 기본 생성자를 반드시 하나를 생성해야 한다.
+// 파라미터 없는 생성자 생성 어노테이션인 NoArgsConstructor를 사용하고 기본 생성자를 사용하는 곳은 JPA Entity Class 밖에 없기 때문에 Protect로 접근을 제한한다.
 
-//JPA에서는 프록시 생성을 위해 기본 생성자를 반드시 하난 생성해야 한다.
-//생성자 자동 생성 : NoArgsConstructor, AllArgsConstructor
-//NoArgsConstructor : 객체 생성 시 초기 인자 없이 객체를 생성할 수 있다.
-
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -24,59 +21,67 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED) //외부에서 생성을 열어 둘 필요가 없을 때 , 보안적으로 권장함
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
 @Table(name = "post")
 public class Post extends Time {
-	@Id //Primary Key Field
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //PK 생성 규칙
 	private Long id;
 
 	@Column(length = 500, nullable = false)
 	private String title;
 
-	@Column(length = 10, nullable = false)
-	private String writer;
-
-	@Column(columnDefinition = "TEXT", nullable = true)
-	private String hashTag;
-
-	@Column(columnDefinition = "TEXT", nullable = false)
+	@Column(columnDefinition = "TEXT")
 	private String content;
 
-	@Column(columnDefinition = "TEXT", nullable = true)
-	private String subcontent;
+	@Column
+	private String type;
 
-	@Column(length = 300, nullable = false)
-	private String thumbnail;
+	@Column
+	private String capacity;
+
+	@Column
+	private String mode;
+
+	@Column
+	private String duration;
+
+	@Column
+	private String techStack;
+
+	@Column
+	private String recruitmentPosition;
+
+	@Column
+	private LocalDateTime deadLine;
+
+	@Column
+	private String contact_method;
+
+	@Column
+	private String link;
+
+	@Column
+	private boolean isRemoved = false;
+
+	@Column
+	private boolean isFull = false;
+
+	@Column(columnDefinition = "integer default 0", nullable = false)
+	private int commentCnt;
 
 	@Column(columnDefinition = "integer default 0", nullable = false)
 	private int view;
 
-	@Column(columnDefinition = "TEXT", nullable = true)
-	private String location;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
-
-	@Column(columnDefinition = "integer default 0", nullable = false)
-	private int likecnt;
-
-	@Column(columnDefinition = "integer default 0", nullable = false)
-	private int commentcnt;
-
-	@Column
-	@Builder.Default
-	private boolean isfull = false;
 
 	/* 댓글 */
 	@OrderBy("id asc") //댓글 정렬
@@ -84,28 +89,28 @@ public class Post extends Time {
 	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private List<Comment> comments;
 
-	/* 좋아요 */
-	@JsonIgnoreProperties({"post"})
-	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	private Set<Like> likes;
-
-	/* 모집된 인원 */
-	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-	private Set<Recruit> recruits;
-
-	public void update(String title, String hashTag, String content, String subcontent, String thumbnail,
-		String location) {
+	@Builder
+	public Post(Long id, String title, String content, String type, String capacity, String mode, String duration,
+		String techStack, String recruitmentPosition, LocalDateTime deadLine, String contact_method, String link,
+		boolean isRemoved, boolean isFull, int commentCnt, int view, User user, List<Comment> comments) {
+		this.id = id;
 		this.title = title;
-		this.hashTag = hashTag;
 		this.content = content;
-		this.subcontent = subcontent;
-		this.thumbnail = thumbnail;
-		this.location = location;
-	}
-
-	public boolean close() {
-		this.isfull = !this.isfull;
-		return this.isfull;
+		this.type = type;
+		this.capacity = capacity;
+		this.mode = mode;
+		this.duration = duration;
+		this.techStack = techStack;
+		this.recruitmentPosition = recruitmentPosition;
+		this.deadLine = deadLine;
+		this.contact_method = contact_method;
+		this.link = link;
+		this.isRemoved = isRemoved;
+		this.isFull = isFull;
+		this.commentCnt = commentCnt;
+		this.view = view;
+		this.user = user;
+		this.comments = comments;
 	}
 }
 

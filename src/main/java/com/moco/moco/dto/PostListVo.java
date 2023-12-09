@@ -9,38 +9,46 @@ import lombok.Getter;
 @Getter
 public class PostListVo {
 	private Long id;
-	private LocalDateTime created_date;
 	private String title;
-	private String writer;
 	private String content;
-	private Long userId;
+	private String type;
+	private String capacity;
+	private String mode;
+	private String duration;
+	private String techStack;
+	private String recruitmentPosition;
+	private LocalDateTime deadLine;
+	private String contact_method;
+	private String link;
 	private Integer view;
-	private String thumbnail;
-	private String subcontent;
-	private Integer likecnt;
-	private Integer commentcnt;
+	private Integer commentCnt;
+	private LocalDateTime created_date;
+	private String userId;
+	private String writer;
 	private String picture;
-	private String hashTag;
-	private Boolean isfull;
 
 	@QueryProjection
-	public PostListVo(Long id, LocalDateTime created_date, String title, String writer, String content, Long userId,
-		Integer view, String thumbnail, String subcontent, Integer likecnt, Integer commentcnt, String picture,
-		String hashTag, Boolean isfull) {
+	public PostListVo(Long id, String title, String content, String type, String capacity, String mode, String duration,
+		String techStack, String recruitmentPosition, LocalDateTime deadLine, String contact_method, String link,
+		Integer view, Integer commentCnt, LocalDateTime created_date, String userId, String writer, String picture) {
 		this.id = id;
-		this.created_date = created_date;
 		this.title = title;
-		this.writer = writer;
 		this.content = content;
-		this.userId = userId;
+		this.type = type;
+		this.capacity = capacity;
+		this.mode = mode;
+		this.duration = duration;
+		this.techStack = techStack;
+		this.recruitmentPosition = recruitmentPosition;
+		this.deadLine = deadLine;
+		this.contact_method = contact_method;
+		this.link = link;
 		this.view = view;
-		this.thumbnail = thumbnail;
-		this.subcontent = subcontent;
-		this.likecnt = likecnt;
-		this.commentcnt = commentcnt;
+		this.commentCnt = commentCnt;
+		this.created_date = created_date;
+		this.userId = userId;
+		this.writer = writer;
 		this.picture = picture;
-		this.hashTag = hashTag;
-		this.isfull = isfull;
 	}
 }
 

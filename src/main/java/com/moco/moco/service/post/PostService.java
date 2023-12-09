@@ -27,19 +27,17 @@ public class PostService {
 	private PostRepositoryCustom postRepositoryCustom;
 
 	private CommentService commentService;
-	private LikeService likeService;
-	private RecruitService recruitService;
 
 	private static final int PAGE_POST_COUNT = 9; // 한 페이지에 존재하는 게시글 수
 
-	/* 모집중인 게시글 가져오기 */
-	@Transactional(readOnly = true)
-	public List<PostListVo> getPostListOnRecruit(Integer pageNum) {
-		PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
-			Sort.by(Sort.Direction.DESC, "created_date"));
-		List<PostListVo> postList = postRepositoryCustom.getPostsOnRecruit(pageRequest);
-		return postList;
-	}
+	// /* 모집중인 게시글 가져오기 */
+	// @Transactional(readOnly = true)
+	// public List<PostListVo> getPostListOnRecruit(Integer pageNum) {
+	// 	PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
+	// 		Sort.by(Sort.Direction.DESC, "created_date"));
+	// 	List<PostListVo> postList = postRepositoryCustom.getPostsOnRecruit(pageRequest);
+	// 	return postList;
+	// }
 
 	/* 모든 게시글 가져오기 */
 	@Transactional(readOnly = true)
@@ -51,22 +49,22 @@ public class PostService {
 		return new PostDto.Posts(posts, total);
 	}
 
-	/* 게시글 검색 */
-	@Transactional
-	public PostDto.Posts searchPosts(Integer offset, Integer limit, String keyword) {
-		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
-		List<PostListVo> posts = postRepositoryCustom.getSearchPost(pageRequest, keyword);
-		Long total = getPostCount();
-		return new PostDto.Posts(posts, total);
-	}
+	// /* 게시글 검색 */
+	// @Transactional
+	// public PostDto.Posts searchPosts(Integer offset, Integer limit, String keyword) {
+	// 	PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
+	// 	List<PostListVo> posts = postRepositoryCustom.getSearchPost(pageRequest, keyword);
+	// 	Long total = getPostCount();
+	// 	return new PostDto.Posts(posts, total);
+	// }
 
-	/* 내가 쓴글 가져오기 */
-	@Transactional(readOnly = true)
-	public List<PostListVo> getMyPosts(Integer pageNum, Long userId) {
-		PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
-			Sort.by(Sort.Direction.DESC, "created_date"));
-		return postRepositoryCustom.getMyPosts(pageRequest, userId);
-	}
+	// /* 내가 쓴글 가져오기 */
+	// @Transactional(readOnly = true)
+	// public List<PostListVo> getMyPosts(Integer pageNum, Long userId) {
+	// 	PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
+	// 		Sort.by(Sort.Direction.DESC, "created_date"));
+	// 	return postRepositoryCustom.getMyPosts(pageRequest, userId);
+	// }
 
 	/* 게시글 상세 */
 	@Transactional
@@ -77,16 +75,10 @@ public class PostService {
 		/* get comment to NestedStructure */
 		List<CommentDto.Response> comments = commentService.convertNestedStructure(post.getComments());
 
-		/* get like count */
-		Long likeCount = likeService.findLikeCount(postId);
-
-		/* get Number of currently registered users  */
-		Long joinUsers = recruitService.countToJoinUsers(postId);
-
 		/* view update +1 */
 		postRepository.updateView(postId);
 
-		return new PostDto.PostDetailDto(postDto, comments, likeCount, joinUsers);
+		return new PostDto.PostDetailDto(postDto, comments);
 	}
 
 	@Transactional(readOnly = true)
@@ -105,22 +97,14 @@ public class PostService {
 	}
 
 	/* 게시글 수정 */
-	@Transactional
-	public Long updatePost(Long postId, PostDto.Request postDto) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-		post.update(postDto.getTitle(), postDto.getHashtag(), postDto.getContent(), postDto.getSubcontent(),
-			postDto.getThumbnail(), postDto.getLocation());
-		return post.getId();
-	}
-
-	/* UPDATE -  모집 마감 */
-	@Transactional
-	public boolean updateFull(Long postId) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-		return post.close();
-	}
+	// @Transactional
+	// public Long updatePost(Long postId, PostDto.Request postDto) {
+	// 	Post post = postRepository.findById(postId)
+	// 		.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+	// 	post.update(postDto.getTitle(), postDto.getHashtag(), postDto.getContent(), postDto.getSubcontent(),
+	// 		postDto.getThumbnail(), postDto.getLocation());
+	// 	return post.getId();
+	// }
 
 	/* DELETE - 게시글 삭제 */
 	@Transactional

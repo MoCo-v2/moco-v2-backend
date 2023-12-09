@@ -9,18 +9,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
-@Entity
-@AllArgsConstructor
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "likes")
-public class Like {
+@Getter
+@Table(name = "bookmark")
+@Entity
+public class Bookmark {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -32,5 +29,4 @@ public class Like {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "post_id")
 	private Post post;
-
 }

@@ -1,18 +1,9 @@
 package com.moco.moco.controller;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import com.moco.moco.config.LoginUserInfo;
-import com.moco.moco.config.auth.UserInfo;
-import com.moco.moco.dto.PostListVo;
 import com.moco.moco.service.post.PostService;
 import com.moco.moco.service.profile.ProfileService;
 import com.moco.moco.service.user.UserService;
@@ -51,23 +42,23 @@ public class ProfileController {
 	// 	return ResponseEntity.ok("탈퇴완료");
 	// }
 
-	@Operation(summary = "게시글 리스트 요청", description = "자신이 작성한 게시글들을 반환합니다.")
-	@GetMapping("/mypost")
-	public String myPost(@RequestParam(value = "page", defaultValue = "1") Integer pageNum,
-		@LoginUserInfo UserInfo sessionUser, Model model) {
-		List<PostListVo> boardList = postService.getMyPosts(pageNum, sessionUser.getId());
-		Integer totalPage = postService.getPageList(pageNum);
+	// @Operation(summary = "게시글 리스트 요청", description = "자신이 작성한 게시글들을 반환합니다.")
+	// @GetMapping("/mypost")
+	// public String myPost(@RequestParam(value = "page", defaultValue = "1") Integer pageNum,
+	// 	@LoginUserInfo UserInfo sessionUser, Model model) {
+	// 	List<PostListVo> boardList = postService.getMyPosts(pageNum, sessionUser.getId());
+	// 	Integer totalPage = postService.getPageList(pageNum);
+	//
+	// 	model.addAttribute("boardList", boardList);
+	// 	model.addAttribute("totalPage", totalPage);
+	//
+	// 	return "profile/mypost";
+	// }
 
-		model.addAttribute("boardList", boardList);
-		model.addAttribute("totalPage", totalPage);
-
-		return "profile/mypost";
-	}
-
-	/* 무한스크롤 AJAX */
-	@GetMapping("/MyListJson/{page}/{userId}")
-	public ResponseEntity listJson(@PathVariable("page") Integer pageNum, @PathVariable("userId") Long userId) {
-		List<PostListVo> boardList = postService.getMyPosts(pageNum, userId);
-		return ResponseEntity.ok(boardList);
-	}
+	// /* 무한스크롤 AJAX */
+	// @GetMapping("/MyListJson/{page}/{userId}")
+	// public ResponseEntity listJson(@PathVariable("page") Integer pageNum, @PathVariable("userId") Long userId) {
+	// 	List<PostListVo> boardList = postService.getMyPosts(pageNum, userId);
+	// 	return ResponseEntity.ok(boardList);
+	// }
 }

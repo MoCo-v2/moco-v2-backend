@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,7 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.moco.moco.exception.CustomAuthenticationEntryPoint;
 import com.moco.moco.service.token.JwTokenService;
-import com.moco.moco.service.user.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
-	private final CustomUserDetailsService customUserDetailsService;
 	private final JwTokenService jwtTokenService;
 
 	@Bean
@@ -37,10 +34,6 @@ public class SecurityConfig {
 	@Bean
 	public PasswordEncoder encoder() {
 		return new BCryptPasswordEncoder();
-	}
-
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(customUserDetailsService).passwordEncoder(encoder());
 	}
 
 	@Bean
@@ -63,11 +56,8 @@ public class SecurityConfig {
 			.authorizeHttpRequests()
 			.requestMatchers("", "/", "/actuator/health").permitAll()
 			.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-			.requestMatchers("/admin", "/admin/**").hasRole("MASTER")
-			.requestMatchers("/login").permitAll()
-			.requestMatchers("/posts/**").authenticated()
-			.requestMatchers("/signup", "/login/signup").permitAll()
-			.requestMatchers("/id/check", "/name/check").permitAll()
+			.requestMatchers("/public/**").permitAll()
+			.requestMatchers("/private/**").authenticated()
 			.anyRequest().authenticated() // 그 외 인증 없이 접근 X
 			.and()
 			.exceptionHandling()

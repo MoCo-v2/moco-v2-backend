@@ -12,14 +12,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "comment")
 @Entity
@@ -30,15 +28,15 @@ public class Comment extends Time {
 	private Long id;
 
 	@Column(columnDefinition = "TEXT", nullable = false)
-	private String comment; //댓글 내용
+	private String comment;
 
 	@ManyToOne
 	@JoinColumn(name = "post_id")
-	private Post post;   //게시글 id
+	private Post post;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
-	private User user;     //작성자
+	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent_id")
@@ -48,19 +46,27 @@ public class Comment extends Time {
 	@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
 	private List<Comment> childList;
 
-	@Builder.Default
-	private boolean isRemoved = false;
+	private boolean isRemoved;
 
-	/* 댓글 수정 */
 	public void update(String comment) {
 		this.comment = comment;
 	}
 
-	/* 삭제 표시 */
 	public void remove() {
 		this.isRemoved = true;
 	}
 
+	@Builder
+	public Comment(Long id, String comment, Post post, User user, Comment parent, List<Comment> childList,
+		boolean isRemoved) {
+		this.id = id;
+		this.comment = comment;
+		this.post = post;
+		this.user = user;
+		this.parent = parent;
+		this.childList = childList;
+		this.isRemoved = isRemoved;
+	}
 }
 
 

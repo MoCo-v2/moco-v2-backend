@@ -1,20 +1,10 @@
 package com.moco.moco.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.moco.moco.config.LoginUserInfo;
-import com.moco.moco.config.auth.UserInfo;
-import com.moco.moco.dto.CommentDto;
 import com.moco.moco.service.post.CommentService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -45,27 +35,27 @@ public class CommentController {
 	// 	return ResponseEntity.ok(commentService.recommentSave(sessionUser.getId(), boardId, parentId, commentDto));
 	// }
 
-	/* UPDATE - 댓글/답글 수정 */
-	@Operation(summary = "댓글 수정", description = "댓글 과 대댓글의 수정하기 위한 요청입니다.")
-	@PutMapping("/{commentId}/{userId}")
-	public ResponseEntity commentUpdate(@Parameter(description = "해당번호를 가진 댓글을 수정합니다.") @PathVariable Long commentId,
-		@Parameter(description = "댓글 작성자의 번호입니다.") @PathVariable Long userId,
-		@Parameter(description = "") @RequestBody CommentDto.Request commentDto,
-		@LoginUserInfo UserInfo sessionUser) {
-		if (!sessionUser.getId().equals(userId)) {
-			return ResponseEntity.badRequest().build();
-		}
+	// /* UPDATE - 댓글/답글 수정 */
+	// @Operation(summary = "댓글 수정", description = "댓글 과 대댓글의 수정하기 위한 요청입니다.")
+	// @PutMapping("/{commentId}/{userId}")
+	// public ResponseEntity commentUpdate(@Parameter(description = "해당번호를 가진 댓글을 수정합니다.") @PathVariable Long commentId,
+	// 	@Parameter(description = "댓글 작성자의 번호입니다.") @PathVariable Long userId,
+	// 	@Parameter(description = "") @RequestBody CommentDto.Request commentDto,
+	// 	@LoginUserInfo UserInfo sessionUser) {
+	// 	if (!sessionUser.getId().equals(userId)) {
+	// 		return ResponseEntity.badRequest().build();
+	// 	}
+	//
+	// 	commentService.commentUpdate(commentId, commentDto);
+	// 	return ResponseEntity.ok(commentId);
+	// }
 
-		commentService.commentUpdate(commentId, commentDto);
-		return ResponseEntity.ok(commentId);
-	}
-
-	/* DELETE - 댓글 삭제 */
-	@Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다.")
-	@DeleteMapping("/{commentId}/{boardId}")
-	public ResponseEntity commentDelete(@Parameter(description = "해당번호를 가진 댓글을 삭제합니다.") @PathVariable Long commentId,
-		@PathVariable Long boardId) {
-		commentService.commentDelete(boardId, commentId);
-		return ResponseEntity.ok(commentId);
-	}
+	// /* DELETE - 댓글 삭제 */
+	// @Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다.")
+	// @DeleteMapping("/{commentId}/{boardId}")
+	// public ResponseEntity commentDelete(@Parameter(description = "해당번호를 가진 댓글을 삭제합니다.") @PathVariable Long commentId,
+	// 	@PathVariable Long boardId) {
+	// 	commentService.commentDelete(boardId, commentId);
+	// 	return ResponseEntity.ok(commentId);
+	// }
 }

@@ -6,12 +6,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@NoArgsConstructor
 @Table(name = "refreshToken")
 public class RefreshToken {
 
@@ -21,12 +22,7 @@ public class RefreshToken {
 	@NotBlank
 	private String refreshToken;
 	@NotBlank
-	private String email;
-
-	public RefreshToken(String token, String email) {
-		this.refreshToken = token;
-		this.email = email;
-	}
+	private String userId;
 
 	public RefreshToken updateToken(String token) {
 		this.refreshToken = token;

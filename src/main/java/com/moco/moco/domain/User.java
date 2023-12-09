@@ -16,17 +16,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
-@Entity
-@Table(name = "user")
 @DynamicInsert
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "user")
+@Entity
 public class User extends Time {
+
 	@Id
 	private String id;
-
-	@Column(nullable = false, unique = true)
-	private String email;
 
 	@NotBlank
 	@Length(min = 2, max = 10)
@@ -34,21 +32,21 @@ public class User extends Time {
 	@Column(nullable = false)
 	private String name;
 
-	@Column(nullable = true)
+	@Column
+	private String position;
+
+	@Column
+	private String stack;
+
+	@Column
+	private String career;
+
+	@Column
 	private String picture;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Role role;
-
-	@Builder
-	public User(String name, String email, String picture,
-		Role role) {
-		this.name = name;
-		this.email = email;
-		this.picture = picture;
-		this.role = role;
-	}
 
 	/* Oauth 로그인 갱신 날짜 갱신 */
 	public void updateProfile(String pictureURL) {
@@ -65,4 +63,14 @@ public class User extends Time {
 		return this.role.getKey();
 	}
 
+	@Builder
+	public User(String id, String name, String position, String stack, String career, String picture, Role role) {
+		this.id = id;
+		this.name = name;
+		this.position = position;
+		this.stack = stack;
+		this.career = career;
+		this.picture = picture;
+		this.role = role;
+	}
 }
