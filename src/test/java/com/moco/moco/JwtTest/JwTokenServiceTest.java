@@ -15,10 +15,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import com.moco.moco.service.token.JwTokenService;
+import com.moco.moco.service.jwt.JwTokenService;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.io.Decoders;
@@ -33,20 +31,19 @@ import io.jsonwebtoken.io.Decoders;
 // PER_CLASS: test 클래스 당 인스턴스가 생성
 // PER_METHOD: test 함수 당 인스턴스가 생성
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@SpringBootTest
 public class JwTokenServiceTest {
 
-	@Autowired
-	private JwTokenService jwTokenService;
+	private static JwTokenService jwTokenService;
 
 	private String secretKey = "quswowlsquswowlsquswowlsquswowlsquswasasasowasdasdls";
-	private String EMAIL = "test@github.com";
+	private String USER_ID = "google1234567";
 	private String base64EncodedSecretKey;
 
 	// 테스트에 사용할 Secret Key를 Base64 형식으로 인코딩한 후,
 	// 인코딩된 Secret Key를 각 테스트 케이스에서 사용
 	@BeforeAll
 	public void init() {
+		jwTokenService = new JwTokenService();
 		base64EncodedSecretKey = jwTokenService.encodeBase64SecretKey(secretKey);
 		System.out.println(base64EncodedSecretKey);
 	}
@@ -63,12 +60,11 @@ public class JwTokenServiceTest {
 	public void generateAccessTokenTest() {
 		//given
 		Map<String, Object> claims = new HashMap<>();
-		claims.put("email", EMAIL);
+		claims.put("id", USER_ID);
 		claims.put("roles", List.of("USER"));
-		claims.put("id", 2);
 		String subject = "access token";
 		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.MINUTE, 10);
+		calendar.add(Calendar.MINUTE, 110);
 		Date expiration = calendar.getTime();
 
 		//when
@@ -104,8 +100,7 @@ public class JwTokenServiceTest {
 	public void verifySignatureTest() {
 		//given
 		Map<String, Object> claims = new HashMap<>();
-		claims.put("email", EMAIL);
-		claims.put("id", 1);
+		claims.put("id", USER_ID);
 		claims.put("roles", List.of("USER"));
 		String subject = "test access token";
 		Calendar calendar = Calendar.getInstance();
@@ -124,8 +119,7 @@ public class JwTokenServiceTest {
 	public void verifyExpirationTest() throws InterruptedException {
 		//given
 		Map<String, Object> claims = new HashMap<>();
-		claims.put("email", EMAIL);
-		claims.put("id", 1);
+		claims.put("id", USER_ID);
 		claims.put("roles", List.of("USER"));
 		String subject = "test access token";
 		Calendar calendar = Calendar.getInstance();

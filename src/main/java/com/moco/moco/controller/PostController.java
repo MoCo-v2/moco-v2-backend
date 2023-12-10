@@ -8,12 +8,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.moco.moco.config.LoginUserInfo;
 import com.moco.moco.config.auth.UserInfo;
 import com.moco.moco.dto.PostDto;
+import com.moco.moco.dto.queryDslDto.PostDetailVo;
 import com.moco.moco.service.post.PostService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,61 +31,41 @@ public class PostController {
 	private final Logger log = LoggerFactory.getLogger(PostController.class);
 
 	private final String OFFSET = "0";
-	private final String LIMIT = "8";
+	private final String LIMIT = "9";
 
-	/* ----- Post 📋 ----- */
 	@GetMapping("/public/posts")
-	public ResponseEntity<PostDto.Posts> getPosts(
+	public ResponseEntity<PostDto.Response> getPostsOnRecruit(
+		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
+		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit) {
+		return ResponseEntity.ok().body(postService.getPostsOnRecruit(offset, limit));
+	}
+
+	@GetMapping("/public/all-posts")
+	public ResponseEntity<PostDto.Response> getPosts(
 		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
 		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit) {
 		return ResponseEntity.ok().body(postService.getPosts(offset, limit));
 	}
 
-	/* READ - 검색 */
-	// @GetMapping("/public/search")
-	// public ResponseEntity<PostDto.Posts> search(
-	// 	@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
-	// 	@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
-	// 	@RequestParam(value = "keyword") String keyword) {
-	// 	return ResponseEntity.ok().body(postService.searchPosts(offset, limit, keyword));
-	// }
-
-	@Operation(summary = "return post data", description = "특정 id를 가진 post를 반환합니다.")
-	@GetMapping("/{postId}")
-	public ResponseEntity<PostDto.PostDetailDto> detail(
-		@Parameter(description = "게시글 id") @PathVariable("postId") Long postId) {
+	@GetMapping("/public/posts/{postId}")
+	public ResponseEntity<PostDetailVo> getPost(
+		@PathVariable("postId") Long postId) {
 		return ResponseEntity.ok().body(postService.getPost(postId));
 	}
 
-	/* CREATE - 글작성 */
-	@Operation(summary = "게시글 작성", description = "신규 게시글을 등록합니다.")
-	@PostMapping("/{userId}")
+	@PostMapping("/private/posts")
 	public ResponseEntity<Long> createPost(
-		@Parameter(description = "게시글의 정보가 담긴 Request 객체입니다.") @Valid PostDto.Request boardDto,
-		@Parameter(description = "게시글 작성을 요청한 유저 ID") @PathVariable("userId") String userId) {
-		return ResponseEntity.ok().body(postService.savePost(userId, boardDto));
+		@Valid @RequestBody PostDto.Request postDto,
+		@LoginUserInfo UserInfo userInfo) {
+		return ResponseEntity.status(201).body(postService.savePost(postDto, userInfo.getId()));
 	}
 
-	/* UPDATE - 게시글 수정 */
-	@Operation(summary = "게시글 수정", description = "게시글을 수정 합니다.")
-	@PutMapping("/{postId}")
-	public String update(@Parameter(description = "해당 번호를 가진 게시글을 수정합니다.") @PathVariable("postId") Long postId,
-		@Parameter(description = "수정된 게시글의 정보가 담긴 Request 객체 입니다.") @Valid PostDto.Request postDto,
-		@Parameter(description = "게시글 작성을 요청한 유저 ID") @PathVariable("userId") Long userId) {
-		// if (!sessionUser.getId().equals(postService.getPost(boardId).getUserId())) {
-		// 	return "error/404error";
-		// }
-		//
-		// /* 해시태그 저장 */
-		// if (!tags.isEmpty()) {
-		// 	String tag = utils.hashtagParse(tags);
-		// 	boardDto.setHashtag(tag);
-		// }
-		//
-		// boardDto.setWriter(sessionUser.getName());
-		// postService.updatePost(boardId, boardDto);
-		//
-		return "redirect:/board/list";
+	@PutMapping("/private/posts/{postId}")
+	public ResponseEntity<Long> updatePost(
+		@PathVariable(value = "postId") Long postId,
+		@Valid @RequestBody PostDto.Request postDto,
+		@LoginUserInfo UserInfo userInfo) {
+		return ResponseEntity.status(201).body(postService.updatePost(postId, postDto, userInfo.getId()));
 	}
 
 	/* DELETE - 게시글 삭제 */

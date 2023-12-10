@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.moco.moco.exception.CustomAuthenticationEntryPoint;
-import com.moco.moco.service.token.JwTokenService;
+import com.moco.moco.service.jwt.JwTokenService;
 
 import lombok.RequiredArgsConstructor;
 

@@ -92,20 +92,24 @@ public class CommentService {
 	//
 	// }
 
-	/* 댓글 계층 정렬 */
+	// 댓글과 대댓글을 계층 정렬한다.
 	public List<CommentDto.Response> convertNestedStructure(List<Comment> comments) {
 		List<CommentDto.Response> result = new ArrayList<>();
-		Map<Long, Comment> map = new HashMap<>();
+		Map<Long, CommentDto.Response> map = new HashMap<>();
 
 		comments.stream().forEach(comment -> {
-			map.put(comment.getId(), comment);
-
-			/* 부모 댓글 존재 */
+			CommentDto.Response commentDto = new CommentDto.Response(comment);
 			if (comment.getParent() != null) {
-				map.get(comment.getParent().getId()).getChildList().add(comment);
-			} else
-				result.add(new CommentDto.Response(comment));
+				commentDto.setParentId(comment.getParent().getId());
+			}
+			map.put(commentDto.getId(), commentDto);
+			if (comment.getParent() != null) {
+				map.get(comment.getParent().getId()).getChildList().add(commentDto);
+			} else {
+				result.add(commentDto);
+			}
 		});
+
 		return result;
 	}
 }

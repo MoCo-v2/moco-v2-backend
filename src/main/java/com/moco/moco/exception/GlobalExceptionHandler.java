@@ -18,12 +18,12 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	protected ResponseEntity<ErrorResponse> methodArgNotValidException() {
+	protected ResponseEntity<ErrorResponse> methodArgNotValidException(MethodArgumentNotValidException e) {
 		return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, "유효하지 않은 요청입니다.");
 	}
 
 	@ExceptionHandler(RuntimeException.class)
-	protected ResponseEntity<ErrorResponse> unexpectedRuntimeException(CustomAuthenticationException e) {
+	protected ResponseEntity<ErrorResponse> unexpectedRuntimeException(RuntimeException e) {
 		return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, "잘못된 요청입니다.");
 	}
 }

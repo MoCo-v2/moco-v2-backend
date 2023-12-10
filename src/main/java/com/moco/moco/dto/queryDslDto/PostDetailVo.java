@@ -1,13 +1,18 @@
-package com.moco.moco.dto;
+package com.moco.moco.dto.queryDslDto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.moco.moco.dto.CommentDto;
 import com.querydsl.core.annotations.QueryProjection;
 
 import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 @Getter
-public class PostListVo {
+public class PostDetailVo {
 	private Long id;
 	private String title;
 	private String content;
@@ -23,14 +28,19 @@ public class PostListVo {
 	private Integer view;
 	private Integer commentCnt;
 	private LocalDateTime created_date;
+	private boolean isRemoved;
+	private boolean isFull;
+	private List<CommentDto.Response> comments = new ArrayList<>();
 	private String userId;
 	private String writer;
 	private String picture;
 
 	@QueryProjection
-	public PostListVo(Long id, String title, String content, String type, String capacity, String mode, String duration,
+	public PostDetailVo(Long id, String title, String content, String type, String capacity, String mode,
+		String duration,
 		String techStack, String recruitmentPosition, LocalDateTime deadLine, String contact_method, String link,
-		Integer view, Integer commentCnt, LocalDateTime created_date, String userId, String writer, String picture) {
+		Integer view, Integer commentCnt, LocalDateTime created_date, boolean isRemoved, boolean isFull, String userId,
+		String writer, String picture) {
 		this.id = id;
 		this.title = title;
 		this.content = content;
@@ -46,29 +56,10 @@ public class PostListVo {
 		this.view = view;
 		this.commentCnt = commentCnt;
 		this.created_date = created_date;
+		this.isRemoved = isRemoved;
+		this.isFull = isFull;
 		this.userId = userId;
 		this.writer = writer;
 		this.picture = picture;
 	}
 }
-
-
-
-/*
-public interface BoardListVo {
-    Integer getId();
-    LocalDateTime getCreated_date();
-    String  getContent();
-    String  getTitle();
-    String  getWriter();
-    Integer getUser_id();
-    Integer getView();
-    String  getThumbnail();
-    String  getSubcontent();
-    Integer getLike_count();
-    Integer getComment_count();
-    String  getPicture();
-    String  getHashTag();
-    Boolean getIsfull();
-}
-*/
