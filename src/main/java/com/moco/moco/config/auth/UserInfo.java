@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 public class UserInfo implements Serializable {
-	private Long id;
-	private String email;
+	private String id;
 	private List<String> roles;
 }

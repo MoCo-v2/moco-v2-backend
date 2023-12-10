@@ -7,11 +7,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.moco.moco.domain.Comment;
 import com.moco.moco.domain.Post;
 import com.moco.moco.domain.User;
-import com.moco.moco.dto.CommentDto;
 import com.moco.moco.dto.PostDto;
-import com.moco.moco.dto.PostListVo;
+import com.moco.moco.dto.queryDslDto.PostDetailVo;
+import com.moco.moco.dto.queryDslDto.PostVo;
+import com.moco.moco.exception.CustomAuthenticationException;
+import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.repository.PostRepository;
 import com.moco.moco.repository.PostRepositoryCustom;
 import com.moco.moco.repository.UserRepository;
@@ -39,14 +42,74 @@ public class PostService {
 	// 	return postList;
 	// }
 
-	/* 모든 게시글 가져오기 */
+	// 모집중인 게시글을 페이징 한다.
 	@Transactional(readOnly = true)
-	public PostDto.Posts getPosts(Integer offset, Integer limit) {
+	public PostDto.Response getPostsOnRecruit(Integer offset, Integer limit) {
 		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
-		List<PostListVo> posts = postRepositoryCustom.getPosts(pageRequest);
+		List<PostVo> posts = postRepositoryCustom.getPostsOnRecruit(pageRequest);
 		Long total = getPostCount();
 
-		return new PostDto.Posts(posts, total);
+		return new PostDto.Response(posts, total);
+	}
+
+	// 모든 게시글을 페이징 한다.
+	@Transactional(readOnly = true)
+	public PostDto.Response getPosts(Integer offset, Integer limit) {
+		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
+		List<PostVo> posts = postRepositoryCustom.getPosts(pageRequest);
+		Long total = getPostCount();
+
+		return new PostDto.Response(posts, total);
+	}
+
+	// 특정 게시글을 가져온다.
+	@Transactional
+	public PostDetailVo getPost(Long postId) {
+		PostDetailVo post = postRepositoryCustom.getPost(postId)
+			.orElseThrow(() -> new CustomAuthenticationException(
+				ErrorCode.POST_NOT_FOUND));
+
+		//댓글 계층 구조로 정렬한다.
+		List<Comment> comments = postRepositoryCustom.getComments(post.getId());
+		post.setComments(commentService.convertNestedStructure(comments));
+
+		//조회수를 1 증가 시킨다.
+		postRepository.updateView(postId);
+
+		return post;
+	}
+
+	// 게시글을 생성 한다.
+	@Transactional
+	public Long savePost(PostDto.Request postDto, String userId) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
+		postDto.setUser(user);
+
+		return postRepository.save(postDto.toEntity()).getId();
+	}
+
+	// 게시글을 수정한다.
+	@Transactional
+	public Long updatePost(Long postId, PostDto.Request postDto, String userId) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
+
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
+
+		Boolean isWriter = post.getUser().getId().equals(userId);
+		if (!isWriter) {
+			throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);
+		}
+
+		return post.update(postDto);
+	}
+
+	/* DELETE - 게시글 삭제 */
+	@Transactional
+	public void deletePost(Long id) {
+		postRepository.deleteById(id);
 	}
 
 	// /* 게시글 검색 */
@@ -65,52 +128,6 @@ public class PostService {
 	// 		Sort.by(Sort.Direction.DESC, "created_date"));
 	// 	return postRepositoryCustom.getMyPosts(pageRequest, userId);
 	// }
-
-	/* 게시글 상세 */
-	@Transactional
-	public PostDto.PostDetailDto getPost(Long postId) {
-		Post post = postRepository.findByIdWithFetchJoin(postId);
-		PostDto.Response postDto = new PostDto.Response(post);
-
-		/* get comment to NestedStructure */
-		List<CommentDto.Response> comments = commentService.convertNestedStructure(post.getComments());
-
-		/* view update +1 */
-		postRepository.updateView(postId);
-
-		return new PostDto.PostDetailDto(postDto, comments);
-	}
-
-	@Transactional(readOnly = true)
-	public Post findById(Long postId) {
-		return postRepository.findByIdWithFetchJoin(postId);
-	}
-
-	/* 게시글 저장 */
-	@Transactional
-	public Long savePost(String userId, PostDto.Request postDto) {
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
-		postDto.setUser(user);
-
-		return postRepository.save(postDto.toEntity()).getId();
-	}
-
-	/* 게시글 수정 */
-	// @Transactional
-	// public Long updatePost(Long postId, PostDto.Request postDto) {
-	// 	Post post = postRepository.findById(postId)
-	// 		.orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-	// 	post.update(postDto.getTitle(), postDto.getHashtag(), postDto.getContent(), postDto.getSubcontent(),
-	// 		postDto.getThumbnail(), postDto.getLocation());
-	// 	return post.getId();
-	// }
-
-	/* DELETE - 게시글 삭제 */
-	@Transactional
-	public void deletePost(Long id) {
-		postRepository.deleteById(id);
-	}
 
 	/* 페이징 */
 	@Transactional

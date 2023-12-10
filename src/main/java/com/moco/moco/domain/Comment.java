@@ -28,7 +28,7 @@ public class Comment extends Time {
 	private Long id;
 
 	@Column(columnDefinition = "TEXT", nullable = false)
-	private String comment;
+	private String content;
 
 	@ManyToOne
 	@JoinColumn(name = "post_id")
@@ -48,8 +48,8 @@ public class Comment extends Time {
 
 	private boolean isRemoved;
 
-	public void update(String comment) {
-		this.comment = comment;
+	public void update(String content) {
+		this.content = content;
 	}
 
 	public void remove() {
@@ -57,10 +57,10 @@ public class Comment extends Time {
 	}
 
 	@Builder
-	public Comment(Long id, String comment, Post post, User user, Comment parent, List<Comment> childList,
+	public Comment(Long id, String content, Post post, User user, Comment parent, List<Comment> childList,
 		boolean isRemoved) {
 		this.id = id;
-		this.comment = comment;
+		this.content = content;
 		this.post = post;
 		this.user = user;
 		this.parent = parent;

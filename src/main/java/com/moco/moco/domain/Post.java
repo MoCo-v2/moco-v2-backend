@@ -3,10 +3,11 @@ package com.moco.moco.domain;
 // JPA에서는 프록시 객체 생성을 위해 파라미터가 없는 기본 생성자를 반드시 하나를 생성해야 한다.
 // 파라미터 없는 생성자 생성 어노테이션인 NoArgsConstructor를 사용하고 기본 생성자를 사용하는 곳은 JPA Entity Class 밖에 없기 때문에 Protect로 접근을 제한한다.
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.moco.moco.dto.PostDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -59,7 +60,7 @@ public class Post extends Time {
 	private String recruitmentPosition;
 
 	@Column
-	private LocalDateTime deadLine;
+	private LocalDate deadLine;
 
 	@Column
 	private String contact_method;
@@ -91,7 +92,7 @@ public class Post extends Time {
 
 	@Builder
 	public Post(Long id, String title, String content, String type, String capacity, String mode, String duration,
-		String techStack, String recruitmentPosition, LocalDateTime deadLine, String contact_method, String link,
+		String techStack, String recruitmentPosition, LocalDate deadLine, String contact_method, String link,
 		boolean isRemoved, boolean isFull, int commentCnt, int view, User user, List<Comment> comments) {
 		this.id = id;
 		this.title = title;
@@ -111,6 +112,21 @@ public class Post extends Time {
 		this.view = view;
 		this.user = user;
 		this.comments = comments;
+	}
+
+	public Long update(PostDto.Request postDto) {
+		this.title = postDto.getTitle();
+		this.content = postDto.getContent();
+		this.type = postDto.getType();
+		this.capacity = postDto.getCapacity();
+		this.mode = postDto.getMode();
+		this.duration = postDto.getDuration();
+		this.techStack = postDto.getTechStack();
+		this.deadLine = postDto.getDeadLine();
+		this.recruitmentPosition = postDto.getRecruitmentPosition();
+		this.contact_method = postDto.getContact_method();
+		this.link = postDto.getLink();
+		return this.id;
 	}
 }
 
