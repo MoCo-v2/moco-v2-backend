@@ -14,7 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.moco.moco.config.auth.UserInfo;
 import com.moco.moco.exception.ErrorCode;
-import com.moco.moco.service.token.JwTokenService;
+import com.moco.moco.service.jwt.JwTokenService;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -67,7 +67,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 	// 필터를 통과시킬 url 패턴
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
-		String[] excludePath = {};
+		String[] excludePath = {"/api/v1/public/"};
 		String path = request.getRequestURI();
 		return Arrays.stream(excludePath).anyMatch(path::startsWith);
 	}
