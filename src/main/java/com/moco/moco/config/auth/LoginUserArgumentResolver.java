@@ -1,4 +1,4 @@
-package com.moco.moco.config;
+package com.moco.moco.config.auth;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -8,7 +8,6 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import com.moco.moco.config.auth.UserInfo;
 import com.moco.moco.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;

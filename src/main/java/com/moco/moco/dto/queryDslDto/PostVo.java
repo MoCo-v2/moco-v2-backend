@@ -1,5 +1,6 @@
 package com.moco.moco.dto.queryDslDto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.querydsl.core.annotations.QueryProjection;
@@ -17,7 +18,7 @@ public class PostVo {
 	private String duration;
 	private String techStack;
 	private String recruitmentPosition;
-	private LocalDateTime deadLine;
+	private LocalDate deadLine;
 	private String contact_method;
 	private String link;
 	private Integer view;
@@ -31,7 +32,7 @@ public class PostVo {
 
 	@QueryProjection
 	public PostVo(Long id, String title, String content, String type, String capacity, String mode, String duration,
-		String techStack, String recruitmentPosition, LocalDateTime deadLine, String contact_method, String link,
+		String techStack, String recruitmentPosition, LocalDate deadLine, String contact_method, String link,
 		Integer view, Integer commentCnt, LocalDateTime created_date, boolean isRemoved, boolean isFull, String userId,
 		String writer, String picture) {
 		this.id = id;
