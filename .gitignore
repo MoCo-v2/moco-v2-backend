@@ -44,3 +44,6 @@ out/
 .DS_Store
 .AppleDouble
 .LSOverride
+
+### QueryDsl QClass 제외
+/src/main/generated/
