@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.moco.moco.config.LoginUserInfo;
+import com.moco.moco.config.auth.LoginUserInfo;
 import com.moco.moco.config.auth.UserInfo;
 import com.moco.moco.dto.PostDto;
 import com.moco.moco.dto.queryDslDto.PostDetailVo;

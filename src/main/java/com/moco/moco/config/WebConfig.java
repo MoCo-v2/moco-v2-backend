@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.moco.moco.config.auth.LoginUserArgumentResolver;
+
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

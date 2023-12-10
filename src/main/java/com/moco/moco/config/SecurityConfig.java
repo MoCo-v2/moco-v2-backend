@@ -52,7 +52,6 @@ public class SecurityConfig {
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
 			.and()
-
 			.authorizeHttpRequests()
 			.requestMatchers("", "/", "/actuator/health").permitAll()
 			.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
