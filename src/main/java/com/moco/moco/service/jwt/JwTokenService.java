@@ -1,4 +1,4 @@
-package com.moco.moco.service.token;
+package com.moco.moco.service.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -99,11 +99,9 @@ public class JwTokenService {
 			.build()
 			.parseClaimsJws(jws).getBody(); // JWT를 파싱해서 Claims를 얻음
 		List<GrantedAuthority> authorities = (List)claimsBody.get("roles");
-		System.out.println(authorities.get(0));
 		return UserInfo
 			.builder()
-			.id(Long.valueOf((Integer)claimsBody.get("id")))
-			.email(claimsBody.get("email").toString())
+			.id((String)claimsBody.get("id"))
 			.roles((List)claimsBody.get("roles"))
 			.build();
 	}
