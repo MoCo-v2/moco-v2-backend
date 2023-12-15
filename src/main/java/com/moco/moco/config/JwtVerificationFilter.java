@@ -12,7 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.moco.moco.config.auth.UserInfo;
+import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.service.jwt.JwTokenService;
 

@@ -1,4 +1,4 @@
-package com.moco.moco.config.auth;
+package com.moco.moco.config.argsResolver;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
