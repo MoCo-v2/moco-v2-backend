@@ -57,24 +57,3 @@ public class PostVo {
 		this.picture = picture;
 	}
 }
-
-
-
-/*
-public interface BoardListVo {
-    Integer getId();
-    LocalDateTime getCreated_date();
-    String  getContent();
-    String  getTitle();
-    String  getWriter();
-    Integer getUser_id();
-    Integer getView();
-    String  getThumbnail();
-    String  getSubcontent();
-    Integer getLike_count();
-    Integer getComment_count();
-    String  getPicture();
-    String  getHashTag();
-    Boolean getIsfull();
-}
-*/
