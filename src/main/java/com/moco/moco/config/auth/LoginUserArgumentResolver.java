@@ -1,4 +1,4 @@
-package com.moco.moco.config.argumentResolver;
+package com.moco.moco.config.auth;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -1,4 +1,4 @@
-package com.moco.moco.config.argumentResolver;
+package com.moco.moco.config.auth;
 
 import java.io.Serializable;
 import java.util.List;
