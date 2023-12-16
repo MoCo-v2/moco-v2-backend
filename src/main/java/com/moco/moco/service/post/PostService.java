@@ -31,32 +31,20 @@ public class PostService {
 
 	private CommentService commentService;
 
-	private static final int PAGE_POST_COUNT = 9; // 한 페이지에 존재하는 게시글 수
-
-	// /* 모집중인 게시글 가져오기 */
-	// @Transactional(readOnly = true)
-	// public List<PostListVo> getPostListOnRecruit(Integer pageNum) {
-	// 	PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
-	// 		Sort.by(Sort.Direction.DESC, "created_date"));
-	// 	List<PostListVo> postList = postRepositoryCustom.getPostsOnRecruit(pageRequest);
-	// 	return postList;
-	// }
-
-	// 모집중인 게시글을 페이징 한다.
+	// 게시글을 페이징 한다.
 	@Transactional(readOnly = true)
-	public PostDto.Response getPostsOnRecruit(Integer offset, Integer limit) {
-		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
-		List<PostVo> posts = postRepositoryCustom.getPostsOnRecruit(pageRequest);
-		Long total = getPostCount();
+	public PostDto.Response getPosts(Integer offset, Integer limit, String recruit, String userId) {
+		boolean isRecruit;
+		if ("true".equalsIgnoreCase(recruit)) {
+			isRecruit = true;
+		} else if ("false".equalsIgnoreCase(recruit)) {
+			isRecruit = false;
+		} else {
+			throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);
+		}
 
-		return new PostDto.Response(posts, total);
-	}
-
-	// 모든 게시글을 페이징 한다.
-	@Transactional(readOnly = true)
-	public PostDto.Response getPosts(Integer offset, Integer limit) {
 		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
-		List<PostVo> posts = postRepositoryCustom.getPosts(pageRequest);
+		List<PostVo> posts = postRepositoryCustom.getPosts(pageRequest, isRecruit, userId);
 		Long total = getPostCount();
 
 		return new PostDto.Response(posts, total);
@@ -72,9 +60,6 @@ public class PostService {
 		//댓글 계층 구조로 정렬한다.
 		List<Comment> comments = postRepositoryCustom.getComments(post.getId());
 		post.setComments(commentService.convertNestedStructure(comments));
-
-		//조회수를 1 증가 시킨다.
-		postRepository.updateView(postId);
 
 		return post;
 	}
@@ -106,10 +91,18 @@ public class PostService {
 		return post.update(postDto);
 	}
 
-	/* DELETE - 게시글 삭제 */
 	@Transactional
-	public void deletePost(Long id) {
-		postRepository.deleteById(id);
+	public Long deletePost(String userId, Long postId) {
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
+
+		Boolean isWriter = post.getUser().getId().equals(userId);
+
+		if (!isWriter) {
+			throw new CustomAuthenticationException(ErrorCode.UNAUTHORIZED_WRITER);
+		}
+
+		return post.delete();
 	}
 
 	// /* 게시글 검색 */
@@ -121,32 +114,10 @@ public class PostService {
 	// 	return new PostDto.Posts(posts, total);
 	// }
 
-	// /* 내가 쓴글 가져오기 */
-	// @Transactional(readOnly = true)
-	// public List<PostListVo> getMyPosts(Integer pageNum, Long userId) {
-	// 	PageRequest pageRequest = PageRequest.of(pageNum - 1, PAGE_POST_COUNT,
-	// 		Sort.by(Sort.Direction.DESC, "created_date"));
-	// 	return postRepositoryCustom.getMyPosts(pageRequest, userId);
-	// }
-
 	/* 페이징 */
 	@Transactional
 	public Long getPostCount() {
 		return postRepository.count();
-	}
-
-	public Integer getPageList(Integer curPageNum) {
-		// 총 게시글 갯수
-		Double postsTotalCount = Double.valueOf(this.getPostCount());
-
-		// 총 게시글 기준으로 계산한 마지막 페이지 번호 계산 (올림으로 계산)
-		return (Integer)(int)(Math.ceil((postsTotalCount / PAGE_POST_COUNT)));
-	}
-
-	/* 조회수 */
-	@Transactional
-	public int updateView(Long id) {
-		return postRepository.updateView(id);
 	}
 
 }
