@@ -15,11 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.moco.moco.config.argsResolver.LoginUserInfo;
 import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.dto.PostDto;
-import com.moco.moco.dto.queryDslDto.PostDetailVo;
 import com.moco.moco.service.post.PostService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
@@ -32,25 +29,15 @@ public class PostController {
 
 	private final String OFFSET = "0";
 	private final String LIMIT = "9";
+	private final String RECRUIT = "false";
 
-	@GetMapping("/public/posts")
-	public ResponseEntity<PostDto.Response> getPostsOnRecruit(
-		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
-		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit) {
-		return ResponseEntity.ok().body(postService.getPostsOnRecruit(offset, limit));
-	}
-
-	@GetMapping("/public/all-posts")
+	@GetMapping(value = {"/public/posts", "/public/posts/{userId}"})
 	public ResponseEntity<PostDto.Response> getPosts(
 		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
-		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit) {
-		return ResponseEntity.ok().body(postService.getPosts(offset, limit));
-	}
-
-	@GetMapping("/public/posts/{postId}")
-	public ResponseEntity<PostDetailVo> getPost(
-		@PathVariable("postId") Long postId) {
-		return ResponseEntity.ok().body(postService.getPost(postId));
+		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
+		@RequestParam(value = "recruit", required = false, defaultValue = RECRUIT) String recruit,
+		@PathVariable(value = "userId", required = false) String userId) {
+		return ResponseEntity.ok().body(postService.getPosts(offset, limit, recruit, userId));
 	}
 
 	@PostMapping("/private/posts")
@@ -68,41 +55,12 @@ public class PostController {
 		return ResponseEntity.status(201).body(postService.updatePost(postId, postDto, userInfo.getId()));
 	}
 
-	/* DELETE - 게시글 삭제 */
-	@Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다. 삭제 성공시 모집하기 페이지로 리다이렉트 됩니다.")
-	@DeleteMapping("/{boardId}")
-	public String delete(@Parameter(description = "해당 번호를 가진 게시글을 삭제합니다.") @PathVariable("boardId") Long boardId,
-		@LoginUserInfo UserInfo sessionUser) {
-		// if (!sessionUser.getId().equals(postService.getPost(boardId).getUserId())) {
-		// 	return "/error/404error";
-		// }
-		//
-		// postService.deletePost(boardId);
-		return "redirect:/board/list";
+	@DeleteMapping("/private/posts/{postId}")
+	public ResponseEntity<Long> delete(@PathVariable("postId") Long postId,
+		@LoginUserInfo UserInfo userInfo) {
+		return ResponseEntity.ok().body(postService.deletePost(userInfo.getId(), postId));
 	}
 
-	/* CREATE - 스터디 참가 */
-	// @Operation(summary = "스터디 참가", description = "스터디에 참가합니다. 응답으로는 200 , 400 입니다.")
-	// @ApiResponses({
-	// 	@ApiResponse(responseCode = "200", description = "참가 성공의 경우 응답입니다."),
-	// 	@ApiResponse(responseCode = "400", description = "참가 실패의 경우 응답입니다."),
-	// })
-	// @PostMapping("/recruit/{boardId}/{userId}")
-	// public ResponseEntity recruitSave(@Parameter(description = "참가하는 게시글 번호입니다.") @PathVariable Long boardId,
-	// 	@Parameter(description = "참가하는 사용자의 번호입니다.") @PathVariable Long userId,
-	// 	@LoginUserInfo UserInfo sessionUser) {
-	// 	if (!sessionUser.getId().equals(userId)) {
-	// 		return ResponseEntity.badRequest().build();
-	// 	}
-	//
-	// 	RecruitDto.Request dto = new RecruitDto.Request();
-	//
-	// 	boolean isDuplicate = recruitService.isDuplicate(boardId, userId);
-	// 	if (isDuplicate) {
-	// 		return ResponseEntity.badRequest().body("이미 신청하였습니다.");
-	// 	}
-	// 	return ResponseEntity.ok(recruitService.join(boardId, userId, dto));
-	// }
 }
 
 
