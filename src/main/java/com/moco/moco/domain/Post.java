@@ -128,6 +128,11 @@ public class Post extends Time {
 		this.link = postDto.getLink();
 		return this.id;
 	}
+
+	public Long delete() {
+		this.isRemoved = true;
+		return this.id;
+	}
 }
 
 
