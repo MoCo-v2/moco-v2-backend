@@ -10,12 +10,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.moco.moco.domain.Comment;
+import com.moco.moco.domain.Post;
+import com.moco.moco.domain.User;
 import com.moco.moco.dto.CommentDto;
+import com.moco.moco.exception.CustomAuthenticationException;
+import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.repository.CommentRepository;
 import com.moco.moco.repository.PostRepository;
 import com.moco.moco.repository.PostRepositoryCustom;
 import com.moco.moco.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -28,71 +33,53 @@ public class CommentService {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
-	// /* CREATE */
-	// @Transactional
-	// public Long commentSave(String userId, Long postId, CommentDto.Request commentDto) {
-	// 	User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저를 찾을수 없습니다."));
-	// 	Post post = postRepository.findById(postId).orElseThrow(() ->
-	// 		new IllegalArgumentException("댓글 작성 실패 : 해당 게시글이 존재하지 않습니다." + postId));
-	//
-	// 	commentDto.setUser(user);
-	// 	commentDto.setPost(post);
-	// 	commentRepository.save(commentDto.toEntity());
-	// 	postRepositoryCustom.updateCommentCountPlus(postId);
-	//
-	// 	return commentDto.getId();
-	// }
-	//
-	// /* CREATE */
-	// @Transactional
-	// public Long recommentSave(String userId, Long postId, Long parentId, CommentDto.Request commentDto) {
-	// 	User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저를 찾을수 없습니다."));
-	// 	Post post = postRepository.findById(postId).orElseThrow(() ->
-	// 		new IllegalArgumentException("댓글 작성 실패 : 해당 게시글이 존재하지 않습니다." + postId));
-	// 	commentRepository.findById(parentId)
-	// 		.ifPresentOrElse(parent -> commentDto.setParent(parent), () -> commentDto.setParent(null));
-	//
-	// 	commentDto.setUser(user);
-	// 	commentDto.setPost(post);
-	//
-	// 	commentRepository.save(commentDto.toEntity());
-	// 	postRepositoryCustom.updateCommentCountPlus(postId);
-	//
-	// 	return commentDto.getId();
-	//
-	// }
-	//
-	// /* UPDATE */
-	// @Transactional
-	// public void commentUpdate(Long id, CommentDto.Request commentDto) {
-	// 	Comment comment = commentRepository.findById(id).orElseThrow(() ->
-	// 		new IllegalArgumentException("해당 댓글이 존재하지 않습니다." + id));
-	// 	comment.update(commentDto.getComment());
-	// }
-	//
-	// /* DELETE */
-	// @Transactional
-	// public void commentDelete(Long postId, Long id) {
-	// 	Comment comment = commentRepository.findById(id).orElseThrow(() ->
-	// 		new IllegalArgumentException("해당 댓글이 존재하지 않습니다." + id));
-	//
-	// 	/* (부모댓글)답글이 존재하는 상태면 */
-	// 	if (!comment.getChildList().isEmpty()) {
-	// 		comment.remove();
-	// 	} else {
-	// 		/* 대댓글 삭제 */
-	// 		commentRepository.delete(comment);
-	// 		/* 마지막 댓글 이면서 부모 댓글이 삭제되었는지 체크 -> 부모 댓글 까지 삭제 */
-	// 		if (comment.getParent() != null && comment.getParent().getChildList().size() == 1 && comment.getParent()
-	// 			.isRemoved()) {
-	// 			commentRepository.delete(comment.getParent());
-	// 		}
-	// 	}
-	// 	postRepositoryCustom.updateCommentCountMinus(postId);
-	//
-	// }
+	@Transactional
+	public CommentDto.Response createComment(String userId, Long postId, CommentDto.Request commentDto) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 
-	// 댓글과 대댓글을 계층 정렬한다.
+		if (commentDto.getParentId() != null) {
+			Comment parentComment = commentRepository.findById(commentDto.getParentId())
+				.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.COMMENT_NOT_FOUND));
+			commentDto.setParentComment(parentComment);
+		} else {
+			commentDto.setParentComment(null);
+		}
+
+		commentDto.setUser(user);
+		commentDto.setPost(post);
+		postRepositoryCustom.addCommentCount(postId, +1);
+		Comment comment = commentRepository.save(commentDto.toEntity());
+		return new CommentDto.Response(comment);
+	}
+
+	@Transactional
+	public CommentDto.Response updateComment(String userId, Long commentId, CommentDto.Request commentDto) {
+		Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+			new CustomAuthenticationException(ErrorCode.COMMENT_NOT_FOUND));
+
+		if (!comment.getUser().getId().equals(userId)) {
+			throw new CustomAuthenticationException(ErrorCode.UNAUTHORIZED_WRITER);
+		}
+
+		return new CommentDto.Response(comment.update(commentDto.getContent()));
+	}
+
+	@Transactional
+	public void deleteComment(String userId, Long commentId) {
+		Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+			new CustomAuthenticationException(ErrorCode.COMMENT_NOT_FOUND));
+
+		if (!comment.getUser().getId().equals(userId)) {
+			throw new CustomAuthenticationException(ErrorCode.UNAUTHORIZED_WRITER);
+		}
+
+		comment.remove();
+		postRepositoryCustom.addCommentCount(comment.getPost().getId(), -1);
+	}
+
 	public List<CommentDto.Response> convertNestedStructure(List<Comment> comments) {
 		List<CommentDto.Response> result = new ArrayList<>();
 		Map<Long, CommentDto.Response> map = new HashMap<>();

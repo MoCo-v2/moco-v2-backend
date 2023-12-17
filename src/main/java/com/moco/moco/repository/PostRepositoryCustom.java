@@ -88,4 +88,12 @@ public class PostRepositoryCustom {
 			.orderBy(comment.parent.id.asc().nullsFirst(), comment.createdDate.asc())
 			.fetch();
 	}
+
+	//게시글의 댓글 개수 +1 or -1
+	public void addCommentCount(Long postId, int num) {
+		queryFactory.update(post)
+			.set(post.commentCnt, post.commentCnt.add(num))
+			.where(post.id.eq(postId))
+			.execute();
+	}
 }

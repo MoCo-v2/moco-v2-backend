@@ -30,26 +30,26 @@ public class Comment extends Time {
 	@Column(columnDefinition = "TEXT", nullable = false)
 	private String content;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "post_id")
 	private Post post;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent_id")
-	private Comment parent; //부모댓글 id 참조 (Self Join)
+	private Comment parent;
 
-	/* 부모 댓글을 삭제해도 자식 댓글은 남아있음 */
 	@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
 	private List<Comment> childList;
 
 	private boolean isRemoved;
 
-	public void update(String content) {
+	public Comment update(String content) {
 		this.content = content;
+		return this;
 	}
 
 	public void remove() {
