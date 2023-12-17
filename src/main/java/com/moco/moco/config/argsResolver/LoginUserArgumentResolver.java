@@ -33,11 +33,10 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 
 	/**
 	 * supportsParameter 콜백 함수에서 true를 반환했을 경우 호출되는 콜백 함수
-	 * @throws Exception
 	 */
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-		return (UserInfo)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+		return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 }
