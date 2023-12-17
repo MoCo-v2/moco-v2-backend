@@ -14,15 +14,15 @@ public enum ErrorCode {
 
 	// 401 UNAUTHORIZED : 인증되지 않은 사용자
 	INVALID_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "권한 정보가 없는 토큰입니다."),
-	UNAUTHORIZED_WRITER(HttpStatus.UNAUTHORIZED, "게시글 작성자가 아닙니다."),
+	UNAUTHORIZED_WRITER(HttpStatus.UNAUTHORIZED, "작성자가 아닙니다."),
 
 	// 404 NOT_FOUND : Resource를 찾을 수 없음
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
 	POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
+	COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
 
 	// 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재
-	DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다."),
-	;
+	DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다.");
 
 	private final HttpStatus httpStatus;
 	private final String message;

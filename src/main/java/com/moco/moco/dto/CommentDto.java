@@ -8,37 +8,28 @@ import com.moco.moco.domain.Comment;
 import com.moco.moco.domain.Post;
 import com.moco.moco.domain.User;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class CommentDto {
 
-	@Data
-	@AllArgsConstructor
-	@NoArgsConstructor
-	@Builder
+	@Setter
+	@Getter
 	public static class Request {
-		private Long id;
+		private Long parentId;
 		private String content;
-		private LocalDateTime createdDate;
-		private LocalDateTime modifiedDate;
 		private User user;
 		private Post post;
-		private Comment parent;
+		private Comment parentComment;
 
 		/* DTO -> Entity */
 		public Comment toEntity() {
 			Comment comments = Comment.builder()
-				.id(id)
 				.content(content)
 				.user(user)
 				.isRemoved(false)
 				.post(post)
-				.parent(parent)
+				.parent(parentComment)
 				.build();
 			return comments;
 		}

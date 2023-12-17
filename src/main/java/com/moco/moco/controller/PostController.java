@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.moco.moco.config.argsResolver.LoginUserInfo;
 import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.dto.PostDto;
+import com.moco.moco.service.post.CommentService;
 import com.moco.moco.service.post.PostService;
 
 import jakarta.validation.Valid;
@@ -25,6 +26,7 @@ import lombok.AllArgsConstructor;
 @RestController
 public class PostController {
 	private final PostService postService;
+	private final CommentService commentService;
 	private final Logger log = LoggerFactory.getLogger(PostController.class);
 
 	private final String OFFSET = "0";
@@ -56,11 +58,10 @@ public class PostController {
 	}
 
 	@DeleteMapping("/private/posts/{postId}")
-	public ResponseEntity<Long> delete(@PathVariable("postId") Long postId,
+	public ResponseEntity<Long> deletePost(@PathVariable("postId") Long postId,
 		@LoginUserInfo UserInfo userInfo) {
 		return ResponseEntity.ok().body(postService.deletePost(userInfo.getId(), postId));
 	}
-
 }
 
 
