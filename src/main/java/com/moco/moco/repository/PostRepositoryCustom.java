@@ -28,29 +28,29 @@ public class PostRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
 	//게시글을 페이징처리하여 가져온다.
-	public List<PostVo> getPosts(Pageable pageable, boolean recruit, String userId) {
+	public List<PostVo> getPosts(Pageable pageable, boolean recruit, String username) {
 		return queryFactory
 			.select(
 				new QPostVo(post.id, post.title, post.content, post.type, post.capacity, post.mode, post.duration,
 					post.techStack, post.recruitmentPosition, post.deadLine, post.contact_method, post.link, post.view,
-					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.id, user.name, user.picture))
+					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.name, user.picture))
 			.from(post)
 			.innerJoin(post.user, user)
 			.on(post.user.id.eq(user.id))
 			.where(post.isRemoved.eq(false)
 				.and(post.isFull.eq(recruit))
-				.and(userIdEq(userId)))
+				.and(usernameEq(username)))
 			.orderBy(post.createdDate.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
 	}
 
-	private BooleanExpression userIdEq(String userId) {
-		if (userId == null) {
+	private BooleanExpression usernameEq(String username) {
+		if (username == null) {
 			return null;
 		}
-		return user.id.eq(userId);
+		return user.name.eq(username);
 	}
 
 	//게시글 상세 정보를 가져온다.
@@ -59,7 +59,7 @@ public class PostRepositoryCustom {
 			.select(
 				new QPostDetailVo(post.id, post.title, post.content, post.type, post.capacity, post.mode, post.duration,
 					post.techStack, post.recruitmentPosition, post.deadLine, post.contact_method, post.link, post.view,
-					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.id, user.name, user.picture))
+					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.name, user.picture))
 			.from(post)
 			.innerJoin(post.user, user)
 			.where(

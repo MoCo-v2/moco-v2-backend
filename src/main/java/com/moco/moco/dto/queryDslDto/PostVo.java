@@ -26,14 +26,13 @@ public class PostVo {
 	private LocalDateTime created_date;
 	private boolean isRemoved;
 	private boolean isFull;
-	private String userId;
 	private String writer;
 	private String picture;
 
 	@QueryProjection
 	public PostVo(Long id, String title, String content, String type, String capacity, String mode, String duration,
 		String techStack, String recruitmentPosition, LocalDate deadLine, String contact_method, String link,
-		Integer view, Integer commentCnt, LocalDateTime created_date, boolean isRemoved, boolean isFull, String userId,
+		Integer view, Integer commentCnt, LocalDateTime created_date, boolean isRemoved, boolean isFull,
 		String writer, String picture) {
 		this.id = id;
 		this.title = title;
@@ -50,9 +49,8 @@ public class PostVo {
 		this.view = view;
 		this.commentCnt = commentCnt;
 		this.created_date = created_date;
-		this.created_date = created_date;
 		this.isRemoved = isRemoved;
-		this.userId = userId;
+		this.isFull = isFull;
 		this.writer = writer;
 		this.picture = picture;
 	}

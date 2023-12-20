@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.moco.moco.config.argsResolver.LoginUserInfo;
 import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.dto.PostDto;
+import com.moco.moco.dto.queryDslDto.PostDetailVo;
 import com.moco.moco.service.post.CommentService;
 import com.moco.moco.service.post.PostService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
-/* 게시판 */
 @AllArgsConstructor
 @RestController
 public class PostController {
@@ -33,13 +33,18 @@ public class PostController {
 	private final String LIMIT = "9";
 	private final String RECRUIT = "false";
 
-	@GetMapping(value = {"/public/posts", "/public/posts/{userId}"})
+	@GetMapping("/public/posts")
 	public ResponseEntity<PostDto.Response> getPosts(
 		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
 		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
 		@RequestParam(value = "recruit", required = false, defaultValue = RECRUIT) String recruit,
-		@PathVariable(value = "userId", required = false) String userId) {
-		return ResponseEntity.ok().body(postService.getPosts(offset, limit, recruit, userId));
+		@RequestParam(value = "username", required = false) String username) {
+		return ResponseEntity.ok().body(postService.getPosts(offset, limit, recruit, username));
+	}
+
+	@GetMapping("/public/posts/{postId}")
+	public ResponseEntity<PostDetailVo> getPost(@PathVariable Long postId) {
+		return ResponseEntity.ok().body(postService.getPost(postId));
 	}
 
 	@PostMapping("/private/posts")
@@ -58,9 +63,9 @@ public class PostController {
 	}
 
 	@DeleteMapping("/private/posts/{postId}")
-	public ResponseEntity<Long> deletePost(@PathVariable("postId") Long postId,
+	public ResponseEntity<Long> removePost(@PathVariable("postId") Long postId,
 		@LoginUserInfo UserInfo userInfo) {
-		return ResponseEntity.ok().body(postService.deletePost(userInfo.getId(), postId));
+		return ResponseEntity.ok().body(postService.removePost(userInfo.getId(), postId));
 	}
 }
 

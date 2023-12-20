@@ -32,7 +32,6 @@ public class PostDetailVo {
 	private boolean isRemoved;
 	private boolean isFull;
 	private List<CommentDto.Response> comments = new ArrayList<>();
-	private String userId;
 	private String writer;
 	private String picture;
 
@@ -40,7 +39,7 @@ public class PostDetailVo {
 	public PostDetailVo(Long id, String title, String content, String type, String capacity, String mode,
 		String duration,
 		String techStack, String recruitmentPosition, LocalDate deadLine, String contact_method, String link,
-		Integer view, Integer commentCnt, LocalDateTime created_date, boolean isRemoved, boolean isFull, String userId,
+		Integer view, Integer commentCnt, LocalDateTime created_date, boolean isRemoved, boolean isFull,
 		String writer, String picture) {
 		this.id = id;
 		this.title = title;
@@ -59,7 +58,6 @@ public class PostDetailVo {
 		this.created_date = created_date;
 		this.isRemoved = isRemoved;
 		this.isFull = isFull;
-		this.userId = userId;
 		this.writer = writer;
 		this.picture = picture;
 	}
