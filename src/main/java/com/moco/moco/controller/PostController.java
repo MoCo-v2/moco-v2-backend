@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.moco.moco.config.argsResolver.LoginUserInfo;
 import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.dto.PostDto;
+import com.moco.moco.dto.queryDslDto.PostDetailVo;
 import com.moco.moco.service.post.CommentService;
 import com.moco.moco.service.post.PostService;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
-/* 게시판 */
 @AllArgsConstructor
 @RestController
 public class PostController {
@@ -42,6 +42,11 @@ public class PostController {
 		return ResponseEntity.ok().body(postService.getPosts(offset, limit, recruit, userId));
 	}
 
+	@GetMapping("/public/posts/{postId}")
+	public ResponseEntity<PostDetailVo> getPost(@PathVariable Long postId) {
+		return ResponseEntity.ok().body(postService.getPost(postId));
+	}
+
 	@PostMapping("/private/posts")
 	public ResponseEntity<Long> createPost(
 		@Valid @RequestBody PostDto.Request postDto,
@@ -58,9 +63,9 @@ public class PostController {
 	}
 
 	@DeleteMapping("/private/posts/{postId}")
-	public ResponseEntity<Long> deletePost(@PathVariable("postId") Long postId,
+	public ResponseEntity<Long> removePost(@PathVariable("postId") Long postId,
 		@LoginUserInfo UserInfo userInfo) {
-		return ResponseEntity.ok().body(postService.deletePost(userInfo.getId(), postId));
+		return ResponseEntity.ok().body(postService.removePost(userInfo.getId(), postId));
 	}
 }
 

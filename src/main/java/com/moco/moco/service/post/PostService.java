@@ -92,7 +92,7 @@ public class PostService {
 	}
 
 	@Transactional
-	public Long deletePost(String userId, Long postId) {
+	public Long removePost(String userId, Long postId) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 
