@@ -33,13 +33,13 @@ public class PostController {
 	private final String LIMIT = "9";
 	private final String RECRUIT = "false";
 
-	@GetMapping(value = {"/public/posts", "/public/posts/{userId}"})
+	@GetMapping("/public/posts")
 	public ResponseEntity<PostDto.Response> getPosts(
 		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
 		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
 		@RequestParam(value = "recruit", required = false, defaultValue = RECRUIT) String recruit,
-		@PathVariable(value = "userId", required = false) String userId) {
-		return ResponseEntity.ok().body(postService.getPosts(offset, limit, recruit, userId));
+		@RequestParam(value = "username", required = false) String username) {
+		return ResponseEntity.ok().body(postService.getPosts(offset, limit, recruit, username));
 	}
 
 	@GetMapping("/public/posts/{postId}")

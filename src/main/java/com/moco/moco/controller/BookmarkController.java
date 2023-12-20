@@ -25,8 +25,9 @@ public class BookmarkController {
 	}
 
 	@DeleteMapping("/private/bookmark/{postId}")
-	public ResponseEntity<BookmarkDto.Response> removeBookmark(@PathVariable Long postId,
+	public ResponseEntity<Void> removeBookmark(@PathVariable Long postId,
 		@LoginUserInfo UserInfo userInfo) {
-		return ResponseEntity.status(201).body(bookMarkService.removeBookmark(userInfo.getId(), postId));
+		bookMarkService.removeBookmark(userInfo.getId(), postId);
+		return ResponseEntity.status(204).build();
 	}
 }

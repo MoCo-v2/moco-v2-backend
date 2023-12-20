@@ -43,7 +43,6 @@ public class CommentDto {
 		private LocalDateTime createdDate;
 		private LocalDateTime modifiedDate;
 		private String name;
-		private String userId;
 		private Long postId;
 		private Long parentId;
 		private List<CommentDto.Response> childList = new ArrayList<>();
@@ -56,7 +55,6 @@ public class CommentDto {
 			this.createdDate = comment.getCreatedDate();
 			this.modifiedDate = comment.getModifiedDate();
 			this.name = comment.getUser().getName();
-			this.userId = comment.getUser().getId();
 			this.postId = comment.getPost().getId();
 			this.isRemoved = comment.isRemoved();
 		}

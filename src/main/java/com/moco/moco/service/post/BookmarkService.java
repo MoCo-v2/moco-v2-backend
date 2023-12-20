@@ -1,5 +1,8 @@
 package com.moco.moco.service.post;
 
+import java.util.Optional;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.moco.moco.domain.Bookmark;
@@ -9,6 +12,7 @@ import com.moco.moco.dto.BookmarkDto;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.repository.BookmarkRepository;
+import com.moco.moco.repository.BookmarkRepositoryCustom;
 import com.moco.moco.repository.PostRepository;
 import com.moco.moco.repository.UserRepository;
 
@@ -18,29 +22,45 @@ import lombok.AllArgsConstructor;
 @Service
 public class BookmarkService {
 
+	private final BookmarkRepositoryCustom bookmarkRepositoryCustom;
 	private final BookmarkRepository bookMarkRepository;
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 
 	public BookmarkDto.Response createBookmark(String userId, Long postId) {
+		Boolean isExistsBookmark = bookmarkRepositoryCustom.isBookmarkExists(userId, postId);
+		if (isExistsBookmark) {
+			throw new CustomAuthenticationException(ErrorCode.DUPLICATE_RESOURCE);
+		}
+
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 
 		Bookmark bookmark = Bookmark.builder().post(post).user(user).build();
-		return new BookmarkDto.Response(bookMarkRepository.save(bookmark));
+
+		Bookmark saveBookmark = null;
+		try {
+			saveBookmark = bookMarkRepository.save(bookmark);
+		} catch (DataIntegrityViolationException e) {
+			// 유니크 제약 위배 예외 처리
+			throw new CustomAuthenticationException(ErrorCode.DUPLICATE_RESOURCE);
+		}
+		return new BookmarkDto.Response(saveBookmark);
 	}
 
-	public BookmarkDto.Response removeBookmark(String userId, Long postId) {
-		Bookmark bookmark = bookMarkRepository.findByUserIdAndPostId(userId, postId);
+	public void removeBookmark(String userId, Long postId) {
+		Optional<Bookmark> bookmark = Optional.ofNullable(bookMarkRepository.findByUserIdAndPostId(userId, postId));
 
-		if (!bookmark.getUser().getId().equals(userId)) {
+		if (bookmark.isEmpty()) {
+			throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);
+		}
+
+		if (!bookmark.get().getUser().getId().equals(userId)) {
 			throw new CustomAuthenticationException(ErrorCode.UNAUTHORIZED_WRITER);
 		}
 
-		bookMarkRepository.delete(bookmark);
-
-		return new BookmarkDto.Response(bookMarkRepository.save(bookmark));
+		bookMarkRepository.delete(bookmark.get());
 	}
 }
