@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,11 +28,10 @@ public class UserController {
 	}
 
 	@PostMapping("/public/join")
-	public ResponseEntity<TokenDto.Response> signUp(@Valid @RequestBody UserDto.Request request) {
-		return ResponseEntity.ok().body(userService.join(request));
+	public ResponseEntity<TokenDto.Response> signUp(@Valid @RequestBody UserDto.Request userDto) {
+		return ResponseEntity.ok().body(userService.join(userDto));
 	}
 
-	/* 별명 중복 체크 */
 	@GetMapping("/public/check-nickname/{name}")
 	public ResponseEntity<CommonResponseDto> checkNameDuplication(@PathVariable(value = "name") String name) {
 		boolean isNameDuplication = userService.checkNameDuplication(name);
@@ -40,6 +40,11 @@ public class UserController {
 				.body(CommonResponseDto.builder().msg("이미 존재하는 이름입니다.").result(false).build());
 		}
 		return ResponseEntity.ok().body(CommonResponseDto.builder().msg("사용 가능한 이름입니다.").result(true).build());
+	}
+
+	@PutMapping("/private/users")
+	public ResponseEntity<UserDto.Response> updateUserInfo(@Valid @RequestBody UserDto.Request userDto) {
+		return ResponseEntity.ok().body(userService.updateUserInfo(userDto));
 	}
 
 }

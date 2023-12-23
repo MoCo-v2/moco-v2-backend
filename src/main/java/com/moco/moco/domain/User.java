@@ -33,6 +33,9 @@ public class User extends Time {
 	private String name;
 
 	@Column
+	private String intro;
+
+	@Column
 	private String position;
 
 	@Column
@@ -48,25 +51,27 @@ public class User extends Time {
 	@Column(nullable = false)
 	private Role role;
 
-	/* Oauth 로그인 갱신 날짜 갱신 */
-	public void updateProfile(String pictureURL) {
-		this.picture = pictureURL;
-	}
-
-	/* 설정 에서 별명 바꾸기 */
-	public void updateNameInSetting(String name) {
+	public User update(String name, String intro, String position, String stack, String career, String picture) {
 		this.name = name;
+		this.intro = intro;
+		this.position = position;
+		this.stack = stack;
+		this.career = career;
+		this.picture = picture;
+
+		return this;
 	}
 
-	/* 권한 타입 가져오기 */
 	public String getRoleKey() {
 		return this.role.getKey();
 	}
 
 	@Builder
-	public User(String id, String name, String position, String stack, String career, String picture, Role role) {
+	public User(String id, String name, String intro, String position, String stack, String career, String picture,
+		Role role) {
 		this.id = id;
 		this.name = name;
+		this.intro = intro;
 		this.position = position;
 		this.stack = stack;
 		this.career = career;
