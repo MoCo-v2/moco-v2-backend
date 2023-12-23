@@ -16,7 +16,6 @@ import com.moco.moco.repository.UserRepository;
 import com.moco.moco.service.jwt.JwTokenService;
 import com.moco.moco.service.oauth.OauthService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,9 +65,8 @@ public class UserService {
 		}
 	}
 
-	/* 회원가입 */
 	@Transactional
-	public TokenDto.JwtResponse join(@Valid UserDto.Request userDto) {
+	public TokenDto.JwtResponse join(UserDto.Request userDto) {
 		boolean isExistId = userRepository.existsById(userDto.getId());
 		if (isExistId) {
 			throw new CustomAuthenticationException(ErrorCode.DUPLICATE_RESOURCE);
@@ -77,24 +75,20 @@ public class UserService {
 		return getUserIdAndGenerateToken(user.getId());
 	}
 
+	@Transactional
+	public UserDto.Response updateUserInfo(UserDto.Request userDto) {
+		User user = userRepository.findById(userDto.getId())
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
+
+		user.update(userDto.getName(), userDto.getIntro(), userDto.getPosition(), userDto.getStack(),
+			userDto.getCareer(), userDto.getPicture());
+
+		return new UserDto.Response(user);
+	}
+
 	@Transactional(readOnly = true)
 	public boolean checkNameDuplication(String name) {
 		return userRepository.existsByName(name);
-	}
-
-	@Transactional
-	public User nameUpdateInSetting(String userid, String name) {
-		User user = userRepository.findById(userid).orElseThrow(() ->
-			new IllegalArgumentException("유저를 찾을수 없습니다."));
-		user.updateNameInSetting(name);
-		return user;
-	}
-
-	@Transactional
-	public User profileUpdateInSetting(String userId, String imgURL) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
-		user.updateProfile(imgURL);
-		return user;
 	}
 
 	/* 회원탈퇴 */
