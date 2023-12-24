@@ -7,7 +7,7 @@ permissions:
 
 jobs:
   deploy:
-    production
+    environment: production
 
   build:
     runs-on: ubuntu-latest
