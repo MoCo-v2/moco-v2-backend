@@ -38,7 +38,7 @@ out/
 
 ### yml ###
 **/src/main/resources/*.yml
-appspec.yml
+*.yml
 
 ### scripts ###
 scripts/
