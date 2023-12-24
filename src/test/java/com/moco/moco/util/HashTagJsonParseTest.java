@@ -1,4 +1,4 @@
-package com.moco.moco.MethodTest;
+package com.moco.moco.util;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
