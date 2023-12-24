@@ -24,20 +24,20 @@ jobs:
           cd ./src/main/resources
           
           ## application.yml 파일 생성
-          touch ./application.yml
-          echo "${{ secrets.APPLICATION_YML }}" >> ./application.yml
+          touch application.yml
+          echo "${{ secrets.APPLICATION_YML }}" >> application.yml
           
           ## application-prod.yml 파일 생성
-          touch ./application-prod.yml
-          echo "${{ secrets.APPLICATION_PROD }}" >> ./application-prod.yml
-          
-          shell: bash
+          touch application-prod.yml
+          echo "${{ secrets.APPLICATION_PROD }}" >> application-prod.yml
+        shell: bash
 
       ## create appspec.yml
       - name: 🗂️Create appspec.yml
         run: |
           touch appspec.yml
           echo "{{ secrets.APPSPEC_YML }}" >> appspec.yml
+        shell: bash
 
       ## make scripts
       - name: 🗂️Create scripts
@@ -45,6 +45,7 @@ jobs:
           mkdir scripts
           touch scripts/start.sh
           echo "{{ secrets.START_SH }}" >> scripts/start.sh
+        shell: bash
 
       ## ⚙️빌드
       - name: Grant execute permission for gradlew & Build with Gradle
@@ -56,6 +57,7 @@ jobs:
       ## 소스코드 압축
       - name: 📦 Zip project files
         run: zip -r ./$GITHUB_SHA.zip .
+        shell: bash
 
       ## AWS 인증
       - name: 🌎 Access to AWS
