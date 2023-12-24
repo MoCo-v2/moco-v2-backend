@@ -1,11 +1,8 @@
 name: Java CI CD with Gradle
 
 on:
-  workflow_dispatch
-
-permissions:
-  contents: read
-
+  workflow_dispatch:
+  
 jobs:
   build:
     runs-on: ubuntu-latest
