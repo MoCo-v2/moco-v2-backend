@@ -2,7 +2,7 @@ name: Java CI CD with Gradle
 
 on:
   workflow_dispatch:
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,12 +24,12 @@ jobs:
           cd ./src/main/resources
           
           ## application.yml 파일 생성
-          touch application.yml
-          echo "${{ secrets.APPLICATION_YML }}" >> application.yml
+          touch ./application.yml
+          echo "${{ secrets.APPLICATION_YML }}" >> ./application.yml
           
           ## application-prod.yml 파일 생성
-          touch application-prod.yml
-          echo "${{ secrets.APPLICATION_PROD }}" >> application-prod.yml
+          touch ./application-prod.yml
+          echo "${{ secrets.APPLICATION_PROD }}" >> ./application-prod.yml
           
           shell: bash
 
