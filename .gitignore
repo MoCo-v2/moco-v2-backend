@@ -38,6 +38,10 @@ out/
 
 ### yml ###
 **/src/main/resources/*.yml
+*.yml
+
+### scripts ###
+scripts/
 
 ### macOS ###
 # General

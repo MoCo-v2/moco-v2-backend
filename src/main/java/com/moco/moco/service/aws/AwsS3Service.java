@@ -15,6 +15,8 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.moco.moco.exception.CustomAuthenticationException;
+import com.moco.moco.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,9 +40,9 @@ public class AwsS3Service {
 				.withCannedAcl(CannedAccessControlList.PublicRead));
 			fileName = amazonS3.getUrl(bucket, fileName).toString();
 		} catch (IOException e) {
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다.");
+			throw new CustomAuthenticationException(ErrorCode.SERVER_ERROR);
 		}
-
+		
 		return fileName;
 	}
 

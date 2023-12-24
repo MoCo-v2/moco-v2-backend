@@ -1,4 +1,4 @@
-package com.moco.moco.MethodTest;
+package com.moco.moco.util;
 
 import java.util.Arrays;
 import java.util.HashSet;
