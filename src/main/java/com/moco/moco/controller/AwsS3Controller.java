@@ -4,36 +4,29 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.moco.moco.service.aws.AwsS3Service;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/s3")
 public class AwsS3Controller {
 	private final AwsS3Service awsS3Service;
 
 	/** @return 성공 시 200 Success와 함께 업로드 된 파일의 파일명 리스트 반환 */
-	@Operation(summary = "이미지 업로드 요청", description = "게시글 작성, 프로필 사진 업로드시 요청 Api 입니다.")
-	@PostMapping("/image")
+	@PostMapping("/private/images")
 	public ResponseEntity uploadImage(
-		@Parameter(description = "이미지를 multipartFile 타입으로 받습니다.") @RequestParam(value = "image", required = true) MultipartFile multipartFile) {
+		@RequestParam(value = "image") MultipartFile multipartFile) {
 		return ResponseEntity.ok().body(awsS3Service.uploadImage(multipartFile));
 	}
 
 	/** @return 성공 시 200 Success */
-	@Operation(summary = "이미지 삭제 요청", description = "이미지 삭제시 요청 Api 입니다.")
-	@DeleteMapping("/image")
-	public ResponseEntity<Void> deleteImage(
-		@Parameter(description = "이미지가 저장된 url 를 파라미터로 받습니다.") @RequestBody(required = true) String fileName) {
+	@DeleteMapping("/private/images")
+	public ResponseEntity<Void> deleteImage(@RequestBody String fileName) {
 		awsS3Service.deleteImage(fileName);
 		return ResponseEntity.ok().build();
 	}
