@@ -1,18 +1,17 @@
 name: Java CI CD with Gradle
 
-on: workflow_dispatch
+on:
+  workflow_dispatch
 
 permissions:
   contents: read
 
 jobs:
-  deploy:
-    environment: production
-
   build:
     runs-on: ubuntu-latest
-    steps:
+    environment: production
 
+    steps:
       - name: ✅Checkout branch
         uses: actions/checkout@v3
 
@@ -49,7 +48,6 @@ jobs:
           mkdir scripts
           touch scripts/start.sh
           echo "{{ secrets.START_SH }}" >> scripts/start.sh
-      
 
       ## ⚙️빌드
       - name: Grant execute permission for gradlew & Build with Gradle
