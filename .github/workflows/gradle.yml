@@ -1,113 +1,91 @@
-name: Java CI with Gradle
+name: Java CI CD with Gradle
 
 on:
+  workflow_dispatch:
+
   push:
-    #branches: [ "master" ]
+    branches:
+      - master
+
 
 permissions:
   contents: read
 
 jobs:
+  deploy:
+    production
+
   build:
     runs-on: ubuntu-latest
     steps:
 
-      - name: checkout
+      - name: ✅Checkout branch
         uses: actions/checkout@v3
 
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
 
-      ## create application.yml
-      - name: make application.yml
+      ## create application.yml & application-dev.yml
+      - name: 🗂️Create application.yml
         run: |
           cd ./src/main/resources
           
           ## application.yml 파일 생성
-          touch ./application.yml
+          touch application.yml
+          echo "${{ secrets.APPLICATION_YML }}" >> application.yml
           
-          ## GitHub-Actions 에서 설정한 값을 application.yml 파일에 쓰기
-          echo "${{ secrets.APPLICATION }}" >> ./application.yml
+          ## application-prod.yml 파일 생성
+          touch application-prod.yml
+          echo "${{ secrets.APPLICATION_PROD }}" >> application-prod.yml
           
-          ## application-oauth2.yml 파일 생성
-          touch ./application-oauth2.yml
-          
-          ## GitHub-Actions 에서 설정한 값을 application-oauth2.yml 파일에 쓰기
-          echo "${{ secrets.APPLICATION_OAUTH2 }}" >> ./application-oauth2.yml
+          shell: bash
 
+      ## create appspec.yml
+      - name: 🗂️Create appspec.yml
+        run: |
+          touch appspec.yml
+          echo "{{ secrets.APPSPEC_YML }}" >> appspec.yml
+
+      ## make scripts
+      - name: 🗂️Create scripts
+        run: |
+          mkdir scripts
+          touch scripts/start.sh
+          echo "{{ secrets.START_SH }}" >> scripts/start.sh
+      
+
+      ## ⚙️빌드
+      - name: Grant execute permission for gradlew & Build with Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build
         shell: bash
 
-      ## build Docker and Push Docker Hub
-      - name: build with Gradle
-        run: ./gradlew --exclude-task test
-      - name: build Docker
-        run: |
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t ${{ secrets.DOCKER_REPO }} .
-          docker push ${{ secrets.DOCKER_REPO }}:latest
+      ## 소스코드 압축
+      - name: 📦 Zip project files
+        run: zip -r ./$GITHUB_SHA.zip .
 
-      - name: Run scripts in server
-        uses: appleboy/ssh-action@master
+      ## AWS 인증
+      - name: 🌎 Access to AWS
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          key: ${{ secrets.SSH_KEY }}
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          script: |
-            sudo docker pull ${{ secrets.DOCKER_REPO }}:latest
-            
-            echo "실행 중인 도커 확인.."
-            RUNNING_SERVER=$(sudo docker ps --format 'table{{.Names}}' | grep AA)
-            if [ -z "${RUNNING_SERVER}"]
-            then 
-              echo "BB 가 실행중입니다. BB -> AA 서버 교체를 진행합니다.."
-              START_CONTAINER=AA
-              TERMINATE_CONTAINER=BB
-              START_PORT=8080
-              TERMINATE_PORT=8081
-              sudo docker run -d -p 8080:8080 --name AA --log-driver=awslogs --log-opt awslogs-region=ap-northeast-2 --log-opt awslogs-group=${{ secrets.LOG_GROUP_NAME }} --log-opt awslogs-stream=${{ secrets.LOG_STREAM_NAME }} ${{ secrets.DOCKER_REPO }}
-            else
-              echo "AA가 실행중입니다. AA -> BB 서버 교체를 진행합니다.."
-              START_CONTAINER=BB
-              TERMINATE_CONTAINER=AA
-              START_PORT=8081
-              TERMINATE_PORT=8080
-              sudo docker run -d -p 8081:8080 --name BB --log-driver=awslogs --log-opt awslogs-region=ap-northeast-2 --log-opt awslogs-group=${{ secrets.LOG_GROUP_NAME }} --log-opt awslogs-stream=${{ secrets.LOG_STREAM_NAME }} ${{ secrets.DOCKER_REPO }}
-            fi
-            
-            for cnt in {1..10} 
-            do
-                echo "check server start.."
-                
-                UP=$(curl -s http://127.0.0.1:${START_PORT}/actuator/health | grep 'UP')
-                if [ -z "${UP}" ] 
-                then
-                    echo "서버가 아직 실행되지 않았습니다.."
-                else
-                    echo "서버 실행이 확인 되었습니다."
-                    break
-                fi
-                
-                echo "10초간 대기 합니다.." 
-                sleep 10
-            done
-              
-            if [ $cnt -eq 10 ] 
-            then
-              echo "deployment failed."
-              exit 1
-            fi
-            
-            echo "server start!"
-            
-            echo "change nginx server port"
-            sudo sed -i "s/${TERMINATE_PORT}/${START_PORT}/" /etc/nginx/conf.d/service-url.inc
-            sudo service nginx restart
-            
-            sudo docker stop ${TERMINATE_CONTAINER}
-            sudo docker rm ${TERMINATE_CONTAINER}
-            sudo docker image prune -f
-    
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ap-northeast-2
+
+      ## Zip S3 업로드
+      - name: 🚛 Upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://${{ secrets.S3_BUCKET_NAME }}/${{ secrets.S3_BUCKET_DIR_NAME }}/$GITHUB_SHA.zip
+
+      ## CodeDeploy 배포 요청
+      - name: 🚀 Deploy to EC2 with CodeDeploy
+        run: aws deploy create-deployment
+          --application-name codedeploy-app
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --deployment-group-name ${{ secrets.DEPLOYMENT_GROUP_NAME }}
+          --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},bundleType=zip,key=${{ env.S3_BUCKET_DIR_NAME }}/$GITHUB_SHA.zip
+
  
