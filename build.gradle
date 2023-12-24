@@ -1,8 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '3.0.0'
     id 'io.spring.dependency-management' version '1.0.12.RELEASE'
-    //queryDsl 추가
-    //id 'com.ewerk.gradle.plugins.querydsl' version "1.0.10"
     id 'java'
 }
 
@@ -56,20 +54,20 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
 
     // Test
-    testImplementation 'junit:junit:4.13.1'
-    compileOnly 'org.jetbrains:annotations:13.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
 
+    compileOnly 'org.jetbrains:annotations:13.0'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // postgresql
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
 
-    //implementation 'mysql:mysql-connector-java'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-tasks.named('test') {
+test {
     useJUnitPlatform()
 }
 

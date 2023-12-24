@@ -1,4 +1,4 @@
-package com.moco.moco.jwtTest;
+package com.moco.moco.JwtTest;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
