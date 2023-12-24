@@ -40,6 +40,9 @@ out/
 **/src/main/resources/*.yml
 appspec.yml
 
+### scripts ###
+scripts/
+
 ### macOS ###
 # General
 .DS_Store
