@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class AwsS3Service {
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
-
+	private final String dir = "/images";
 	private final AmazonS3 amazonS3;
 
 	public String uploadImage(MultipartFile multipartFile) {
@@ -36,13 +36,13 @@ public class AwsS3Service {
 		objectMetadata.setContentType(multipartFile.getContentType());
 
 		try (InputStream inputStream = multipartFile.getInputStream()) {
-			amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+			amazonS3.putObject(new PutObjectRequest(bucket + dir, fileName, inputStream, objectMetadata)
 				.withCannedAcl(CannedAccessControlList.PublicRead));
 			fileName = amazonS3.getUrl(bucket, fileName).toString();
 		} catch (IOException e) {
 			throw new CustomAuthenticationException(ErrorCode.SERVER_ERROR);
 		}
-		
+
 		return fileName;
 	}
 
