@@ -54,6 +54,19 @@ public class TokenDto {
 			this.id = id;
 			this.result = result;
 		}
+	}
 
+	@Getter
+	public static class AccessTokenRequest {
+		private String refreshToken;
+	}
+
+	@Getter
+	public static class AccessTokenRespose {
+		private String accessToken;
+
+		public AccessTokenRespose(String accessToken) {
+			this.accessToken = accessToken;
+		}
 	}
 }

@@ -63,6 +63,9 @@ dependencies {
     // postgresql
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
 
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

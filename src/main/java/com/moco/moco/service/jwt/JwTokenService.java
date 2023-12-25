@@ -29,14 +29,6 @@ public class JwTokenService {
 	@Value("${jwt.key.secret}")
 	private String secretKey;
 
-	@Getter
-	@Value("${jwt.access-token-expiration-millisecond}")
-	private int accessTokenExpirationMillisecond;
-
-	@Getter
-	@Value("${jwt.refresh-token-expiration-millisecond}")
-	private int refreshTokenExpirationMillisecond;
-
 	// 평문 비밀키를 Base64로 인코딩한다.
 	// 인코딩 하는 이유는 OS마다 특수문자를 바이너리 값으로 치환하는 방법이 다르기 때문에 미리 어플리케이션 레벨에서 변환해주기 위함
 	public String encodeBase64SecretKey(String secretKey) {
