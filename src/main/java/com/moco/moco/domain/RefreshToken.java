@@ -1,31 +1,20 @@
 package com.moco.moco.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+import lombok.Getter;
+
 @Getter
-@Entity
-@Table(name = "refreshToken")
+@RedisHash(value = "jwtToken", timeToLive = 60 * 60 * 24 * 3)
 public class RefreshToken {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@NotBlank
 	private String refreshToken;
-	@NotBlank
 	private String userId;
 
-	public RefreshToken updateToken(String token) {
-		this.refreshToken = token;
-		return this;
+	public RefreshToken(String refreshToken, String userId) {
+		this.refreshToken = refreshToken;
+		this.userId = userId;
 	}
 }

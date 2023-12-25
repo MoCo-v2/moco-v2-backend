@@ -59,7 +59,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 		} catch (Exception e) {
 			log.info("필터 예외 발생", JwtVerificationFilter.class);
 			log.info(e.getMessage());
-			request.setAttribute(EXCEPTION_KET, ErrorCode.INVALID_AUTH_TOKEN.getMessage());
+			request.setAttribute(EXCEPTION_KET, ErrorCode.SERVER_ERROR.getMessage());
 		}
 		filterChain.doFilter(request, response);
 	}
