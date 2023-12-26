@@ -30,8 +30,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation group: 'io.awspring.cloud', name: 'spring-cloud-starter-aws', version: '2.4.4'
 
+    // AWS
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.429'
+    implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+    
     // QueryDsl
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
@@ -54,11 +57,10 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
 
     // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
-
-    compileOnly 'org.jetbrains:annotations:13.0'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework:spring-test'
 
     // postgresql
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
@@ -66,8 +68,13 @@ dependencies {
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    //Marvin (image Resize)
+    implementation 'com.github.downgoon:marvin:1.5.5'
+    implementation 'com.github.downgoon:MarvinPlugins:1.5.5'
+
+    compileOnly 'org.jetbrains:annotations:13.0'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 test {
