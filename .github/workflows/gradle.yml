@@ -32,16 +32,11 @@ jobs:
           echo "${{ secrets.APPLICATION_PROD }}" >> application-prod.yml
         shell: bash
 
-      ## ⚙️빌드
+      ## ⚙️jar 빌드
       - name: Grant execute permission for gradlew & Build with Gradle
         run: |
           chmod +x ./gradlew
           ./gradlew build
-        shell: bash
-
-      ## 소스코드 압축
-      - name: 📦 Zip project files
-        run: zip -r ./$GITHUB_SHA.zip .
         shell: bash
 
       ## AWS 인증
@@ -51,6 +46,25 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ap-northeast-2
+
+      ## 🐋 도커 빌드 & ECR Push
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      ## 스크립트 + appscpec.yml 압축
+      - name: 📦 Zip project files
+        run: zip -r ./$GITHUB_SHA.zip ./scripts appspec.yml
+        shell: bash
 
       ## Zip S3 업로드
       - name: 🚛 Upload to S3
