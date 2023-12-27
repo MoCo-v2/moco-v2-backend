@@ -66,6 +66,8 @@ jobs:
           echo "docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/deploy.sh
           echo "REPOSITORY=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> scripts/deploy.sh
           echo "sudo ./scripts/start.sh" >> scripts/deploy.sh
+        shell: bash
+
 
       ## 스크립트 + appscpec.yml 압축
       - name: 📦 Zip project files
