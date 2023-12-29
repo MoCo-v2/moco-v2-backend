@@ -6,19 +6,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.moco.moco.dto.auth.TokenDto;
-import com.moco.moco.service.jwt.RefreshTokenService;
+import com.moco.moco.service.jwt.JwTokenService;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
 public class TokenController {
-	private final RefreshTokenService refreshTokenService;
+	private final JwTokenService jwTokenService;
 
 	@PostMapping("/public/access-token")
 	public ResponseEntity<TokenDto.AccessTokenRespose> generateAccessToken(
 		@RequestBody TokenDto.AccessTokenRequest request) {
-		String accessToken = refreshTokenService.generateAccessToken(request.getRefreshToken());
+		String accessToken = jwTokenService.renewAccessToken(request.getRefreshToken());
 		return ResponseEntity.status(201).body(new TokenDto.AccessTokenRespose(accessToken));
 	}
 }

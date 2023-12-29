@@ -7,13 +7,11 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.moco.moco.domain.RefreshToken;
 import com.moco.moco.domain.User;
 import com.moco.moco.dto.UserDto;
 import com.moco.moco.dto.auth.TokenDto;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
-import com.moco.moco.repository.RefreshTokenRepository;
 import com.moco.moco.repository.UserRepository;
 import com.moco.moco.service.jwt.JwTokenService;
 import com.moco.moco.service.oauth.OauthService;
@@ -29,7 +27,6 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final JwTokenService tokenService;
 	private final OauthService oauthService;
-	private final RefreshTokenRepository refreshTokenRepository;
 
 	public TokenDto.Response authenticateAndGenerateToken(TokenDto.OauthRequest tokenDto) {
 		String id = "";
@@ -78,6 +75,10 @@ public class UserService {
 		return getUserIdAndGenerateToken(user.getId());
 	}
 
+	public void logout(String userId) {
+
+	}
+
 	@Transactional
 	public UserDto.Response updateUserInfo(UserDto.Request userDto) {
 		User user = userRepository.findById(userDto.getId())
@@ -108,7 +109,7 @@ public class UserService {
 		String refreshToken = tokenService.generateRefreshToken(subject, refreshTokenExpiration, secretKey);
 
 		//redis에 RefreshToken 저장 (refreshToken, 유저 ID)
-		refreshTokenRepository.save(new RefreshToken(refreshToken, userId));
+		tokenService.saveTokenInfo(refreshToken, userId);
 
 		return TokenDto.JwtResponse.builder()
 			.accessToken(accessToken)
