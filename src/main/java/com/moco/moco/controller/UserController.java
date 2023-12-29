@@ -1,6 +1,7 @@
 package com.moco.moco.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,9 +9,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.moco.moco.config.argsResolver.LoginUserInfo;
+import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.dto.CommonResponseDto;
 import com.moco.moco.dto.UserDto;
 import com.moco.moco.dto.auth.TokenDto;
+import com.moco.moco.service.jwt.JwTokenService;
 import com.moco.moco.service.user.UserService;
 
 import jakarta.validation.Valid;
@@ -21,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserService userService;
+	private final JwTokenService jwTokenService;
 
 	@PostMapping("/public/login")
 	public ResponseEntity<TokenDto.Response> login(@Valid @RequestBody TokenDto.OauthRequest tokenDto) {
@@ -30,6 +35,13 @@ public class UserController {
 	@PostMapping("/public/join")
 	public ResponseEntity<TokenDto.Response> signUp(@Valid @RequestBody UserDto.Request userDto) {
 		return ResponseEntity.ok().body(userService.join(userDto));
+	}
+
+	@DeleteMapping("/private/logout")
+	public ResponseEntity<?> logout(@RequestBody TokenDto.AccessTokenRequest request,
+		@LoginUserInfo UserInfo userInfo) {
+		jwTokenService.removeRefreshToken(request.getRefreshToken(), userInfo.getId());
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/public/check-nickname/{name}")

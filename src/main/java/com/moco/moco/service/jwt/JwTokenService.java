@@ -10,24 +10,32 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.moco.moco.config.argsResolver.UserInfo;
+import com.moco.moco.domain.RefreshToken;
+import com.moco.moco.exception.CustomAuthenticationException;
+import com.moco.moco.exception.ErrorCode;
+import com.moco.moco.repository.RefreshTokenRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
+@Service
+@RequiredArgsConstructor
 public class JwTokenService {
 	@Getter
 	@Value("${jwt.key.secret}")
 	private String secretKey;
+	private final RefreshTokenRepository refreshTokenRepository;
 
 	// 평문 비밀키를 Base64로 인코딩한다.
 	// 인코딩 하는 이유는 OS마다 특수문자를 바이너리 값으로 치환하는 방법이 다르기 때문에 미리 어플리케이션 레벨에서 변환해주기 위함
@@ -76,6 +84,36 @@ public class JwTokenService {
 			.setExpiration(expiration)
 			.signWith(key)
 			.compact();
+	}
+
+	public String renewAccessToken(String refreshToken) {
+		RefreshToken getRefreshToken = refreshTokenRepository.findById(refreshToken)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.NEED_LOGIN));
+
+		Map<String, Object> claims = generateClaims(getRefreshToken.getUserId());
+
+		String subject = "access token";
+		String secretKey = encodeBase64SecretKey(getSecretKey());
+		Date accessTokenExpiration = getTimeAfterMinutes(60);
+		String accessToken = generateAccessToken(claims, subject, accessTokenExpiration, secretKey);
+		return accessToken;
+	}
+
+	@Transactional
+	public void saveTokenInfo(String refreshToken, String userId) {
+		refreshTokenRepository.save(new RefreshToken(refreshToken, userId));
+	}
+
+	@Transactional
+	public void removeRefreshToken(String refreshToken, String userId) {
+		refreshTokenRepository.findById(refreshToken)
+			.ifPresent(token -> {
+				if (token.getUserId().equals(userId)) {
+					refreshTokenRepository.delete(token);
+				} else {
+					throw new CustomAuthenticationException(ErrorCode.INVALID_AUTH_TOKEN);
+				}
+			});
 	}
 
 	// 토큰을 검증한다.

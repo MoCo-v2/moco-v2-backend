@@ -15,7 +15,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mock;
 
+import com.moco.moco.repository.RefreshTokenRepository;
 import com.moco.moco.service.jwt.JwTokenService;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -33,6 +35,9 @@ import io.jsonwebtoken.io.Decoders;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class JwTokenServiceTest {
 
+	@Mock
+	private RefreshTokenRepository refreshTokenRepository;
+
 	private static JwTokenService jwTokenService;
 
 	private String secretKey = "quswowlsquswowlsquswowlsquswowlsquswasasasowasdasdls";
@@ -43,7 +48,7 @@ public class JwTokenServiceTest {
 	// 인코딩된 Secret Key를 각 테스트 케이스에서 사용
 	@BeforeAll
 	public void init() {
-		jwTokenService = new JwTokenService();
+		jwTokenService = new JwTokenService(refreshTokenRepository);
 		base64EncodedSecretKey = jwTokenService.encodeBase64SecretKey(secretKey);
 		System.out.println(base64EncodedSecretKey);
 	}
