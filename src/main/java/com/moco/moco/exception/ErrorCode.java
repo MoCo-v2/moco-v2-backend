@@ -11,6 +11,7 @@ public enum ErrorCode {
 	// 400 BAD_REQUEST : 잘못된 요청
 	BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
 	INVALID_REQUEST(HttpStatus.UNAUTHORIZED, "유효하지 않은 인증 요청입니다."),
+	NEED_LOGIN(HttpStatus.BAD_REQUEST, "로그인을 해주세요"),
 
 	// 401 UNAUTHORIZED : 인증되지 않은 사용자
 	INVALID_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다. 재발급을 받으세요."),

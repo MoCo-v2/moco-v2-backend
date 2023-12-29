@@ -88,7 +88,7 @@ public class JwTokenService {
 
 	public String renewAccessToken(String refreshToken) {
 		RefreshToken getRefreshToken = refreshTokenRepository.findById(refreshToken)
-			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.BAD_REQUEST));
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.NEED_LOGIN));
 
 		Map<String, Object> claims = generateClaims(getRefreshToken.getUserId());
 
