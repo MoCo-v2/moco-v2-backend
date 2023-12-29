@@ -40,7 +40,7 @@ public class JwTokenServiceTest {
 
 	private static JwTokenService jwTokenService;
 
-	private String secretKey = "spzkfkznqoekdxhspzkfkznqoekdxhspzkfkznqoekdxh";
+	private String secretKey = "quswowlsquswowlsquswowlsquswowlsquswasasasowasdasdls";
 	private String USER_ID = "google1234567";
 	private String base64EncodedSecretKey;
 
