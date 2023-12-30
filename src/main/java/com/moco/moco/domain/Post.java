@@ -63,7 +63,7 @@ public class Post extends Time {
 	private LocalDate deadLine;
 
 	@Column
-	private String contact_method;
+	private String contactMethod;
 
 	@Column
 	private String link;
@@ -92,7 +92,7 @@ public class Post extends Time {
 
 	@Builder
 	public Post(Long id, String title, String content, String type, String capacity, String mode, String duration,
-		String techStack, String recruitmentPosition, LocalDate deadLine, String contact_method, String link,
+		String techStack, String recruitmentPosition, LocalDate deadLine, String contactMethod, String link,
 		boolean isRemoved, boolean isFull, int commentCnt, int view, User user, List<Comment> comments) {
 		this.id = id;
 		this.title = title;
@@ -104,7 +104,7 @@ public class Post extends Time {
 		this.techStack = techStack;
 		this.recruitmentPosition = recruitmentPosition;
 		this.deadLine = deadLine;
-		this.contact_method = contact_method;
+		this.contactMethod = contactMethod;
 		this.link = link;
 		this.isRemoved = isRemoved;
 		this.isFull = isFull;
@@ -124,7 +124,7 @@ public class Post extends Time {
 		this.techStack = postDto.getTechStack();
 		this.deadLine = postDto.getDeadLine();
 		this.recruitmentPosition = postDto.getRecruitmentPosition();
-		this.contact_method = postDto.getContact_method();
+		this.contactMethod = postDto.getContactMethod();
 		this.link = postDto.getLink();
 		return this.id;
 	}

@@ -32,7 +32,7 @@ public class PostRepositoryCustom {
 		return queryFactory
 			.select(
 				new QPostVo(post.id, post.title, post.content, post.type, post.capacity, post.mode, post.duration,
-					post.techStack, post.recruitmentPosition, post.deadLine, post.contact_method, post.link, post.view,
+					post.techStack, post.recruitmentPosition, post.deadLine, post.contactMethod, post.link, post.view,
 					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.name, user.picture))
 			.from(post)
 			.innerJoin(post.user, user)
@@ -58,7 +58,7 @@ public class PostRepositoryCustom {
 		PostDetailVo postDetailVo = queryFactory
 			.select(
 				new QPostDetailVo(post.id, post.title, post.content, post.type, post.capacity, post.mode, post.duration,
-					post.techStack, post.recruitmentPosition, post.deadLine, post.contact_method, post.link, post.view,
+					post.techStack, post.recruitmentPosition, post.deadLine, post.contactMethod, post.link, post.view,
 					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.name, user.picture))
 			.from(post)
 			.innerJoin(post.user, user)

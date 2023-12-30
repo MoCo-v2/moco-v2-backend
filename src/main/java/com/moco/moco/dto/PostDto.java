@@ -26,7 +26,7 @@ public class PostDto {
 		private String techStack;
 		private LocalDate deadLine;
 		private String recruitmentPosition;
-		private String contact_method;
+		private String contactMethod;
 		private String link;
 		private User user;
 
@@ -42,7 +42,7 @@ public class PostDto {
 				.techStack(techStack)
 				.recruitmentPosition(recruitmentPosition)
 				.deadLine(deadLine)
-				.contact_method(contact_method)
+				.contactMethod(contactMethod)
 				.link(link)
 				.isFull(false)
 				.isRemoved(false)

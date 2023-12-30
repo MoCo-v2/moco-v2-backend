@@ -1,7 +1,6 @@
 package com.moco.moco.service;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
@@ -9,13 +8,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
@@ -30,7 +27,6 @@ import com.moco.moco.repository.PostRepositoryCustom;
 import com.moco.moco.repository.UserRepository;
 import com.moco.moco.service.post.PostService;
 
-@RunWith(MockitoJUnitRunner.class)
 public class PostServiceTest {
 
 	@InjectMocks
@@ -43,7 +39,7 @@ public class PostServiceTest {
 	@Mock
 	UserRepository userRepository;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 	}
@@ -100,8 +96,8 @@ public class PostServiceTest {
 		PostDto.Response result = postService.getPosts(offset, limit, recruit, username);
 
 		// Then
-		assertThat(result.getPosts(), equalTo(posts));
-		assertThat(result.getTotal(), equalTo(total));
+		assertThat(result.getPosts()).isEqualTo(posts);
+		assertThat(result.getTotal()).isEqualTo(total);
 	}
 
 	@Test
@@ -114,7 +110,7 @@ public class PostServiceTest {
 		Long result = postService.getPostCount();
 
 		// Then
-		assertThat(result, equalTo(expectedCount));
+		assertThat(result).isEqualTo(expectedCount);
 	}
 
 	private List<PostVo> generatePostVos() {
