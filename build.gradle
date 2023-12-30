@@ -55,9 +55,6 @@ dependencies {
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
-    implementation 'org.springframework:spring-test'
 
     // postgresql
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
@@ -68,6 +65,7 @@ dependencies {
     //Marvin (image Resize)
     implementation 'com.github.downgoon:marvin:1.5.5'
     implementation 'com.github.downgoon:MarvinPlugins:1.5.5'
+    implementation 'org.springframework:spring-test'
 
     compileOnly 'org.jetbrains:annotations:13.0'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
