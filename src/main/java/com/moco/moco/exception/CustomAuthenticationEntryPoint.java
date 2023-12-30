@@ -2,10 +2,11 @@ package com.moco.moco.exception;
 
 import java.io.IOException;
 
-import org.json.simple.JSONObject;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+
+import com.google.gson.JsonObject;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,11 +34,11 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 		response.setContentType("application/json;charset=UTF-8");
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-		JSONObject responseJson = new JSONObject();
-		responseJson.put("code", errorCode.getHttpStatus());
-		responseJson.put("message", errorCode.getMessage());
+		JsonObject responseJson = new JsonObject();
+		responseJson.addProperty("code", String.valueOf(errorCode.getHttpStatus()));
+		responseJson.addProperty("message", errorCode.getMessage());
 
-		response.getWriter().write(responseJson.toJSONString());
+		response.getWriter().write(responseJson.toString());
 	}
 
 }

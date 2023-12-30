@@ -8,7 +8,6 @@ import com.moco.moco.service.post.PostService;
 import com.moco.moco.service.profile.ProfileService;
 import com.moco.moco.service.user.UserService;
 
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -20,7 +19,6 @@ public class ProfileController {
 	private final PostService postService;
 	private final ProfileService profileService;
 
-	@Operation(summary = "페이지 반환", description = "회원정보 페이지를 반환합니다.")
 	@GetMapping("/")
 	public String ProfilePage() {
 		return "profile/profile";
