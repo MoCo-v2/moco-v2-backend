@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.moco.moco.config.argsResolver.LoginUserInfo;
+import com.moco.moco.config.argsResolver.CurrentLoginUser;
 import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.dto.CommentDto;
 import com.moco.moco.service.post.CommentService;
@@ -23,20 +23,20 @@ public class CommentController {
 	@PostMapping("/private/comments/{postId}")
 	public ResponseEntity<CommentDto.Response> createComment(@PathVariable Long postId,
 		@RequestBody CommentDto.Request commentDto,
-		@LoginUserInfo UserInfo userInfo) {
+		@CurrentLoginUser UserInfo userInfo) {
 		return ResponseEntity.status(201).body(commentService.createComment(userInfo.getId(), postId, commentDto));
 	}
 
 	@PutMapping("/private/comments/{commentId}")
 	public ResponseEntity<CommentDto.Response> commentUpdate(@PathVariable Long commentId,
 		@RequestBody CommentDto.Request commentDto,
-		@LoginUserInfo UserInfo userInfo) {
+		@CurrentLoginUser UserInfo userInfo) {
 		return ResponseEntity.ok().body(commentService.updateComment(userInfo.getId(), commentId, commentDto));
 	}
 
 	@DeleteMapping("/private/comments/{commentId}")
 	public ResponseEntity<Void> deleteComment(@PathVariable Long commentId,
-		@LoginUserInfo UserInfo userInfo) {
+		@CurrentLoginUser UserInfo userInfo) {
 		commentService.deleteComment(userInfo.getId(), commentId);
 		return ResponseEntity.noContent().build();
 	}

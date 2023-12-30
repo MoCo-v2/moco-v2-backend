@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.moco.moco.config.argsResolver.LoginUserInfo;
+import com.moco.moco.config.argsResolver.CurrentLoginUser;
 import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.dto.PostDto;
 import com.moco.moco.dto.queryDslDto.PostDetailVo;
@@ -50,7 +50,7 @@ public class PostController {
 	@PostMapping("/private/posts")
 	public ResponseEntity<Long> createPost(
 		@Valid @RequestBody PostDto.Request postDto,
-		@LoginUserInfo UserInfo userInfo) {
+		@CurrentLoginUser UserInfo userInfo) {
 		return ResponseEntity.status(201).body(postService.savePost(postDto, userInfo.getId()));
 	}
 
@@ -58,13 +58,13 @@ public class PostController {
 	public ResponseEntity<Long> updatePost(
 		@PathVariable(value = "postId") Long postId,
 		@Valid @RequestBody PostDto.Request postDto,
-		@LoginUserInfo UserInfo userInfo) {
+		@CurrentLoginUser UserInfo userInfo) {
 		return ResponseEntity.status(201).body(postService.updatePost(postId, postDto, userInfo.getId()));
 	}
 
 	@DeleteMapping("/private/posts/{postId}")
 	public ResponseEntity<Long> removePost(@PathVariable("postId") Long postId,
-		@LoginUserInfo UserInfo userInfo) {
+		@CurrentLoginUser UserInfo userInfo) {
 		return ResponseEntity.ok().body(postService.removePost(userInfo.getId(), postId));
 	}
 }
