@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Component
-public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
+public class CurrentLoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 	private final UserRepository userRepository;
 
 	/**
@@ -25,7 +25,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 
-		boolean isLoginUserAnnotation = parameter.getParameterAnnotation(LoginUserInfo.class) != null;
+		boolean isLoginUserAnnotation = parameter.getParameterAnnotation(CurrentLoginUser.class) != null;
 		boolean isUserClass = UserInfo.class.equals(parameter.getParameterType());
 
 		return isLoginUserAnnotation && isUserClass;

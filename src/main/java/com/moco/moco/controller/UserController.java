@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.moco.moco.config.argsResolver.LoginUserInfo;
+import com.moco.moco.config.argsResolver.CurrentLoginUser;
 import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.dto.CommonResponseDto;
 import com.moco.moco.dto.UserDto;
@@ -39,7 +39,7 @@ public class UserController {
 
 	@DeleteMapping("/private/logout")
 	public ResponseEntity<?> logout(@RequestBody TokenDto.AccessTokenRequest request,
-		@LoginUserInfo UserInfo userInfo) {
+		@CurrentLoginUser UserInfo userInfo) {
 		jwTokenService.removeRefreshToken(request.getRefreshToken(), userInfo.getId());
 		return ResponseEntity.noContent().build();
 	}
