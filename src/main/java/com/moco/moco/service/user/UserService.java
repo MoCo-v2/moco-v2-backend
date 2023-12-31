@@ -88,12 +88,7 @@ public class UserService {
 		User user = userRepository.findById(userDto.getId())
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 
-		user.update(userDto.getName(),
-			userDto.getIntro(),
-			userDto.getPosition(),
-			userDto.getStack(),
-			userDto.getCareer(),
-			userDto.getPicture());
+		user.update(userDto);
 
 		return new UserDto.Response(user);
 	}

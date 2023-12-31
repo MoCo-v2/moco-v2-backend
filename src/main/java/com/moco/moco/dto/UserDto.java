@@ -6,9 +6,11 @@ import com.moco.moco.domain.User;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
+import lombok.Setter;
 
 public class UserDto {
 
+	@Setter
 	@Getter
 	public static class Request {
 		@NotEmpty
