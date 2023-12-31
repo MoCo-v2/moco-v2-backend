@@ -1,5 +1,6 @@
 package com.moco.moco.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,13 +22,13 @@ public class AwsS3Controller {
 	@PostMapping("/private/images")
 	public ResponseEntity uploadImage(
 		@RequestParam(value = "image") MultipartFile multipartFile) {
-		return ResponseEntity.ok().body(awsS3Service.uploadImage(multipartFile));
+		return ResponseEntity.status(HttpStatus.OK).body(awsS3Service.uploadImage(multipartFile));
 	}
 
 	/** @return 성공 시 200 Success */
 	@DeleteMapping("/private/images")
 	public ResponseEntity<Void> deleteImage(@RequestBody String fileName) {
 		awsS3Service.deleteImage(fileName);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.status(HttpStatus.OK).build();
 	}
 }

@@ -17,10 +17,10 @@ import lombok.Getter;
 public abstract class Time {    //상속
 
 	@CreatedDate
-	@Column(updatable = false, name = "created_date")
+	@Column(updatable = false, name = "createdDate")
 	private LocalDateTime createdDate;
 
 	@LastModifiedDate
-	@Column(name = "modified_date")
+	@Column(name = "modifiedDate")
 	private LocalDateTime modifiedDate;
 }

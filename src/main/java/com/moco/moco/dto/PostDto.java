@@ -3,6 +3,8 @@ package com.moco.moco.dto;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import com.moco.moco.domain.Post;
 import com.moco.moco.domain.User;
 import com.moco.moco.dto.queryDslDto.PostVo;
@@ -58,11 +60,13 @@ public class PostDto {
 	@Setter
 	public static class Response {
 		private List<PostVo> posts;
-		private Long total;
+		private int totalPages;
+		private Long totalElements;
 
-		public Response(List<PostVo> posts, Long total) {
-			this.posts = posts;
-			this.total = total;
+		public Response(Page<PostVo> posts) {
+			this.posts = posts.getContent();
+			this.totalPages = posts.getTotalPages();
+			this.totalElements = posts.getTotalElements();
 		}
 	}
 

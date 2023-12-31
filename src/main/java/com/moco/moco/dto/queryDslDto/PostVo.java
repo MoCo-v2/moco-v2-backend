@@ -19,7 +19,7 @@ public class PostVo {
 	private String techStack;
 	private String recruitmentPosition;
 	private LocalDate deadLine;
-	private String contact_method;
+	private String contactMethod;
 	private String link;
 	private Integer view;
 	private Integer commentCnt;
@@ -31,7 +31,7 @@ public class PostVo {
 
 	@QueryProjection
 	public PostVo(Long id, String title, String content, String type, String capacity, String mode, String duration,
-		String techStack, String recruitmentPosition, LocalDate deadLine, String contact_method, String link,
+		String techStack, String recruitmentPosition, LocalDate deadLine, String contactMethod, String link,
 		Integer view, Integer commentCnt, LocalDateTime created_date, boolean isRemoved, boolean isFull,
 		String writer, String picture) {
 		this.id = id;
@@ -44,7 +44,7 @@ public class PostVo {
 		this.techStack = techStack;
 		this.recruitmentPosition = recruitmentPosition;
 		this.deadLine = deadLine;
-		this.contact_method = contact_method;
+		this.contactMethod = contactMethod;
 		this.link = link;
 		this.view = view;
 		this.commentCnt = commentCnt;

@@ -1,5 +1,6 @@
 package com.moco.moco.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,13 +22,13 @@ public class BookmarkController {
 	@PostMapping("/private/bookmark/{postId}")
 	public ResponseEntity<BookmarkDto.Response> createBookmark(@PathVariable Long postId,
 		@CurrentLoginUser UserInfo userInfo) {
-		return ResponseEntity.status(201).body(bookMarkService.createBookmark(userInfo.getId(), postId));
+		return ResponseEntity.status(HttpStatus.CREATED).body(bookMarkService.createBookmark(userInfo.getId(), postId));
 	}
 
 	@DeleteMapping("/private/bookmark/{postId}")
 	public ResponseEntity<Void> removeBookmark(@PathVariable Long postId,
 		@CurrentLoginUser UserInfo userInfo) {
 		bookMarkService.removeBookmark(userInfo.getId(), postId);
-		return ResponseEntity.status(204).build();
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.moco.moco.domain.OauthType;
 import com.moco.moco.domain.User;
 import com.moco.moco.dto.UserDto;
 import com.moco.moco.dto.auth.TokenDto;
@@ -28,24 +29,18 @@ public class UserService {
 	private final JwTokenService tokenService;
 	private final OauthService oauthService;
 
+	public UserDto.Response getUser(String userId) {
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
+		return new UserDto.Response(user);
+	}
+
 	public TokenDto.Response authenticateAndGenerateToken(TokenDto.OauthRequest tokenDto) {
 		String id = "";
 
 		try {
 
-			switch (tokenDto.getProvider()) {
-				case GOOGLE:
-					id = oauthService.requestGoogleUserInfo(tokenDto.getAccessToken());
-					break;
-				case KAKAO:
-					id = oauthService.requestKaKaoUserInfo(tokenDto.getAccessToken());
-					break;
-				case GITHUB:
-					id = oauthService.requestGithubUserInfo(tokenDto.getAccessToken());
-					break;
-				default:
-					throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);
-			}
+			id = getOauth2UserId(tokenDto.getProvider(), tokenDto.getAccessToken());
 
 			Optional<User> user = userRepository.findById(id);
 
@@ -65,6 +60,19 @@ public class UserService {
 		}
 	}
 
+	private String getOauth2UserId(OauthType oauthType, String accessToken) {
+		switch (oauthType) {
+			case GOOGLE:
+				return oauthService.requestGoogleUserInfo(accessToken);
+			case KAKAO:
+				return oauthService.requestKaKaoUserInfo(accessToken);
+			case GITHUB:
+				return oauthService.requestGithubUserInfo(accessToken);
+			default:
+				throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);
+		}
+	}
+
 	@Transactional
 	public TokenDto.JwtResponse join(UserDto.Request userDto) {
 		boolean isExistId = userRepository.existsById(userDto.getId());
@@ -75,17 +83,17 @@ public class UserService {
 		return getUserIdAndGenerateToken(user.getId());
 	}
 
-	public void logout(String userId) {
-
-	}
-
 	@Transactional
 	public UserDto.Response updateUserInfo(UserDto.Request userDto) {
 		User user = userRepository.findById(userDto.getId())
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 
-		user.update(userDto.getName(), userDto.getIntro(), userDto.getPosition(), userDto.getStack(),
-			userDto.getCareer(), userDto.getPicture());
+		user.update(userDto.getName(),
+			userDto.getIntro(),
+			userDto.getPosition(),
+			userDto.getStack(),
+			userDto.getCareer(),
+			userDto.getPicture());
 
 		return new UserDto.Response(user);
 	}
