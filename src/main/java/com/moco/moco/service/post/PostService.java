@@ -2,6 +2,7 @@ package com.moco.moco.service.post;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -44,10 +45,9 @@ public class PostService {
 		}
 
 		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
-		List<PostVo> posts = postRepositoryCustom.getPosts(pageRequest, isRecruit, username);
-		Long total = getPostCount();
+		Page<PostVo> posts = postRepositoryCustom.getPosts(pageRequest, isRecruit, username);
 
-		return new PostDto.Response(posts, total);
+		return new PostDto.Response(posts);
 	}
 
 	// 특정 게시글을 가져온다.

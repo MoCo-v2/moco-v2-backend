@@ -40,8 +40,9 @@ public class JwTokenServiceTest {
 
 	private static JwTokenService jwTokenService;
 
-	private String secretKey = "quswowlsquswowlsquswowlsquswowlsquswasasasowasdasdls";
-	private String USER_ID = "google1234567";
+	private final String secretKey = "quswowlsquswowlsquswowlsquswowlsquswasasasowasdasdls";
+	private final String USER_ID = "google1234567";
+	private final String subject = "access Token";
 	private String base64EncodedSecretKey;
 
 	// 테스트에 사용할 Secret Key를 Base64 형식으로 인코딩한 후,
@@ -60,17 +61,37 @@ public class JwTokenServiceTest {
 		assertThat(secretKey, is(new String(Decoders.BASE64.decode(base64EncodedSecretKey))));
 	}
 
+	private Map<String, Object> generateClaims() {
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("id", USER_ID);
+		claims.put("roles", List.of("USER"));
+		return claims;
+	}
+
+	private Date getTimeAfterMinute(int minute) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.MINUTE, minute);
+		return calendar.getTime();
+	}
+
+	private Date getTimeAfterHour(int hour) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.HOUR, hour);
+		return calendar.getTime();
+	}
+
+	private Date getTimeAfterSecond(int second) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.SECOND, second);
+		return calendar.getTime();
+	}
+
 	@DisplayName("Access Token 생성 정상 케이스")
 	@Test
 	public void generateAccessTokenTest() {
 		//given
-		Map<String, Object> claims = new HashMap<>();
-		claims.put("id", USER_ID);
-		claims.put("roles", List.of("USER"));
-		String subject = "access token";
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.MINUTE, 110);
-		Date expiration = calendar.getTime();
+		Map<String, Object> claims = generateClaims();
+		Date expiration = getTimeAfterMinute(110);
 
 		//when
 		String accessToken = jwTokenService.generateAccessToken(claims, subject, expiration, base64EncodedSecretKey);
@@ -86,10 +107,7 @@ public class JwTokenServiceTest {
 	public void generateRefreshTokenTest() {
 
 		//given
-		String subject = "test refresh token";
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.HOUR, 24);
-		Date expiration = calendar.getTime();
+		Date expiration = getTimeAfterHour(24);
 
 		// when
 		String refreshToken = jwTokenService.generateRefreshToken(subject, expiration, base64EncodedSecretKey);
@@ -104,13 +122,8 @@ public class JwTokenServiceTest {
 	@Test
 	public void verifySignatureTest() {
 		//given
-		Map<String, Object> claims = new HashMap<>();
-		claims.put("id", USER_ID);
-		claims.put("roles", List.of("USER"));
-		String subject = "test access token";
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.MINUTE, 10);
-		Date expiration = calendar.getTime();
+		Map<String, Object> claims = generateClaims();
+		Date expiration = getTimeAfterMinute(10);
 
 		//when
 		String accessToken = jwTokenService.generateAccessToken(claims, subject, expiration, base64EncodedSecretKey);
@@ -123,13 +136,8 @@ public class JwTokenServiceTest {
 	@Test
 	public void verifyExpirationTest() throws InterruptedException {
 		//given
-		Map<String, Object> claims = new HashMap<>();
-		claims.put("id", USER_ID);
-		claims.put("roles", List.of("USER"));
-		String subject = "test access token";
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.SECOND, 1);
-		Date expiration = calendar.getTime();
+		Map<String, Object> claims = generateClaims();
+		Date expiration = getTimeAfterSecond(1);
 
 		String accessToken = jwTokenService.generateAccessToken(claims, subject, expiration, base64EncodedSecretKey);
 

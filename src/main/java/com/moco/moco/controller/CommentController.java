@@ -1,5 +1,6 @@
 package com.moco.moco.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,20 +25,22 @@ public class CommentController {
 	public ResponseEntity<CommentDto.Response> createComment(@PathVariable Long postId,
 		@RequestBody CommentDto.Request commentDto,
 		@CurrentLoginUser UserInfo userInfo) {
-		return ResponseEntity.status(201).body(commentService.createComment(userInfo.getId(), postId, commentDto));
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(commentService.createComment(userInfo.getId(), postId, commentDto));
 	}
 
 	@PutMapping("/private/comments/{commentId}")
 	public ResponseEntity<CommentDto.Response> commentUpdate(@PathVariable Long commentId,
 		@RequestBody CommentDto.Request commentDto,
 		@CurrentLoginUser UserInfo userInfo) {
-		return ResponseEntity.ok().body(commentService.updateComment(userInfo.getId(), commentId, commentDto));
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(commentService.updateComment(userInfo.getId(), commentId, commentDto));
 	}
 
 	@DeleteMapping("/private/comments/{commentId}")
 	public ResponseEntity<Void> deleteComment(@PathVariable Long commentId,
 		@CurrentLoginUser UserInfo userInfo) {
 		commentService.deleteComment(userInfo.getId(), commentId);
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
