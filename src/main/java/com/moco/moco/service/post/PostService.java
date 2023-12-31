@@ -1,18 +1,14 @@
 package com.moco.moco.service.post;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.moco.moco.domain.Comment;
 import com.moco.moco.domain.Post;
 import com.moco.moco.domain.User;
 import com.moco.moco.dto.PostDto;
-import com.moco.moco.dto.queryDslDto.PostDetailVo;
 import com.moco.moco.dto.queryDslDto.PostVo;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
@@ -35,15 +31,7 @@ public class PostService {
 	// 게시글을 페이징 한다.
 	@Transactional(readOnly = true)
 	public PostDto.Response getPosts(Integer offset, Integer limit, String recruit, String username) {
-		boolean isRecruit;
-		if ("true".equalsIgnoreCase(recruit)) {
-			isRecruit = true;
-		} else if ("false".equalsIgnoreCase(recruit)) {
-			isRecruit = false;
-		} else {
-			throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);
-		}
-
+		boolean isRecruit = "true".equalsIgnoreCase(recruit) ? true : false;
 		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdDate"));
 		Page<PostVo> posts = postRepositoryCustom.getPosts(pageRequest, isRecruit, username);
 
@@ -52,14 +40,10 @@ public class PostService {
 
 	// 특정 게시글을 가져온다.
 	@Transactional
-	public PostDetailVo getPost(Long postId) {
-		PostDetailVo post = postRepositoryCustom.getPost(postId)
+	public PostVo getPost(Long postId) {
+		PostVo post = postRepositoryCustom.getPost(postId)
 			.orElseThrow(() -> new CustomAuthenticationException(
 				ErrorCode.POST_NOT_FOUND));
-
-		//댓글 계층 구조로 정렬한다.
-		List<Comment> comments = postRepositoryCustom.getComments(post.getId());
-		post.setComments(commentService.convertNestedStructure(comments));
 
 		return post;
 	}
