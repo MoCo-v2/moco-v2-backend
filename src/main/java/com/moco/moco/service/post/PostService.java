@@ -44,7 +44,7 @@ public class PostService {
 			throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);
 		}
 
-		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
+		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdDate"));
 		Page<PostVo> posts = postRepositoryCustom.getPosts(pageRequest, isRecruit, username);
 
 		return new PostDto.Response(posts);
