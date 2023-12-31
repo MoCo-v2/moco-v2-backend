@@ -5,20 +5,25 @@ import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
-import com.moco.moco.domain.Comment;
 import com.moco.moco.domain.Post;
 import com.moco.moco.domain.User;
-import com.moco.moco.dto.queryDslDto.PostDetailVo;
+import com.moco.moco.dto.PostDto;
 import com.moco.moco.dto.queryDslDto.PostVo;
+import com.moco.moco.exception.CustomAuthenticationException;
+import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.repository.PostRepository;
 import com.moco.moco.repository.PostRepositoryCustom;
 import com.moco.moco.repository.UserRepository;
@@ -27,8 +32,7 @@ import com.moco.moco.service.post.PostService;
 public class PostServiceTest {
 
 	@InjectMocks
-	PostService postService;
-
+	PostService service;
 	@Mock
 	PostRepositoryCustom postRepositoryCustom;
 	@Mock
@@ -36,80 +40,227 @@ public class PostServiceTest {
 	@Mock
 	UserRepository userRepository;
 
+	User user;
+	Post post;
+
 	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 	}
 
-	public PostDetailVo generatePostDetailVo() {
-		PostDetailVo postDetailVo = new PostDetailVo(1L,
-			"프론트엔드 1분 모집합니다.",
-			"모코 프로젝트 런칭하기 위해 프론트엔드 1분 모집합니다.",
-			"프로젝트",
-			"1명",
-			"online",
-			"1개월",
-			"['java','react','spring']",
-			"프론트엔드",
-			LocalDate.now(),
-			"카카오톡 오픈 채팅방",
-			"www.moco.run",
-			1,
-			0,
-			LocalDateTime.now(),
-			false,
-			false
-			, "test_user",
-			"www.moco.run/picture"
-		);
-
-		return postDetailVo;
+	private PostVo generatePostVo() {
+		PostVo post = new PostVo();
+		post.setId(1L);
+		post.setTitle("글 제목");
+		post.setContent("글 내용");
+		post.setType("프로젝트");
+		post.setMode("online");
+		post.setDuration("3개월");
+		post.setTechStack("['java','react','spring']");
+		post.setRecruitmentPosition("프론트엔드");
+		post.setCapacity("2명");
+		post.setContactMethod("kakao talk");
+		post.setLink("https://moco.run");
+		post.setView(0);
+		post.setCommentCnt(0);
+		post.setRemoved(false);
+		post.setFull(false);
+		post.setWriter("MoCo");
+		post.setPicture("www.google.com/picture");
+		post.setDeadLine(LocalDate.now());
+		post.setCreatedDate(LocalDateTime.now());
+		return post;
 	}
 
-	private List<Comment> generateComments() {
-		List<Comment> comments = new ArrayList<>();
-		Comment comment = Comment.builder().post(mock(Post.class)).id(1L).user(mock(User.class)).build();
-		comments.add(comment);
-		return comments;
+	private PostDto.Request generatePostDto() {
+		PostDto.Request post = new PostDto.Request();
+		post.setTitle("글 제목");
+		post.setContent("글 내용");
+		post.setType("프로젝트");
+		post.setMode("online");
+		post.setDuration("3개월");
+		post.setTechStack("['java','react','spring']");
+		post.setRecruitmentPosition("프론트엔드");
+		post.setCapacity("2명");
+		post.setContactMethod("kakao talk");
+		post.setLink("https://moco.run");
+		post.setDeadLine(LocalDate.now());
+		return post;
 	}
 
-	// public void getPostsTest() {
-	// 	// Given
-	// 	Integer offset = 0;
-	// 	Integer limit = 1;
-	// 	String recruit = "true";
-	// 	String username = "test_user";
-	//
-	// 	Page<PostVo> posts = new PageImpl<>(generatePostVos());
-	// 	Long total = 20L; // Replace with the actual total count
-	//
-	// 	given(postRepositoryCustom.getPosts(PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdDate")),
-	// 		true, username))
-	// 		.willReturn(posts);
-	// 	given(postService.getPostCount()).willReturn(total);
-	//
-	// 	// When
-	// 	PostDto.Response result = postService.getPosts(offset, limit, recruit, username);
-	//
-	// 	// Then
-	// 	assertThat(result.getPosts()).isEqualTo(posts);
-	// 	assertThat(result.getTotalElements()).isEqualTo(total);
-	// }
+	private void generateUserAndPost() {
+		user = User.builder()
+			.id("google1234")
+			.build();
+
+		post = Post.builder()
+			.id(1L)
+			.user(user)
+			.build();
+	}
+
+	public PageRequest generatePageRequest() {
+		PageRequest pageRequest = PageRequest.of(0, 6, Sort.by(Sort.Direction.DESC, "createdDate"));
+		return pageRequest;
+	}
 
 	@Test
-	public void getPostCountTest() {
-		// Given
-		Long expectedCount = 30L;
-		given(postRepository.count()).willReturn(expectedCount);
+	public void getPostTest_게시글_조회_성공() {
+		//given
+		PostVo post = generatePostVo();
+		given(postRepositoryCustom.getPost(1L)).willReturn(Optional.ofNullable(post));
 
-		// When
-		Long result = postService.getPostCount();
+		//when
+		PostVo result = service.getPost(1L);
 
-		// Then
-		assertThat(result).isEqualTo(expectedCount);
+		//then
+		assertThat(result).isEqualTo(post);
 	}
 
-	private List<PostVo> generatePostVos() {
-		return new ArrayList<>();
+	@Test
+	public void getPostTest_게시글_조회_실패() {
+		//given
+		given(postRepositoryCustom.getPost(999L)).willThrow(
+			new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
+
+		//when
+		assertThatThrownBy(() -> service.getPost(999L))
+
+			//then
+			.isInstanceOf(CustomAuthenticationException.class)
+			.satisfies(exception ->
+				assertThat(((CustomAuthenticationException)exception).getErrorCode()).isEqualTo(
+					ErrorCode.POST_NOT_FOUND)
+			);
 	}
+
+	@Test
+	public void getPostsTest_게시글_페이징_조회_성공() {
+		//given
+		PageRequest pageRequest = generatePageRequest();
+		PostVo post = generatePostVo();
+		Page<PostVo> expectedPage = new PageImpl<>(Collections.singletonList(post));
+		given(postRepositoryCustom.getPosts(pageRequest, false, "google1234")).willReturn(expectedPage);
+
+		//when
+		Page<PostVo> resultPage = postRepositoryCustom.getPosts(pageRequest, false, "google1234");
+
+		//then
+		assertThat(resultPage).isEqualTo(expectedPage);
+		verify(postRepositoryCustom).getPosts(pageRequest, false, "google1234");
+	}
+
+	@Test
+	public void getPostsTest_게시글_페이징_조회_실패() {
+		//given
+		PageRequest pageRequest = generatePageRequest();
+		given(postRepositoryCustom.getPosts(pageRequest, false, "google1234")).willReturn(null);
+
+		//when
+		Page<PostVo> resultPage = postRepositoryCustom.getPosts(pageRequest, false, "google1234");
+
+		//then
+		assertThat(resultPage).isNull();
+	}
+
+	@Test
+	public void createPost_게시글_추가_성공() {
+		//given
+		PostDto.Request postDto = generatePostDto();
+		generateUserAndPost();
+		given(userRepository.findById(anyString())).willReturn(Optional.ofNullable(user));
+		given(postRepository.save(any(Post.class))).willReturn(post);
+
+		//when
+		Long result = service.savePost(postDto, user.getId());
+
+		//then
+		assertThat(result).isEqualTo(post.getId());
+	}
+
+	@Test
+	public void createPost_게시글_추가_실패() {
+		//given
+		PostDto.Request postDto = generatePostDto();
+		generateUserAndPost();
+		given(userRepository.findById(anyString())).willThrow(
+			new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
+
+		//when
+		assertThatThrownBy(() -> service.savePost(postDto, user.getId()))
+
+			//then
+			.isInstanceOf(CustomAuthenticationException.class)
+			.satisfies(exception ->
+				assertThat(((CustomAuthenticationException)exception).getErrorCode()).isEqualTo(
+					ErrorCode.USER_NOT_FOUND)
+			);
+	}
+
+	@Test
+	public void updatePost_게시글_수정_성공() {
+		//given
+		PostDto.Request postDto = generatePostDto();
+		generateUserAndPost();
+		given(userRepository.findById(anyString())).willReturn(Optional.ofNullable(user));
+		given(postRepository.findById(anyLong())).willReturn(Optional.ofNullable(post));
+
+		//when
+		Long result = service.updatePost(post.getId(), postDto, user.getId());
+
+		//then
+		assertThat(result).isEqualTo(post.getId());
+	}
+
+	@Test
+	public void updatePost_게시글_수정_실패() {
+		//given
+		PostDto.Request postDto = generatePostDto();
+		generateUserAndPost();
+		given(userRepository.findById(anyString())).willReturn(Optional.ofNullable(user));
+		given(postRepository.findById(anyLong())).willThrow(
+			new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
+
+		//when
+		assertThatThrownBy(() -> service.updatePost(post.getId(), postDto, user.getId()))
+			//then
+			.isInstanceOf(CustomAuthenticationException.class)
+			.satisfies(exception ->
+				assertThat(((CustomAuthenticationException)exception).getErrorCode()).isEqualTo(
+					ErrorCode.POST_NOT_FOUND)
+			);
+
+	}
+
+	@Test
+	public void deletePost_게시글_삭제_성공() {
+		//given
+		generateUserAndPost();
+		given(userRepository.findById(anyString())).willReturn(Optional.ofNullable(user));
+		given(postRepository.findById(anyLong())).willReturn(Optional.ofNullable(post));
+
+		//when
+		Long result = service.removePost(user.getId(), post.getId());
+
+		//then
+		assertThat(result).isEqualTo(post.getId());
+	}
+
+	@Test
+	public void deletePost_게시글_삭제_실패() {
+		//given
+		generateUserAndPost();
+		given(postRepository.findById(anyLong())).willThrow(
+			new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
+
+		//when
+		assertThatThrownBy(() -> service.removePost(user.getId(), post.getId()))
+			//then
+			.isInstanceOf(CustomAuthenticationException.class)
+			.satisfies(exception ->
+				assertThat(((CustomAuthenticationException)exception).getErrorCode()).isEqualTo(
+					ErrorCode.POST_NOT_FOUND)
+			);
+	}
+
 }

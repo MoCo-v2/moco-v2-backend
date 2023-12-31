@@ -3,6 +3,8 @@ package com.moco.moco.domain;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.validator.constraints.Length;
 
+import com.moco.moco.dto.UserDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -51,13 +53,13 @@ public class User extends Time {
 	@Column(nullable = false)
 	private Role role;
 
-	public User update(String name, String intro, String position, String stack, String career, String picture) {
-		this.name = name;
-		this.intro = intro;
-		this.position = position;
-		this.stack = stack;
-		this.career = career;
-		this.picture = picture;
+	public User update(UserDto.Request userDto) {
+		this.name = userDto.getName();
+		this.intro = userDto.getIntro();
+		this.position = userDto.getPosition();
+		this.stack = userDto.getStack();
+		this.career = userDto.getCareer();
+		this.picture = userDto.getPicture();
 
 		return this;
 	}

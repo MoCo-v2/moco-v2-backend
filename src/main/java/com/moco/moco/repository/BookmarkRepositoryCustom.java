@@ -22,6 +22,6 @@ public class BookmarkRepositoryCustom {
 			.from(bookmark)
 			.where(bookmark.user.id.eq(userId)
 				.and(bookmark.post.id.eq(postId)))
-			.fetchCount() > 0;
+			.fetchFirst() != null;
 	}
 }
