@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.moco.moco.config.argsResolver.CurrentLoginUser;
 import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.dto.PostDto;
-import com.moco.moco.dto.queryDslDto.PostDetailVo;
+import com.moco.moco.dto.queryDslDto.PostVo;
 import com.moco.moco.service.post.PostService;
 
 import jakarta.validation.Valid;
@@ -41,7 +41,7 @@ public class PostController {
 	}
 
 	@GetMapping("/public/posts/{postId}")
-	public ResponseEntity<PostDetailVo> getPost(@PathVariable Long postId) {
+	public ResponseEntity<PostVo> getPost(@PathVariable Long postId) {
 		return ResponseEntity.status(HttpStatus.OK).body(postService.getPost(postId));
 	}
 

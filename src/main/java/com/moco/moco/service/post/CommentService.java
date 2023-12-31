@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.moco.moco.domain.Comment;
@@ -16,22 +14,33 @@ import com.moco.moco.dto.CommentDto;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.repository.CommentRepository;
+import com.moco.moco.repository.CommentRepositoryCustom;
 import com.moco.moco.repository.PostRepository;
 import com.moco.moco.repository.PostRepositoryCustom;
 import com.moco.moco.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CommentService {
 	private final CommentRepository commentRepository;
+	private final CommentRepositoryCustom commentRepositoryCustom;
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
 	private final PostRepositoryCustom postRepositoryCustom;
 
-	private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
+	public List<CommentDto.Response> getComments(Long postId) {
+		postRepository.findById(postId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
+
+		List<Comment> comments = commentRepositoryCustom.getComments(postId);
+		
+		return convertNestedStructure(comments);
+	}
 
 	@Transactional
 	public CommentDto.Response createComment(String userId, Long postId, CommentDto.Request commentDto) {
@@ -50,7 +59,7 @@ public class CommentService {
 
 		commentDto.setUser(user);
 		commentDto.setPost(post);
-		postRepositoryCustom.addCommentCount(postId, +1);
+		commentRepositoryCustom.addCommentCount(postId, +1);
 		Comment comment = commentRepository.save(commentDto.toEntity());
 		return new CommentDto.Response(comment);
 	}
@@ -77,7 +86,7 @@ public class CommentService {
 		}
 
 		comment.remove();
-		postRepositoryCustom.addCommentCount(comment.getPost().getId(), -1);
+		commentRepositoryCustom.addCommentCount(comment.getPost().getId(), -1);
 	}
 
 	public List<CommentDto.Response> convertNestedStructure(List<Comment> comments) {
@@ -89,9 +98,14 @@ public class CommentService {
 			if (comment.getParent() != null) {
 				commentDto.setParentId(comment.getParent().getId());
 			}
+
 			map.put(commentDto.getId(), commentDto);
+
 			if (comment.getParent() != null) {
+
 				map.get(comment.getParent().getId()).getChildList().add(commentDto);
+				if (map.get(comment.getParent().getId()) != null) {
+				}
 			} else {
 				result.add(commentDto);
 			}
@@ -99,4 +113,5 @@ public class CommentService {
 
 		return result;
 	}
+
 }

@@ -6,7 +6,9 @@ import java.time.LocalDateTime;
 import com.querydsl.core.annotations.QueryProjection;
 
 import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 @Getter
 public class PostVo {
 	private Long id;
@@ -23,7 +25,7 @@ public class PostVo {
 	private String link;
 	private Integer view;
 	private Integer commentCnt;
-	private LocalDateTime created_date;
+	private LocalDateTime createdDate;
 	private boolean isRemoved;
 	private boolean isFull;
 	private String writer;
@@ -32,7 +34,7 @@ public class PostVo {
 	@QueryProjection
 	public PostVo(Long id, String title, String content, String type, String capacity, String mode, String duration,
 		String techStack, String recruitmentPosition, LocalDate deadLine, String contactMethod, String link,
-		Integer view, Integer commentCnt, LocalDateTime created_date, boolean isRemoved, boolean isFull,
+		Integer view, Integer commentCnt, LocalDateTime createdDate, boolean isRemoved, boolean isFull,
 		String writer, String picture) {
 		this.id = id;
 		this.title = title;
@@ -48,31 +50,13 @@ public class PostVo {
 		this.link = link;
 		this.view = view;
 		this.commentCnt = commentCnt;
-		this.created_date = created_date;
+		this.createdDate = createdDate;
 		this.isRemoved = isRemoved;
 		this.isFull = isFull;
 		this.writer = writer;
 		this.picture = picture;
 	}
+
+	public PostVo() {
+	}
 }
-
-
-
-/*
-public interface BoardListVo {
-    Integer getId();
-    LocalDateTime getCreated_date();
-    String  getContent();
-    String  getTitle();
-    String  getWriter();
-    Integer getUser_id();
-    Integer getView();
-    String  getThumbnail();
-    String  getSubcontent();
-    Integer getLike_count();
-    Integer getComment_count();
-    String  getPicture();
-    String  getHashTag();
-    Boolean getIsfull();
-}
-*/
