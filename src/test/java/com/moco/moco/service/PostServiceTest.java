@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +29,7 @@ import com.moco.moco.repository.PostRepositoryCustom;
 import com.moco.moco.repository.UserRepository;
 import com.moco.moco.service.post.PostService;
 
+@ExtendWith(MockitoExtension.class)
 public class PostServiceTest {
 
 	@InjectMocks
@@ -42,11 +43,6 @@ public class PostServiceTest {
 
 	User user;
 	Post post;
-
-	@BeforeEach
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	private PostVo generatePostVo() {
 		PostVo post = new PostVo();
@@ -236,7 +232,6 @@ public class PostServiceTest {
 	public void deletePost_게시글_삭제_성공() {
 		//given
 		generateUserAndPost();
-		given(userRepository.findById(anyString())).willReturn(Optional.ofNullable(user));
 		given(postRepository.findById(anyLong())).willReturn(Optional.ofNullable(post));
 
 		//when

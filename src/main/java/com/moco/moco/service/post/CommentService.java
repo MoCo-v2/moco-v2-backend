@@ -16,7 +16,6 @@ import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.repository.CommentRepository;
 import com.moco.moco.repository.CommentRepositoryCustom;
 import com.moco.moco.repository.PostRepository;
-import com.moco.moco.repository.PostRepositoryCustom;
 import com.moco.moco.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -31,14 +30,13 @@ public class CommentService {
 	private final CommentRepositoryCustom commentRepositoryCustom;
 	private final UserRepository userRepository;
 	private final PostRepository postRepository;
-	private final PostRepositoryCustom postRepositoryCustom;
 
 	public List<CommentDto.Response> getComments(Long postId) {
 		postRepository.findById(postId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 
 		List<Comment> comments = commentRepositoryCustom.getComments(postId);
-		
+
 		return convertNestedStructure(comments);
 	}
 

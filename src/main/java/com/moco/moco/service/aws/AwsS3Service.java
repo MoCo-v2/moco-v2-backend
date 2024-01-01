@@ -44,7 +44,6 @@ public class AwsS3Service {
 		String fileName = createFileName(multipartFile.getOriginalFilename());
 		String fileFormatName = multipartFile.getContentType()
 			.substring(multipartFile.getContentType().lastIndexOf("/") + 1);
-		System.out.printf("fileFormatName : " + fileFormatName);
 
 		MultipartFile resizedFile = resizeImage(fileName, fileFormatName, multipartFile, 768);
 
