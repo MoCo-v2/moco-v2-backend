@@ -28,9 +28,9 @@ public class UserController {
 	private final UserService userService;
 	private final JwTokenService jwTokenService;
 
-	@GetMapping("/private/users")
-	public ResponseEntity<UserDto.Response> getUserProfile(@CurrentLoginUser UserInfo userInfo) {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userInfo.getId()));
+	@GetMapping("/public/users/{userId}")
+	public ResponseEntity<UserDto.Response> getUserProfile(@PathVariable String userId) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userId));
 	}
 
 	@PostMapping("/public/login")
