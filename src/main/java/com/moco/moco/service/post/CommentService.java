@@ -47,19 +47,24 @@ public class CommentService {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 
+		Comment parentComment = null;
 		if (commentDto.getParentId() != null) {
-			Comment parentComment = commentRepository.findById(commentDto.getParentId())
+			parentComment = commentRepository.findById(commentDto.getParentId())
 				.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.COMMENT_NOT_FOUND));
-			commentDto.setParentComment(parentComment);
-		} else {
-			commentDto.setParentComment(null);
+			if (parentComment.getParent() != null) {
+				throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);
+			}
 		}
 
+		commentDto.setParentComment(parentComment);
 		commentDto.setUser(user);
 		commentDto.setPost(post);
+
 		commentRepositoryCustom.addCommentCount(postId, +1);
-		Comment comment = commentRepository.save(commentDto.toEntity());
-		return new CommentDto.Response(comment);
+
+		Comment savedComment = commentRepository.save(commentDto.toEntity());
+
+		return new CommentDto.Response(savedComment);
 	}
 
 	@Transactional
@@ -100,10 +105,7 @@ public class CommentService {
 			map.put(commentDto.getId(), commentDto);
 
 			if (comment.getParent() != null) {
-
 				map.get(comment.getParent().getId()).getChildList().add(commentDto);
-				if (map.get(comment.getParent().getId()) != null) {
-				}
 			} else {
 				result.add(commentDto);
 			}
