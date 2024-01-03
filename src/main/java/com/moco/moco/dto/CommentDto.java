@@ -42,11 +42,12 @@ public class CommentDto {
 		private String content;
 		private LocalDateTime createdDate;
 		private LocalDateTime modifiedDate;
+		private String userId;
+		private String picture;
 		private String name;
 		private Long postId;
 		private Long parentId;
 		private List<CommentDto.Response> childList = new ArrayList<>();
-		private boolean isRemoved;
 
 		/* Entity -> DTO */
 		public Response(Comment comment) {
@@ -54,9 +55,10 @@ public class CommentDto {
 			this.content = comment.getContent();
 			this.createdDate = comment.getCreatedDate();
 			this.modifiedDate = comment.getModifiedDate();
+			this.userId = comment.getUser().getId();
+			this.picture = comment.getUser().getPicture();
 			this.name = comment.getUser().getName();
 			this.postId = comment.getPost().getId();
-			this.isRemoved = comment.isRemoved();
 		}
 	}
 
