@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "post")
 public class Post extends Time {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY) //PK 생성 규칙
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(length = 500, nullable = false)
