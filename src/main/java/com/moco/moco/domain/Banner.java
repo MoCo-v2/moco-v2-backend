@@ -1,11 +1,13 @@
 package com.moco.moco.domain;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.annotations.Type;
 
-import io.hypersistence.utils.hibernate.type.json.JsonType;
+import com.moco.moco.dto.BannerDto;
+
+import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,15 +30,26 @@ public class Banner extends Time {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Type(JsonType.class)
-	@Column(columnDefinition = "json")
-	private Map<String, Object> items = new HashMap<>();
+	@Column
+	private String bannerName;
 
-	public static Banner of(Map<String, Object> items) {
-		return new Banner(null, items);
+	@Type(ListArrayType.class)
+	@Column(columnDefinition = "text[]")
+	private List<String> imageList = new ArrayList<>();
+
+	@Column
+	private boolean expose = false;
+
+	@Builder
+	public Banner(String bannerName, List<String> imageList, boolean expose) {
+		this.bannerName = bannerName;
+		this.imageList = imageList;
+		this.expose = expose;
 	}
 
-	public void update(Map<String, Object> items) {
-		this.items = items;
+	public void update(BannerDto.Request request) {
+		this.bannerName = request.getBannerName();
+		this.imageList = request.getItems();
+		this.expose = request.isExpose();
 	}
 }

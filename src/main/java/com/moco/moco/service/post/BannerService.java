@@ -1,7 +1,7 @@
 package com.moco.moco.service.post;
 
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,24 +20,29 @@ public class BannerService {
 
 	private final BannerRepository bannerRepository;
 
-	public List<Banner> getBanner() {
-		return bannerRepository.findAll();
+	public List<BannerDto.Response> getBanners() {
+		List<Banner> banners = bannerRepository.findAll();
+		return banners.stream()
+			.map(BannerDto.Response::new)
+			.collect(Collectors.toList());
+	}
+
+	public BannerDto.Response getBanner(Long bannerId) {
+		Banner banner = bannerRepository.findById(bannerId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.BANNER_NOT_FOUNT));
+		return new BannerDto.Response(banner);
 	}
 
 	@Transactional
 	public void saveBanner(BannerDto.Request request) {
-		Map<String, Object> items = Map.of("bannerImages", request.getImages());
-
-		Banner banner = Banner.of(items);
-		bannerRepository.save(banner);
+		bannerRepository.save(request.toEntity());
 	}
 
-	public void updateBanner(Long bannerId, List<String> images) {
+	@Transactional
+	public void updateBanner(Long bannerId, BannerDto.Request request) {
 		Banner banner = bannerRepository.findById(bannerId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.BANNER_NOT_FOUNT));
 
-		Map<String, Object> items = Map.of("bannerImages", images);
-
-		banner.update(items);
+		banner.update(request);
 	}
 }
