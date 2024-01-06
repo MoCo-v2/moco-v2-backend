@@ -60,9 +60,9 @@ public class CommentService {
 		commentDto.setUser(user);
 		commentDto.setPost(post);
 
-		commentRepositoryCustom.addCommentCount(postId, +1);
-
 		Comment savedComment = commentRepository.save(commentDto.toEntity());
+
+		commentRepositoryCustom.addCommentCount(postId, 1);
 
 		return new CommentDto.Response(savedComment);
 	}
@@ -83,6 +83,10 @@ public class CommentService {
 	public void deleteComment(String userId, Long commentId) {
 		Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
 			new CustomAuthenticationException(ErrorCode.COMMENT_NOT_FOUND));
+
+		if (comment.isRemoved()) {
+			throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);
+		}
 
 		if (!comment.getUser().getId().equals(userId)) {
 			throw new CustomAuthenticationException(ErrorCode.UNAUTHORIZED_WRITER);

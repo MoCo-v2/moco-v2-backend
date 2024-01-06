@@ -26,8 +26,6 @@ public class PostService {
 	private PostRepository postRepository;
 	private PostRepositoryCustom postRepositoryCustom;
 
-	private CommentService commentService;
-
 	// 게시글을 페이징 한다.
 	@Transactional(readOnly = true)
 	public PostDto.Response getPosts(Integer offset, Integer limit, String recruit, String username) {
@@ -41,11 +39,9 @@ public class PostService {
 	// 특정 게시글을 가져온다.
 	@Transactional
 	public PostVo getPost(Long postId) {
-		PostVo post = postRepositoryCustom.getPost(postId)
+		return postRepositoryCustom.getPost(postId)
 			.orElseThrow(() -> new CustomAuthenticationException(
 				ErrorCode.POST_NOT_FOUND));
-
-		return post;
 	}
 
 	// 게시글을 생성 한다.
@@ -64,7 +60,7 @@ public class PostService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 
-		Post post = postRepository.findById(postId)
+		Post post = postRepository.findByIdAndIsRemoved(postId, false)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 
 		Boolean isWriter = post.getUser().getId().equals(userId);
@@ -77,7 +73,7 @@ public class PostService {
 
 	@Transactional
 	public Long removePost(String userId, Long postId) {
-		Post post = postRepository.findById(postId)
+		Post post = postRepository.findByIdAndIsRemoved(postId, false)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 
 		Boolean isWriter = post.getUser().getId().equals(userId);
@@ -97,11 +93,5 @@ public class PostService {
 	// 	Long total = getPostCount();
 	// 	return new PostDto.Posts(posts, total);
 	// }
-
-	/* 페이징 */
-	@Transactional
-	public Long getPostCount() {
-		return postRepository.count();
-	}
 
 }
