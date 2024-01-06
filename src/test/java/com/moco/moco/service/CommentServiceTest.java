@@ -49,7 +49,7 @@ class CommentServiceTest {
 		given(commentRepositoryCustom.getComments(1L)).willReturn(comments);
 
 		//when
-		List result = service.getComments(1L);
+		List<CommentDto.Response> result = service.getComments(1L);
 
 		//then
 		assertThat(result).isEqualTo(comments);
@@ -164,7 +164,17 @@ class CommentServiceTest {
 		//given
 		User user = User.builder().id("google1234").build();
 		Post post = Post.builder().id(1L).build();
-		Comment comment = Comment.builder().id(1L).user(user).post(post).isRemoved(false).build();
+		List<Comment> comments = new ArrayList<>();
+		comments.add(Comment.builder().build());
+
+		Comment comment = Comment.builder()
+			.id(1L)
+			.user(user)
+			.post(post)
+			.isRemoved(false)
+			.childList(comments)
+			.build();
+
 		given(commentRepository.findById(anyLong())).willReturn(Optional.ofNullable(comment));
 
 		//when
