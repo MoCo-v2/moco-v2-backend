@@ -42,7 +42,7 @@ public class Comment extends Time {
 	@JoinColumn(name = "parent_id")
 	private Comment parent;
 
-	@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "parent", orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<Comment> childList;
 
 	private boolean isRemoved;
