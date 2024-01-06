@@ -9,14 +9,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.domain.RefreshToken;
+import com.moco.moco.domain.Role;
+import com.moco.moco.domain.User;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.repository.RefreshTokenRepository;
+import com.moco.moco.repository.UserRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -35,6 +37,7 @@ public class JwTokenService {
 	@Getter
 	@Value("${jwt.key.secret}")
 	private String secretKey;
+	private final UserRepository userRepository;
 	private final RefreshTokenRepository refreshTokenRepository;
 
 	// 평문 비밀키를 Base64로 인코딩한다.
@@ -90,7 +93,16 @@ public class JwTokenService {
 		RefreshToken getRefreshToken = refreshTokenRepository.findById(refreshToken)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.NEED_LOGIN));
 
-		Map<String, Object> claims = generateClaims(getRefreshToken.getUserId());
+		User user = userRepository.findById(getRefreshToken.getUserId())
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
+
+		Map<String, Object> claims = null;
+
+		if (user.getRole().getKey().equals(Role.MASTER.getKey())) {
+			claims = generateAdminClaims(user.getId());
+		} else {
+			claims = generateUserClaims(user.getId());
+		}
 
 		String subject = "access token";
 		String secretKey = encodeBase64SecretKey(getSecretKey());
@@ -128,7 +140,6 @@ public class JwTokenService {
 			.setSigningKey(key) // 서명에 사용된 Secret Key를 설정
 			.build()
 			.parseClaimsJws(jws).getBody(); // JWT를 파싱해서 Claims를 얻음
-		List<GrantedAuthority> authorities = (List)claimsBody.get("roles");
 		return UserInfo
 			.builder()
 			.id((String)claimsBody.get("id"))
@@ -136,10 +147,18 @@ public class JwTokenService {
 			.build();
 	}
 
-	public Map<String, Object> generateClaims(String userId) {
+	public Map<String, Object> generateUserClaims(String userId) {
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("id", userId);
-		claims.put("roles", List.of("USER"));
+		claims.put("roles", List.of(Role.USER.getKey()));
+
+		return claims;
+	}
+
+	public Map<String, Object> generateAdminClaims(String userId) {
+		Map<String, Object> claims = new HashMap<>();
+		claims.put("id", userId);
+		claims.put("roles", List.of(Role.MASTER.getKey()));
 
 		return claims;
 	}

@@ -21,13 +21,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException authException) throws IOException {
 		String exception = (String)request.getAttribute(EXCEPTION_KET);
-
-		if (exception == null || exception.equals(ErrorCode.INVALID_AUTH_TOKEN)) {
+		if (exception == null) {
 			setResponse(response, ErrorCode.INVALID_REQUEST);
+			return;
 		}
 
 		setResponse(response, ErrorCode.INVALID_AUTH_TOKEN);
-
 	}
 
 	public static void setResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {

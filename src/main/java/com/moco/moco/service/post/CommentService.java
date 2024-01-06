@@ -88,16 +88,33 @@ public class CommentService {
 			throw new CustomAuthenticationException(ErrorCode.UNAUTHORIZED_WRITER);
 		}
 
-		comment.remove();
+		if (!comment.getChildList().isEmpty()) {
+			comment.remove();
+		} else {
+			commentRepository.delete(getDeletableAncestorComment(comment));
+		}
+
 		commentRepositoryCustom.addCommentCount(comment.getPost().getId(), -1);
+	}
+
+	private Comment getDeletableAncestorComment(Comment comment) {
+		Comment parent = comment.getParent(); // 현재 댓글의 부모를 구함
+		if (parent != null && parent.getChildList().size() == 1 && parent.isRemoved())
+			// 부모가 있고, 부모의 자식이 1개(지금 삭제하는 댓글)이고, 부모의 삭제 상태가 TRUE인 댓글이라면 재귀
+			return getDeletableAncestorComment(parent);
+		return comment; // 삭제해야하는 댓글 반환
 	}
 
 	public List<CommentDto.Response> convertNestedStructure(List<Comment> comments) {
 		List<CommentDto.Response> result = new ArrayList<>();
 		Map<Long, CommentDto.Response> map = new HashMap<>();
 
-		comments.stream().forEach(comment -> {
+		comments.forEach(comment -> {
 			CommentDto.Response commentDto = new CommentDto.Response(comment);
+			if (comment.isRemoved()) {
+				commentDto.setContent("삭제된 댓글입니다.");
+			}
+
 			if (comment.getParent() != null) {
 				commentDto.setParentId(comment.getParent().getId());
 			}

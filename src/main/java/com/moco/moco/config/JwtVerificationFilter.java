@@ -83,11 +83,13 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 
 	// 인증객체에 정보를 토큰의 정보를 담는다.
 	private void setAuthenticationToContext(UserInfo userInfo) {
-		List<GrantedAuthority> authorities = userInfo.getRoles().stream()
-			.map(role -> new SimpleGrantedAuthority(role))
-			.collect(Collectors.toList());
+		List<? extends GrantedAuthority> authorities =
+			userInfo.getRoles().stream()
+				.map(SimpleGrantedAuthority::new)
+				.collect(Collectors.toList());
 
 		Authentication authentication = new UsernamePasswordAuthenticationToken(userInfo, null, authorities);
+
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 }

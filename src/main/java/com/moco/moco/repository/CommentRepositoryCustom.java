@@ -26,7 +26,7 @@ public class CommentRepositoryCustom {
 			.leftJoin(comment.post, post).fetchJoin()
 			.leftJoin(comment.user, user).fetchJoin()
 			.leftJoin(comment.parent).fetchJoin()
-			.where(comment.post.id.eq(postId).and(comment.isRemoved.eq(false)))
+			.where(comment.post.id.eq(postId))
 			.orderBy(comment.parent.id.asc().nullsFirst(), comment.createdDate.asc())
 			.fetch();
 	}

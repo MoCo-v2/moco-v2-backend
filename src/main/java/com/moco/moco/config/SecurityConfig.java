@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.moco.moco.domain.Role;
 import com.moco.moco.exception.CustomAuthenticationEntryPoint;
 import com.moco.moco.service.jwt.JwTokenService;
 
@@ -53,8 +54,9 @@ public class SecurityConfig {
 
 			.and()
 			.authorizeHttpRequests()
-			.requestMatchers("", "/", "/actuator/health").permitAll()
+			.requestMatchers("/actuator/health").permitAll()
 			.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+			.requestMatchers("/admin/**").hasRole(Role.MASTER.name())
 			.requestMatchers("/public/**").permitAll()
 			.requestMatchers("/private/**").authenticated()
 			.anyRequest().authenticated() // 그 외 인증 없이 접근 X
