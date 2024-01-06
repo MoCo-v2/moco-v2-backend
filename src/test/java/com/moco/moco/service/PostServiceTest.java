@@ -199,7 +199,7 @@ public class PostServiceTest {
 		PostDto.Request postDto = generatePostDto();
 		generateUserAndPost();
 		given(userRepository.findById(anyString())).willReturn(Optional.ofNullable(user));
-		given(postRepository.findById(anyLong())).willReturn(Optional.ofNullable(post));
+		given(postRepository.findByIdAndIsRemoved(anyLong(), anyBoolean())).willReturn(Optional.ofNullable(post));
 
 		//when
 		Long result = service.updatePost(post.getId(), postDto, user.getId());
@@ -214,7 +214,7 @@ public class PostServiceTest {
 		PostDto.Request postDto = generatePostDto();
 		generateUserAndPost();
 		given(userRepository.findById(anyString())).willReturn(Optional.ofNullable(user));
-		given(postRepository.findById(anyLong())).willThrow(
+		given(postRepository.findByIdAndIsRemoved(anyLong(), anyBoolean())).willThrow(
 			new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 
 		//when
@@ -232,7 +232,7 @@ public class PostServiceTest {
 	public void deletePost_게시글_삭제_성공() {
 		//given
 		generateUserAndPost();
-		given(postRepository.findById(anyLong())).willReturn(Optional.ofNullable(post));
+		given(postRepository.findByIdAndIsRemoved(anyLong(), anyBoolean())).willReturn(Optional.ofNullable(post));
 
 		//when
 		Long result = service.removePost(user.getId(), post.getId());
@@ -245,7 +245,7 @@ public class PostServiceTest {
 	public void deletePost_게시글_삭제_실패() {
 		//given
 		generateUserAndPost();
-		given(postRepository.findById(anyLong())).willThrow(
+		given(postRepository.findByIdAndIsRemoved(anyLong(), anyBoolean())).willThrow(
 			new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 
 		//when
