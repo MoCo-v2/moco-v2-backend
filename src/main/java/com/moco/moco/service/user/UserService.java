@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.moco.moco.domain.OauthType;
+import com.moco.moco.domain.Role;
 import com.moco.moco.domain.User;
 import com.moco.moco.dto.UserDto;
 import com.moco.moco.dto.auth.TokenDto;
@@ -99,7 +100,16 @@ public class UserService {
 	}
 
 	private TokenDto.JwtResponse getUserIdAndGenerateToken(String userId) {
-		Map<String, Object> claims = tokenService.generateClaims(userId);
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
+
+		Map<String, Object> claims = null;
+
+		if (user.getRole().getKey().equals(Role.MASTER.getKey())) {
+			claims = tokenService.generateAdminClaims(userId);
+		} else {
+			claims = tokenService.generateUserClaims(userId);
+		}
 
 		String subject = "access token";
 

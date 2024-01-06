@@ -17,7 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mock;
 
+import com.moco.moco.domain.Role;
 import com.moco.moco.repository.RefreshTokenRepository;
+import com.moco.moco.repository.UserRepository;
 import com.moco.moco.service.jwt.JwTokenService;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -37,6 +39,8 @@ public class JwTokenServiceTest {
 
 	@Mock
 	private RefreshTokenRepository refreshTokenRepository;
+	@Mock
+	private UserRepository userRepository;
 
 	private static JwTokenService jwTokenService;
 
@@ -49,7 +53,7 @@ public class JwTokenServiceTest {
 	// 인코딩된 Secret Key를 각 테스트 케이스에서 사용
 	@BeforeAll
 	public void init() {
-		jwTokenService = new JwTokenService(refreshTokenRepository);
+		jwTokenService = new JwTokenService(userRepository, refreshTokenRepository);
 		base64EncodedSecretKey = jwTokenService.encodeBase64SecretKey(secretKey);
 		System.out.println(base64EncodedSecretKey);
 	}
@@ -64,26 +68,8 @@ public class JwTokenServiceTest {
 	private Map<String, Object> generateClaims() {
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("id", USER_ID);
-		claims.put("roles", List.of("USER"));
+		claims.put("roles", List.of(Role.USER.getKey()));
 		return claims;
-	}
-
-	private Date getTimeAfterMinute(int minute) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.MINUTE, minute);
-		return calendar.getTime();
-	}
-
-	private Date getTimeAfterHour(int hour) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.HOUR, hour);
-		return calendar.getTime();
-	}
-
-	private Date getTimeAfterSecond(int second) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.SECOND, second);
-		return calendar.getTime();
 	}
 
 	@DisplayName("Access Token 생성 정상 케이스")
@@ -149,6 +135,24 @@ public class JwTokenServiceTest {
 		//then
 		assertThrows(ExpiredJwtException.class,
 			() -> jwTokenService.verifySignature(accessToken, base64EncodedSecretKey));
+	}
+
+	private Date getTimeAfterMinute(int minute) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.MINUTE, minute);
+		return calendar.getTime();
+	}
+
+	private Date getTimeAfterHour(int hour) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.HOUR, hour);
+		return calendar.getTime();
+	}
+
+	private Date getTimeAfterSecond(int second) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.SECOND, second);
+		return calendar.getTime();
 	}
 
 }
