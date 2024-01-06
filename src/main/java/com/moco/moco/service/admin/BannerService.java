@@ -1,4 +1,4 @@
-package com.moco.moco.service.post;
+package com.moco.moco.service.admin;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,5 +45,13 @@ public class BannerService {
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.BANNER_NOT_FOUNT));
 
 		return new BannerDto.Response(banner.update(request));
+	}
+
+	@Transactional
+	public void deleteBanner(Long bannerId) {
+		Banner banner = bannerRepository.findById(bannerId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.BANNER_NOT_FOUNT));
+
+		bannerRepository.delete(banner);
 	}
 }

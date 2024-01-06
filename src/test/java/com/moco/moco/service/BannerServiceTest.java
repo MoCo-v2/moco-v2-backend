@@ -19,7 +19,7 @@ import com.moco.moco.dto.BannerDto;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.repository.BannerRepository;
-import com.moco.moco.service.post.BannerService;
+import com.moco.moco.service.admin.BannerService;
 
 @ExtendWith(MockitoExtension.class)
 public class BannerServiceTest {
