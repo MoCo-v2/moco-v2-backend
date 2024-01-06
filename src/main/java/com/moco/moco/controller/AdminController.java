@@ -32,15 +32,13 @@ public class AdminController {
 	}
 
 	@PostMapping("/admin/banners")
-	public ResponseEntity<Void> saveBanner(@RequestBody BannerDto.Request request) {
-		bannerService.saveBanner(request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+	public ResponseEntity<BannerDto.Response> saveBanner(@RequestBody BannerDto.Request request) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(bannerService.saveBanner(request));
 	}
 
 	@PutMapping("/admin/banners/{bannerId}")
-	public ResponseEntity<Void> updateBanner(@PathVariable Long bannerId,
+	public ResponseEntity<BannerDto.Response> updateBanner(@PathVariable Long bannerId,
 		@RequestBody BannerDto.Request request) {
-		bannerService.updateBanner(bannerId, request);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return ResponseEntity.status(HttpStatus.CREATED).body(bannerService.updateBanner(bannerId, request));
 	}
 }

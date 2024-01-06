@@ -47,9 +47,10 @@ public class Banner extends Time {
 		this.expose = expose;
 	}
 
-	public void update(BannerDto.Request request) {
+	public Banner update(BannerDto.Request request) {
 		this.bannerName = request.getBannerName();
 		this.imageList = request.getItems();
 		this.expose = request.isExpose();
+		return this;
 	}
 }

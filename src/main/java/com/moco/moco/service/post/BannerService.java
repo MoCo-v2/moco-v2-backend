@@ -34,15 +34,16 @@ public class BannerService {
 	}
 
 	@Transactional
-	public void saveBanner(BannerDto.Request request) {
-		bannerRepository.save(request.toEntity());
+	public BannerDto.Response saveBanner(BannerDto.Request request) {
+		Banner banner = bannerRepository.save(request.toEntity());
+		return new BannerDto.Response(banner);
 	}
 
 	@Transactional
-	public void updateBanner(Long bannerId, BannerDto.Request request) {
+	public BannerDto.Response updateBanner(Long bannerId, BannerDto.Request request) {
 		Banner banner = bannerRepository.findById(bannerId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.BANNER_NOT_FOUNT));
 
-		banner.update(request);
+		return new BannerDto.Response(banner.update(request));
 	}
 }
