@@ -22,9 +22,6 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @RestController
 public class CommentController {
-
-	private final String OFFSET = "0";
-	private final String LIMIT = "9";
 	private final CommentService commentService;
 
 	@GetMapping("/public/comments/{postId}")
