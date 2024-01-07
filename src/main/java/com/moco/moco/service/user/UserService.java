@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.domain.OauthType;
 import com.moco.moco.domain.Role;
 import com.moco.moco.domain.User;
@@ -32,6 +33,12 @@ public class UserService {
 
 	public UserDto.Response getUser(String userId) {
 		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
+		return new UserDto.Response(user);
+	}
+
+	public UserDto.Response getMyProfile(UserInfo userInfo) {
+		User user = userRepository.findById(userInfo.getId())
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 		return new UserDto.Response(user);
 	}

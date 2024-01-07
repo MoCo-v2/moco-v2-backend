@@ -33,6 +33,11 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userId));
 	}
 
+	@GetMapping("/private/users")
+	public ResponseEntity<UserDto.Response> getMyProfile(@CurrentLoginUser UserInfo userInfo) {
+		return ResponseEntity.status(HttpStatus.OK).body(userService.getMyProfile(userInfo));
+	}
+
 	@PostMapping("/public/login")
 	public ResponseEntity<TokenDto.Response> login(@Valid @RequestBody TokenDto.OauthRequest tokenDto) {
 		return ResponseEntity.status(HttpStatus.OK).body(userService.authenticateAndGenerateToken(tokenDto));
