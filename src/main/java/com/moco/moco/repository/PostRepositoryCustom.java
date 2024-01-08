@@ -42,7 +42,7 @@ public class PostRepositoryCustom {
 			)
 			.fetchOne();
 
-		if (post != null) {
+		if (postVo != null) {
 			queryFactory.update(post)
 				.set(post.view, post.view.add(1))
 				.where(post.id.eq(postId))
