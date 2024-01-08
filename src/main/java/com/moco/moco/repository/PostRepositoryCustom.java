@@ -3,6 +3,7 @@ package com.moco.moco.repository;
 import static com.moco.moco.domain.QPost.*;
 import static com.moco.moco.domain.QUser.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +53,14 @@ public class PostRepositoryCustom {
 	}
 
 	//게시글을 페이징처리하여 가져온다.
-	public Page<PostVo> getPosts(Pageable pageable, boolean recruit, String username) {
+	public Page<PostVo> getPosts(
+		Pageable pageable,
+		boolean recruit,
+		String username,
+		String type,
+		String position,
+		String mode,
+		String language) {
 		List<PostVo> posts = queryFactory
 			.select(
 				new QPostVo(post.id, post.title, post.content, post.type, post.capacity, post.mode, post.duration,
@@ -63,7 +71,13 @@ public class PostRepositoryCustom {
 			.on(post.user.id.eq(user.id))
 			.where(post.isRemoved.eq(false)
 				.and(post.isFull.eq(recruit))
-				.and(usernameEq(username)))
+				.and(usernameEq(username))
+				.and(typeEq(type))
+				.and(positionEq(position))
+				.and(modeEq(mode))
+				.and(languageEq(language))
+			)
+
 			.orderBy(post.createdDate.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -86,5 +100,40 @@ public class PostRepositoryCustom {
 			return null;
 		}
 		return user.name.eq(username);
+	}
+
+	private BooleanExpression typeEq(String type) {
+		if (type == null) {
+			return null;
+		}
+		return post.type.eq(type);
+	}
+
+	private BooleanExpression positionEq(String position) {
+		if (position == null) {
+			return null;
+		}
+		return post.recruitmentPosition.contains(position);
+	}
+
+	private BooleanExpression modeEq(String mode) {
+		if (mode == null) {
+			return null;
+		}
+		return post.mode.eq(mode);
+	}
+
+	private BooleanExpression languageEq(String language) {
+		if (language == null) {
+			return null;
+		}
+
+		String[] languages = language.split(",");
+		List<String> languageList = Arrays.asList(languages);
+
+		return languageList.stream()
+			.map(post.techStack::contains)
+			.reduce(BooleanExpression::or)
+			.orElse(null);
 	}
 }

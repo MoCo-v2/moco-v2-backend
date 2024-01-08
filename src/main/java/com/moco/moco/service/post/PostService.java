@@ -28,10 +28,19 @@ public class PostService {
 
 	// 게시글을 페이징 한다.
 	@Transactional(readOnly = true)
-	public PostDto.Response getPosts(Integer offset, Integer limit, String recruit, String username) {
+	public PostDto.Response getPosts(Integer offset,
+		Integer limit,
+		String recruit,
+		String username,
+		String type,
+		String position,
+		String mode,
+		String language
+	) {
 		boolean isRecruit = "true".equalsIgnoreCase(recruit) ? true : false;
 		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdDate"));
-		Page<PostVo> posts = postRepositoryCustom.getPosts(pageRequest, isRecruit, username);
+		Page<PostVo> posts = postRepositoryCustom.getPosts(pageRequest, isRecruit, username, type, position, mode,
+			language);
 
 		return new PostDto.Response(posts);
 	}
