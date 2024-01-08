@@ -18,13 +18,11 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
 public class PostRepositoryCustom {
-	private final EntityManager em;
 	private final JPAQueryFactory queryFactory;
 
 	//게시글 상세 정보를 가져온다.

@@ -15,8 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 import com.moco.moco.domain.Post;
 import com.moco.moco.domain.User;
@@ -93,11 +91,6 @@ public class PostServiceTest {
 			.id(1L)
 			.user(user)
 			.build();
-	}
-
-	public PageRequest generatePageRequest() {
-		PageRequest pageRequest = PageRequest.of(0, 6, Sort.by(Sort.Direction.DESC, "createdDate"));
-		return pageRequest;
 	}
 
 	@Test
