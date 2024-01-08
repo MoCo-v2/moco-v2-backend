@@ -64,4 +64,16 @@ public class CommentDto {
 		}
 	}
 
+	@Getter
+	@Setter
+	public static class Count {
+		private Long postId;
+		private Long totalCount;
+
+		public Count(Long postId, Long totalCount) {
+			this.postId = postId;
+			this.totalCount = totalCount;
+		}
+	}
+
 }

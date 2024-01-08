@@ -31,6 +31,13 @@ public class CommentRepositoryCustom {
 			.fetch();
 	}
 
+	//특정 게시글의 댓글 개수를 가져온다.
+	public long getCommentsCount(Long postId) {
+		return queryFactory.select(comment.count()).from(comment)
+			.where(comment.post.id.eq(postId))
+			.fetchOne();
+	}
+
 	//게시글의 댓글 개수 +1 or -1
 	public void addCommentCount(Long postId, int num) {
 		queryFactory.update(post)
