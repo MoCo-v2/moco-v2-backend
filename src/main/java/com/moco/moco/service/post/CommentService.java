@@ -32,12 +32,19 @@ public class CommentService {
 	private final PostRepository postRepository;
 
 	public List<CommentDto.Response> getComments(Long postId) {
-		postRepository.findById(postId)
+		postRepository.findByIdAndIsRemoved(postId, false)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 
 		List<Comment> comments = commentRepositoryCustom.getComments(postId);
 
 		return convertNestedStructure(comments);
+	}
+
+	public CommentDto.Count getCommentsCount(Long postId) {
+		postRepository.findByIdAndIsRemoved(postId, false)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
+		Long totalCount = commentRepositoryCustom.getCommentsCount(postId);
+		return new CommentDto.Count(postId, totalCount);
 	}
 
 	@Transactional

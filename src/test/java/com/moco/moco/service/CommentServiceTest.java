@@ -45,7 +45,7 @@ class CommentServiceTest {
 		//given
 		Post post = Post.builder().id(1L).build();
 		List<Comment> comments = new ArrayList<>();
-		given(postRepository.findById(1L)).willReturn(Optional.ofNullable(post));
+		given(postRepository.findByIdAndIsRemoved(anyLong(), anyBoolean())).willReturn(Optional.ofNullable(post));
 		given(commentRepositoryCustom.getComments(1L)).willReturn(comments);
 
 		//when
@@ -58,7 +58,8 @@ class CommentServiceTest {
 	@Test
 	void getComments_댓글_조회_실패() {
 		//given
-		given(postRepository.findById(1L)).willThrow(new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
+		given(postRepository.findByIdAndIsRemoved(anyLong(), anyBoolean())).willThrow(
+			new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 
 		//when
 		assertThatThrownBy(() -> service.getComments(1L))

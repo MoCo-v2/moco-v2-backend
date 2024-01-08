@@ -29,6 +29,11 @@ public class CommentController {
 		return ResponseEntity.status(HttpStatus.OK).body(commentService.getComments(postId));
 	}
 
+	@GetMapping("/public/comments-count/{postId}")
+	public ResponseEntity<CommentDto.Count> getCommentsCount(@PathVariable Long postId) {
+		return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentsCount(postId));
+	}
+
 	@PostMapping("/private/comments/{postId}")
 	public ResponseEntity<CommentDto.Response> createComment(@PathVariable Long postId,
 		@RequestBody CommentDto.Request commentDto,

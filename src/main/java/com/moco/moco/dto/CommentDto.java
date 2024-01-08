@@ -24,14 +24,13 @@ public class CommentDto {
 
 		/* DTO -> Entity */
 		public Comment toEntity() {
-			Comment comments = Comment.builder()
+			return Comment.builder()
 				.content(content)
 				.user(user)
 				.isRemoved(false)
 				.post(post)
 				.parent(parentComment)
 				.build();
-			return comments;
 		}
 	}
 
@@ -61,6 +60,18 @@ public class CommentDto {
 			this.name = comment.getUser().getName();
 			this.postId = comment.getPost().getId();
 			this.isRemoved = comment.isRemoved();
+		}
+	}
+
+	@Getter
+	@Setter
+	public static class Count {
+		private Long postId;
+		private Long totalCount;
+
+		public Count(Long postId, Long totalCount) {
+			this.postId = postId;
+			this.totalCount = totalCount;
 		}
 	}
 

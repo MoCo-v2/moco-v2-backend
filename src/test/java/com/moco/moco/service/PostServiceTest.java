@@ -15,8 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 import com.moco.moco.domain.Post;
 import com.moco.moco.domain.User;
@@ -95,11 +93,6 @@ public class PostServiceTest {
 			.build();
 	}
 
-	public PageRequest generatePageRequest() {
-		PageRequest pageRequest = PageRequest.of(0, 6, Sort.by(Sort.Direction.DESC, "createdDate"));
-		return pageRequest;
-	}
-
 	@Test
 	public void getPostTest_게시글_조회_성공() {
 		//given
@@ -133,27 +126,32 @@ public class PostServiceTest {
 	@Test
 	public void getPostsTest_게시글_페이징_조회_성공() {
 		//given
-		PageRequest pageRequest = generatePageRequest();
 		PostVo post = generatePostVo();
 		Page<PostVo> expectedPage = new PageImpl<>(Collections.singletonList(post));
-		given(postRepositoryCustom.getPosts(pageRequest, false, "google1234")).willReturn(expectedPage);
+		given(
+			postRepositoryCustom.getPosts(any(), anyBoolean(), anyString(), anyString(), anyString(), anyString(),
+				anyString())).willReturn(expectedPage);
 
 		//when
-		Page<PostVo> resultPage = postRepositoryCustom.getPosts(pageRequest, false, "google1234");
+		Page<PostVo> resultPage = postRepositoryCustom.getPosts(any(), anyBoolean(), anyString(), anyString(),
+			anyString(), anyString(), anyString());
 
 		//then
 		assertThat(resultPage).isEqualTo(expectedPage);
-		verify(postRepositoryCustom).getPosts(pageRequest, false, "google1234");
+		verify(postRepositoryCustom).getPosts(any(), anyBoolean(), anyString(), anyString(), anyString(),
+			anyString(), anyString());
 	}
 
 	@Test
 	public void getPostsTest_게시글_페이징_조회_실패() {
 		//given
-		PageRequest pageRequest = generatePageRequest();
-		given(postRepositoryCustom.getPosts(pageRequest, false, "google1234")).willReturn(null);
+		given(
+			postRepositoryCustom.getPosts(any(), anyBoolean(), anyString(), anyString(), anyString(), anyString(),
+				anyString())).willReturn(null);
 
 		//when
-		Page<PostVo> resultPage = postRepositoryCustom.getPosts(pageRequest, false, "google1234");
+		Page<PostVo> resultPage = postRepositoryCustom.getPosts(any(), anyBoolean(), anyString(), anyString(),
+			anyString(), anyString(), anyString());
 
 		//then
 		assertThat(resultPage).isNull();

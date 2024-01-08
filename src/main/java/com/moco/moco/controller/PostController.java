@@ -36,8 +36,13 @@ public class PostController {
 		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
 		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
 		@RequestParam(value = "recruit", required = false, defaultValue = RECRUIT) String recruit,
-		@RequestParam(value = "username", required = false) String username) {
-		return ResponseEntity.status(HttpStatus.OK).body(postService.getPosts(offset, limit, recruit, username));
+		@RequestParam(value = "username", required = false) String username,
+		@RequestParam(value = "type", required = false) String type,
+		@RequestParam(value = "position", required = false) String position,
+		@RequestParam(value = "mode", required = false) String mode,
+		@RequestParam(value = "language", required = false) String language) {
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(postService.getPosts(offset, limit, recruit, username, type, position, mode, language));
 	}
 
 	@GetMapping("/public/posts/{postId}")
