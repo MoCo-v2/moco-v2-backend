@@ -24,14 +24,13 @@ public class CommentDto {
 
 		/* DTO -> Entity */
 		public Comment toEntity() {
-			Comment comments = Comment.builder()
+			return Comment.builder()
 				.content(content)
 				.user(user)
 				.isRemoved(false)
 				.post(post)
 				.parent(parentComment)
 				.build();
-			return comments;
 		}
 	}
 

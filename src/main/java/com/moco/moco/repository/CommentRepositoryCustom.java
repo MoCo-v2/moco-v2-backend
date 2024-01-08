@@ -11,13 +11,11 @@ import org.springframework.stereotype.Repository;
 import com.moco.moco.domain.Comment;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
 public class CommentRepositoryCustom {
-	private final EntityManager em;
 	private final JPAQueryFactory queryFactory;
 
 	//특정 게시글의 댓글을 가져온다.
