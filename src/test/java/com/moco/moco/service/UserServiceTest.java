@@ -5,20 +5,21 @@ import static org.mockito.BDDMockito.*;
 
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.moco.moco.domain.Role;
 import com.moco.moco.domain.User;
 import com.moco.moco.dto.UserDto;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
-import com.moco.moco.repository.UserRepository;
+import com.moco.moco.jpaRepository.UserRepository;
 import com.moco.moco.service.user.UserService;
 
+@ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 	@InjectMocks
 	UserService service;
@@ -27,11 +28,6 @@ public class UserServiceTest {
 
 	User user;
 	UserDto.Request userDto;
-
-	@BeforeEach
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	private void generateUser() {
 		user = User.builder()

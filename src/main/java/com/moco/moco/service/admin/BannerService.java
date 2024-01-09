@@ -10,7 +10,7 @@ import com.moco.moco.domain.Banner;
 import com.moco.moco.dto.BannerDto;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
-import com.moco.moco.repository.BannerRepository;
+import com.moco.moco.jpaRepository.BannerRepository;
 
 import lombok.RequiredArgsConstructor;
 

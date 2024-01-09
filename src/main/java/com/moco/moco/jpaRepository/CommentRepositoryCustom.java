@@ -1,4 +1,4 @@
-package com.moco.moco.repository;
+package com.moco.moco.jpaRepository;
 
 import static com.moco.moco.domain.QComment.*;
 import static com.moco.moco.domain.QPost.*;

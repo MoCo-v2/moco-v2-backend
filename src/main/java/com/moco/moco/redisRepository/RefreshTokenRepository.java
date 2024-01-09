@@ -1,4 +1,4 @@
-package com.moco.moco.repository;
+package com.moco.moco.redisRepository;
 
 import org.springframework.data.repository.CrudRepository;
 

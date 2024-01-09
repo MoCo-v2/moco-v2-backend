@@ -11,10 +11,10 @@ import com.moco.moco.domain.User;
 import com.moco.moco.dto.BookmarkDto;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
-import com.moco.moco.repository.BookmarkRepository;
-import com.moco.moco.repository.BookmarkRepositoryCustom;
-import com.moco.moco.repository.PostRepository;
-import com.moco.moco.repository.UserRepository;
+import com.moco.moco.jpaRepository.BookmarkRepository;
+import com.moco.moco.jpaRepository.BookmarkRepositoryCustom;
+import com.moco.moco.jpaRepository.PostRepository;
+import com.moco.moco.jpaRepository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -28,7 +28,7 @@ public class BookmarkService {
 	private final UserRepository userRepository;
 
 	public BookmarkDto.Response createBookmark(String userId, Long postId) {
-		Boolean isExistsBookmark = bookmarkRepositoryCustom.isBookmarkExists(userId, postId);
+		boolean isExistsBookmark = bookmarkRepositoryCustom.isBookmarkExists(userId, postId);
 		if (isExistsBookmark) {
 			throw new CustomAuthenticationException(ErrorCode.DUPLICATE_RESOURCE);
 		}
@@ -40,7 +40,7 @@ public class BookmarkService {
 
 		Bookmark bookmark = Bookmark.builder().post(post).user(user).build();
 
-		Bookmark saveBookmark = null;
+		Bookmark saveBookmark;
 		try {
 			saveBookmark = bookMarkRepository.save(bookmark);
 		} catch (DataIntegrityViolationException e) {
