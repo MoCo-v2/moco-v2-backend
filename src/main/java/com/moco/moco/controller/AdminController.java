@@ -1,5 +1,7 @@
 package com.moco.moco.controller;
 
+import static com.moco.moco.common.ResponseEntityConstants.*;
+
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -24,28 +26,32 @@ public class AdminController {
 
 	@GetMapping("/admin/banners")
 	public ResponseEntity<List<BannerDto.Response>> getBanners() {
-		return ResponseEntity.ok().body(bannerService.getBanners());
+		List<BannerDto.Response> bannersDto = bannerService.getBanners();
+		return ResponseEntity.ok().body(bannersDto);
 	}
 
 	@GetMapping("/admin/banners/{bannerId}")
 	public ResponseEntity<BannerDto.Response> getBanner(@PathVariable Long bannerId) {
-		return ResponseEntity.ok().body(bannerService.getBanner(bannerId));
+		BannerDto.Response bannerDto = bannerService.getBanner(bannerId);
+		return ResponseEntity.ok().body(bannerDto);
 	}
 
 	@PostMapping("/admin/banners")
 	public ResponseEntity<BannerDto.Response> saveBanner(@RequestBody BannerDto.Request request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(bannerService.saveBanner(request));
+		BannerDto.Response bannerDto = bannerService.saveBanner(request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(bannerDto);
 	}
 
 	@PutMapping("/admin/banners/{bannerId}")
 	public ResponseEntity<BannerDto.Response> updateBanner(@PathVariable Long bannerId,
 		@RequestBody BannerDto.Request request) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(bannerService.updateBanner(bannerId, request));
+		BannerDto.Response bannerDto = bannerService.updateBanner(bannerId, request);
+		return ResponseEntity.status(HttpStatus.CREATED).body(bannerDto);
 	}
 
 	@DeleteMapping("/admin/banners/{bannerId}")
-	public ResponseEntity<Void> deleteBanner(@PathVariable Long bannerId) {
+	public ResponseEntity<HttpStatus> deleteBanner(@PathVariable Long bannerId) {
 		bannerService.deleteBanner(bannerId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return RESPONSE_ENTITY_NO_CONTENT;
 	}
 }

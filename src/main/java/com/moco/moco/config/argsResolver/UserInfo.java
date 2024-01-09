@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @Builder
 public class UserInfo implements Serializable {
 	private String id;

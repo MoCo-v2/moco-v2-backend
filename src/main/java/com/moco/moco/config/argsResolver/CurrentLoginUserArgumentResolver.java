@@ -19,6 +19,7 @@ public class CurrentLoginUserArgumentResolver implements HandlerMethodArgumentRe
 
 	/**
 	 * Controller의 파라미터 값을 검사하는 콜백 함수
+	 * Description : @CurrentLoginUser 어노테이션이 UserInfo Class에 사용되었는지 검사하는 메소드
 	 * @param parameter 클라이언트로 부터 받은 파라미터
 	 * @return 콜백 함수의 true/false
 	 */
