@@ -69,16 +69,11 @@ public class UserService {
 	}
 
 	private String getOauth2UserId(OauthType oauthType, String accessToken) {
-		switch (oauthType) {
-			case GOOGLE:
-				return oauthService.requestGoogleUserInfo(accessToken);
-			case KAKAO:
-				return oauthService.requestKaKaoUserInfo(accessToken);
-			case GITHUB:
-				return oauthService.requestGithubUserInfo(accessToken);
-			default:
-				throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);
-		}
+		return switch (oauthType) {
+			case GOOGLE -> oauthService.requestGoogleUserInfo(accessToken);
+			case KAKAO -> oauthService.requestKaKaoUserInfo(accessToken);
+			case GITHUB -> oauthService.requestGithubUserInfo(accessToken);
+		};
 	}
 
 	@Transactional
@@ -110,7 +105,7 @@ public class UserService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 
-		Map<String, Object> claims = null;
+		Map<String, Object> claims;
 
 		if (user.getRole().getKey().equals(Role.MASTER.getKey())) {
 			claims = tokenService.generateAdminClaims(userId);

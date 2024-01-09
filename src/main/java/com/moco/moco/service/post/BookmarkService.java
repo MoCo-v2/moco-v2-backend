@@ -28,7 +28,7 @@ public class BookmarkService {
 	private final UserRepository userRepository;
 
 	public BookmarkDto.Response createBookmark(String userId, Long postId) {
-		Boolean isExistsBookmark = bookmarkRepositoryCustom.isBookmarkExists(userId, postId);
+		boolean isExistsBookmark = bookmarkRepositoryCustom.isBookmarkExists(userId, postId);
 		if (isExistsBookmark) {
 			throw new CustomAuthenticationException(ErrorCode.DUPLICATE_RESOURCE);
 		}
@@ -40,7 +40,7 @@ public class BookmarkService {
 
 		Bookmark bookmark = Bookmark.builder().post(post).user(user).build();
 
-		Bookmark saveBookmark = null;
+		Bookmark saveBookmark;
 		try {
 			saveBookmark = bookMarkRepository.save(bookmark);
 		} catch (DataIntegrityViolationException e) {

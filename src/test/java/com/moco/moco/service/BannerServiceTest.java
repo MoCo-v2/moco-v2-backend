@@ -36,7 +36,7 @@ public class BannerServiceTest {
 		Banner banner = Banner.builder().bannerName("배너이름").expose(false).build();
 		BannerDto.Response bannerDto = new BannerDto.Response(banner);
 		//given
-		given(bannerRepository.findById(anyLong())).willReturn(Optional.ofNullable(banner));
+		given(bannerRepository.findById(anyLong())).willReturn(Optional.of(banner));
 		given(service.getBanner(anyLong())).willReturn(bannerDto);
 
 		//when
@@ -48,8 +48,6 @@ public class BannerServiceTest {
 
 	@Test
 	void getBanner_배너_조회_실패() {
-		Banner banner = Banner.builder().bannerName("배너이름").expose(false).build();
-
 		//given
 		given(bannerRepository.findById(anyLong())).willThrow(
 			new CustomAuthenticationException(ErrorCode.BANNER_NOT_FOUNT));
@@ -101,7 +99,6 @@ public class BannerServiceTest {
 		request.setBannerName("배너이름수정");
 		request.setItems(new ArrayList<>());
 		request.setExpose(false);
-		BannerDto.Response response = new BannerDto.Response(banner);
 
 		//given
 		given(bannerRepository.findById(any())).willReturn(Optional.ofNullable(banner));
@@ -115,7 +112,6 @@ public class BannerServiceTest {
 
 	@Test
 	void updateBanner_배너_수정_실패() {
-		Banner banner = Banner.builder().bannerName("배너이름").expose(false).build();
 		BannerDto.Request request = new BannerDto.Request();
 		request.setBannerName("배너이름수정");
 		request.setItems(new ArrayList<>());

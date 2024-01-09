@@ -50,9 +50,8 @@ public class JwTokenService {
 	// 이 키로 서명한다.최신 버전의 jjwt 에서는 내부적으로 적절한 HMAC 알고리즘을 지정해 준다.
 	private Key getKeyFromBase64EncodedKey(String base64EncodedSecretKey) {
 		byte[] keyBytes = Decoders.BASE64.decode(base64EncodedSecretKey);
-		Key key = Keys.hmacShaKeyFor(keyBytes);
 
-		return key;
+		return Keys.hmacShaKeyFor(keyBytes);
 	}
 
 	// Access Token을 생성한다.
