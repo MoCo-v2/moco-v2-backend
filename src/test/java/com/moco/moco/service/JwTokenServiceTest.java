@@ -18,8 +18,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mock;
 
 import com.moco.moco.domain.Role;
-import com.moco.moco.repository.RefreshTokenRepository;
-import com.moco.moco.repository.UserRepository;
+import com.moco.moco.jpaRepository.UserRepository;
+import com.moco.moco.redisRepository.RefreshTokenRepository;
 import com.moco.moco.service.jwt.JwTokenService;
 
 import io.jsonwebtoken.ExpiredJwtException;

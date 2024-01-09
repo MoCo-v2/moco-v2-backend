@@ -17,8 +17,8 @@ import com.moco.moco.domain.Role;
 import com.moco.moco.domain.User;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
-import com.moco.moco.repository.RefreshTokenRepository;
-import com.moco.moco.repository.UserRepository;
+import com.moco.moco.jpaRepository.UserRepository;
+import com.moco.moco.redisRepository.RefreshTokenRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

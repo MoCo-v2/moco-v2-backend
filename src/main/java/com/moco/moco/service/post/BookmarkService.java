@@ -11,10 +11,10 @@ import com.moco.moco.domain.User;
 import com.moco.moco.dto.BookmarkDto;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
-import com.moco.moco.repository.BookmarkRepository;
-import com.moco.moco.repository.BookmarkRepositoryCustom;
-import com.moco.moco.repository.PostRepository;
-import com.moco.moco.repository.UserRepository;
+import com.moco.moco.jpaRepository.BookmarkRepository;
+import com.moco.moco.jpaRepository.BookmarkRepositoryCustom;
+import com.moco.moco.jpaRepository.PostRepository;
+import com.moco.moco.jpaRepository.UserRepository;
 
 import lombok.AllArgsConstructor;
 

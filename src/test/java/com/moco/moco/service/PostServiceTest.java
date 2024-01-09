@@ -22,9 +22,9 @@ import com.moco.moco.dto.PostDto;
 import com.moco.moco.dto.queryDslDto.PostVo;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
-import com.moco.moco.repository.PostRepository;
-import com.moco.moco.repository.PostRepositoryCustom;
-import com.moco.moco.repository.UserRepository;
+import com.moco.moco.jpaRepository.PostRepository;
+import com.moco.moco.jpaRepository.PostRepositoryCustom;
+import com.moco.moco.jpaRepository.UserRepository;
 import com.moco.moco.service.post.PostService;
 
 @ExtendWith(MockitoExtension.class)

@@ -19,10 +19,10 @@ import com.moco.moco.domain.User;
 import com.moco.moco.dto.CommentDto;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
-import com.moco.moco.repository.CommentRepository;
-import com.moco.moco.repository.CommentRepositoryCustom;
-import com.moco.moco.repository.PostRepository;
-import com.moco.moco.repository.UserRepository;
+import com.moco.moco.jpaRepository.CommentRepository;
+import com.moco.moco.jpaRepository.CommentRepositoryCustom;
+import com.moco.moco.jpaRepository.PostRepository;
+import com.moco.moco.jpaRepository.UserRepository;
 import com.moco.moco.service.post.CommentService;
 
 @ExtendWith(MockitoExtension.class)

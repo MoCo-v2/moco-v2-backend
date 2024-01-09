@@ -16,7 +16,7 @@ import com.moco.moco.domain.User;
 import com.moco.moco.dto.UserDto;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
-import com.moco.moco.repository.UserRepository;
+import com.moco.moco.jpaRepository.UserRepository;
 import com.moco.moco.service.user.UserService;
 
 public class UserServiceTest {

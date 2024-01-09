@@ -8,7 +8,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import com.moco.moco.repository.UserRepository;
+import com.moco.moco.jpaRepository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
