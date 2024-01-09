@@ -1,5 +1,7 @@
 package com.moco.moco.controller;
 
+import static com.moco.moco.common.ResponseEntityConstants.*;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,17 +20,17 @@ import lombok.RequiredArgsConstructor;
 public class AwsS3Controller {
 	private final AwsS3Service awsS3Service;
 
-	/** @return 성공 시 200 Success와 함께 업로드 된 파일의 파일명 리스트 반환 */
+	// @return 성공 시 200 Success와 함께 업로드 된 파일의 파일명 반환
 	@PostMapping("/private/images")
-	public ResponseEntity uploadImage(
+	public ResponseEntity<String> uploadImage(
 		@RequestParam(value = "image") MultipartFile multipartFile) {
-		return ResponseEntity.status(HttpStatus.OK).body(awsS3Service.uploadImage(multipartFile));
+		String imageUrl = awsS3Service.uploadImage(multipartFile);
+		return ResponseEntity.status(HttpStatus.OK).body(imageUrl);
 	}
 
-	/** @return 성공 시 200 Success */
 	@DeleteMapping("/private/images")
-	public ResponseEntity<Void> deleteImage(@RequestBody String fileName) {
+	public ResponseEntity<HttpStatus> deleteImage(@RequestBody String fileName) {
 		awsS3Service.deleteImage(fileName);
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return RESPONSE_ENTITY_NO_CONTENT;
 	}
 }

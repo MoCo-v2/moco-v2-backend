@@ -37,7 +37,7 @@ public class UserService {
 		return new UserDto.Response(user);
 	}
 
-	public UserDto.Response getMyProfile(UserInfo userInfo) {
+	public UserDto.Response getMyInfo(UserInfo userInfo) {
 		User user = userRepository.findById(userInfo.getId())
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 		return new UserDto.Response(user);

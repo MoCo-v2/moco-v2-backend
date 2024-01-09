@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -45,19 +46,19 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 	private final String EXCEPTION_KET = "exception";
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-		FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
+		@NotNull FilterChain filterChain) throws ServletException, IOException {
 		try {
 			UserInfo userInfo = getTokenInHeaderAndVerify(request);
 			setAuthenticationToContext(userInfo);
 		} catch (SignatureException se) {
-			log.info("검증되지 않은 토큰으로 요청", JwtVerificationFilter.class);
+			log.info("검증되지 않은 토큰으로 요청 {}", JwtVerificationFilter.class);
 			request.setAttribute(EXCEPTION_KET, ErrorCode.INVALID_REQUEST.getMessage());
 		} catch (ExpiredJwtException ee) {
-			log.info("만료된 토큰으로 요청", JwtVerificationFilter.class);
+			log.info("만료된 토큰으로 요청 {}", JwtVerificationFilter.class);
 			request.setAttribute(EXCEPTION_KET, ErrorCode.INVALID_AUTH_TOKEN.getMessage());
 		} catch (Exception e) {
-			log.info("필터 예외 발생", JwtVerificationFilter.class);
+			log.info("필터 예외 발생 {}", JwtVerificationFilter.class);
 			log.info(e.getMessage());
 			request.setAttribute(EXCEPTION_KET, ErrorCode.SERVER_ERROR.getMessage());
 		}

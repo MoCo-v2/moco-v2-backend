@@ -1,5 +1,7 @@
 package com.moco.moco.controller;
 
+import static com.moco.moco.common.ResponseEntityConstants.*;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,37 +31,41 @@ public class UserController {
 	private final JwTokenService jwTokenService;
 
 	@GetMapping("/public/users/{userId}")
-	public ResponseEntity<UserDto.Response> getUserProfile(@PathVariable String userId) {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.getUser(userId));
+	public ResponseEntity<UserDto.Response> getUserInfo(@PathVariable String userId) {
+		UserDto.Response userInfoDto = userService.getUser(userId);
+		return ResponseEntity.status(HttpStatus.OK).body(userInfoDto);
 	}
 
 	@GetMapping("/private/users")
-	public ResponseEntity<UserDto.Response> getMyProfile(@CurrentLoginUser UserInfo userInfo) {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.getMyProfile(userInfo));
+	public ResponseEntity<UserDto.Response> getMyInfo(@CurrentLoginUser UserInfo userInfo) {
+		UserDto.Response userInfoDto = userService.getMyInfo(userInfo);
+		return ResponseEntity.status(HttpStatus.OK).body(userInfoDto);
 	}
 
 	@PostMapping("/public/login")
 	public ResponseEntity<TokenDto.Response> login(@Valid @RequestBody TokenDto.OauthRequest tokenDto) {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.authenticateAndGenerateToken(tokenDto));
+		TokenDto.Response generatedTokenDto = userService.authenticateAndGenerateToken(tokenDto);
+		return ResponseEntity.status(HttpStatus.OK).body(generatedTokenDto);
 	}
 
 	@PostMapping("/public/join")
 	public ResponseEntity<TokenDto.Response> signUp(@Valid @RequestBody UserDto.Request userDto) {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.join(userDto));
+		TokenDto.JwtResponse generatedTokenDto = userService.join(userDto);
+		return ResponseEntity.status(HttpStatus.OK).body(generatedTokenDto);
 	}
 
 	@DeleteMapping("/private/logout")
-	public ResponseEntity<?> logout(@RequestBody TokenDto.AccessTokenRequest request,
+	public ResponseEntity<HttpStatus> logout(@RequestBody TokenDto.AccessTokenRequest request,
 		@CurrentLoginUser UserInfo userInfo) {
 		jwTokenService.removeRefreshToken(request.getRefreshToken(), userInfo.getId());
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return RESPONSE_ENTITY_NO_CONTENT;
 	}
 
 	@GetMapping("/public/check-nickname/{name}")
 	public ResponseEntity<CommonResponseDto> checkNameDuplication(@PathVariable(value = "name") String name) {
 		boolean isNameDuplication = userService.checkNameDuplication(name);
 		if (isNameDuplication) {
-			return ResponseEntity.status(409)
+			return ResponseEntity.status(HttpStatus.CONFLICT)
 				.body(CommonResponseDto.builder().msg("이미 존재하는 이름입니다.").result(false).build());
 		}
 		return ResponseEntity.status(HttpStatus.OK)
@@ -68,7 +74,8 @@ public class UserController {
 
 	@PutMapping("/private/users")
 	public ResponseEntity<UserDto.Response> updateUserInfo(@Valid @RequestBody UserDto.Request userDto) {
-		return ResponseEntity.status(HttpStatus.OK).body(userService.updateUserInfo(userDto));
+		UserDto.Response userInfoDto = userService.updateUserInfo(userDto);
+		return ResponseEntity.status(HttpStatus.OK).body(userInfoDto);
 	}
 
 }

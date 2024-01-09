@@ -1,5 +1,7 @@
 package com.moco.moco.controller;
 
+import static com.moco.moco.common.ResponseEntityConstants.*;
+
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -26,34 +28,38 @@ public class CommentController {
 
 	@GetMapping("/public/comments/{postId}")
 	public ResponseEntity<List<CommentDto.Response>> getComments(@PathVariable Long postId) {
-		return ResponseEntity.status(HttpStatus.OK).body(commentService.getComments(postId));
+		List<CommentDto.Response> commentDto = commentService.getComments(postId);
+		return ResponseEntity.status(HttpStatus.OK).body(commentDto);
 	}
 
 	@GetMapping("/public/comments-count/{postId}")
 	public ResponseEntity<CommentDto.Count> getCommentsCount(@PathVariable Long postId) {
-		return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentsCount(postId));
+		CommentDto.Count commentsCountDto = commentService.getCommentsCount(postId);
+		return ResponseEntity.status(HttpStatus.OK).body(commentsCountDto);
 	}
 
 	@PostMapping("/private/comments/{postId}")
 	public ResponseEntity<CommentDto.Response> createComment(@PathVariable Long postId,
-		@RequestBody CommentDto.Request commentDto,
+		@RequestBody CommentDto.Request request,
 		@CurrentLoginUser UserInfo userInfo) {
+		CommentDto.Response commentDto = commentService.createComment(userInfo.getId(), postId, request);
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(commentService.createComment(userInfo.getId(), postId, commentDto));
+			.body(commentDto);
 	}
 
 	@PutMapping("/private/comments/{commentId}")
 	public ResponseEntity<CommentDto.Response> commentUpdate(@PathVariable Long commentId,
-		@RequestBody CommentDto.Request commentDto,
+		@RequestBody CommentDto.Request request,
 		@CurrentLoginUser UserInfo userInfo) {
+		CommentDto.Response commentDto = commentService.updateComment(userInfo.getId(), commentId, request);
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(commentService.updateComment(userInfo.getId(), commentId, commentDto));
+			.body(commentDto);
 	}
 
 	@DeleteMapping("/private/comments/{commentId}")
-	public ResponseEntity<Void> deleteComment(@PathVariable Long commentId,
+	public ResponseEntity<HttpStatus> deleteComment(@PathVariable Long commentId,
 		@CurrentLoginUser UserInfo userInfo) {
 		commentService.deleteComment(userInfo.getId(), commentId);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		return RESPONSE_ENTITY_NO_CONTENT;
 	}
 }
