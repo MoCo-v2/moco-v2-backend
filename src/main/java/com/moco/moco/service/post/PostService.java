@@ -1,5 +1,8 @@
 package com.moco.moco.service.post;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -42,7 +45,11 @@ public class PostService {
 		Page<PostVo> posts = postRepositoryCustom.getPosts(pageRequest, isRecruit, username, type, position, mode,
 			language);
 
-		return new PostDto.Response(posts);
+		List<PostDto.PostList> postLists = posts.getContent().stream()
+			.map(PostDto.PostList::new)
+			.collect(Collectors.toList());
+
+		return new PostDto.Response(postLists, posts.getTotalPages(), posts.getTotalElements());
 	}
 
 	// 특정 게시글을 가져온다.
@@ -51,6 +58,14 @@ public class PostService {
 		return postRepositoryCustom.getPost(postId)
 			.orElseThrow(() -> new CustomAuthenticationException(
 				ErrorCode.POST_NOT_FOUND));
+	}
+
+	// 마감이 얼마남지 않은 게시글을 가져온다
+	public List<PostDto.PostList> getPostsNearDeadline() {
+		List<PostVo> postsNearDeadline = postRepositoryCustom.getPostsNearDeadline();
+		return postsNearDeadline.stream()
+			.map(PostDto.PostList::new)
+			.collect(Collectors.toList());
 	}
 
 	// 게시글을 생성 한다.
@@ -93,14 +108,5 @@ public class PostService {
 
 		return post.delete();
 	}
-
-	// /* 게시글 검색 */
-	// @Transactional
-	// public PostDto.Posts searchPosts(Integer offset, Integer limit, String keyword) {
-	// 	PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "created_date"));
-	// 	List<PostListVo> posts = postRepositoryCustom.getSearchPost(pageRequest, keyword);
-	// 	Long total = getPostCount();
-	// 	return new PostDto.Posts(posts, total);
-	// }
 
 }
