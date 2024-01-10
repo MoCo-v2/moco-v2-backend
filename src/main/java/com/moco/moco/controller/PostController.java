@@ -1,5 +1,7 @@
 package com.moco.moco.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,6 +53,12 @@ public class PostController {
 	public ResponseEntity<PostVo> getPost(@PathVariable Long postId) {
 		PostVo postDto = postService.getPost(postId);
 		return ResponseEntity.status(HttpStatus.OK).body(postDto);
+	}
+
+	@GetMapping("/public/posts/near-deadline")
+	public ResponseEntity<List<PostDto.PostList>> getPostsNearDeadline() {
+		List<PostDto.PostList> postsNearDeadline = postService.getPostsNearDeadline();
+		return ResponseEntity.ok().body(postsNearDeadline);
 	}
 
 	@PostMapping("/private/posts")

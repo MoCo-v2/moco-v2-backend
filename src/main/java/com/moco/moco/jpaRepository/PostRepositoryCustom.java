@@ -3,6 +3,7 @@ package com.moco.moco.jpaRepository;
 import static com.moco.moco.domain.QPost.*;
 import static com.moco.moco.domain.QUser.*;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -75,7 +76,6 @@ public class PostRepositoryCustom {
 				.and(modeEq(mode))
 				.and(languageEq(language))
 			)
-
 			.orderBy(post.createdDate.desc())
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -91,6 +91,28 @@ public class PostRepositoryCustom {
 
 		return PageableExecutionUtils.getPage(posts, pageable, countQuery::fetchOne);
 
+	}
+
+	//마감이 얼마남지 않은 게시글을 가져온다.
+	public List<PostVo> getPostsNearDeadline() {
+		LocalDate startDate = LocalDate.now();
+		LocalDate endDate = startDate.plusDays(14);
+
+		return queryFactory
+			.select(
+				new QPostVo(post.id, post.title, post.content, post.type, post.capacity, post.mode, post.duration,
+					post.techStack, post.recruitmentPosition, post.deadLine, post.contactMethod, post.link, post.view,
+					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.name, user.picture))
+			.from(post)
+			.innerJoin(post.user, user)
+			.on(post.user.id.eq(user.id))
+			.where(post.isRemoved.eq(false)
+				.and(post.isFull.eq(false))
+				.and(post.deadLine.between(startDate, endDate))
+			)
+			.orderBy(post.createdDate.desc())
+			.limit(6)
+			.fetch();
 	}
 
 	private BooleanExpression usernameEq(String username) {
@@ -134,4 +156,5 @@ public class PostRepositoryCustom {
 			.reduce(BooleanExpression::or)
 			.orElse(null);
 	}
+
 }
