@@ -10,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.moco.moco.domain.OauthType;
 import com.moco.moco.dto.auth.OauthUserInfoDto;
 
 import lombok.RequiredArgsConstructor;
@@ -24,17 +25,25 @@ public class OauthService {
 	private final String KAKAO_USERINFO_REQUEST_URL = "https://kapi.kakao.com/v2/user/me";
 	private final String GITHUB_USERINFO_REQUEST_URL = "https://api.github.com/user";
 
-	public String requestGoogleUserInfo(String accessToken) {
+	public String getOauth2UserId(OauthType oauthType, String accessToken) {
+		return switch (oauthType) {
+			case GOOGLE -> requestGoogleUserInfo(accessToken);
+			case KAKAO -> requestKaKaoUserInfo(accessToken);
+			case GITHUB -> requestGithubUserInfo(accessToken);
+		};
+	}
+
+	private String requestGoogleUserInfo(String accessToken) {
 		ResponseEntity<String> response = requestUserInfo(GOOGLE_USERINFO_REQUEST_URL, "Bearer " + accessToken);
 		return "google" + parseUserInfo(response);
 	}
 
-	public String requestKaKaoUserInfo(String accessToken) {
+	private String requestKaKaoUserInfo(String accessToken) {
 		ResponseEntity<String> response = requestUserInfo(KAKAO_USERINFO_REQUEST_URL, "Bearer " + accessToken);
 		return "kakao" + parseUserInfo(response);
 	}
 
-	public String requestGithubUserInfo(String accessToken) {
+	private String requestGithubUserInfo(String accessToken) {
 		ResponseEntity<String> response = requestUserInfo(GITHUB_USERINFO_REQUEST_URL, "token " + accessToken);
 		return "github" + parseUserInfo(response);
 	}
