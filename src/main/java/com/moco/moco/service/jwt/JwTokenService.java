@@ -88,6 +88,20 @@ public class JwTokenService {
 			.compact();
 	}
 
+	// claim을 생성한다.
+	public Map<String, Object> generateClaims(String role, String userId) {
+		Map<String, Object> claims;
+
+		if (Role.MASTER.getKey().equals(role)) {
+			claims = generateAdminClaims(userId);
+		} else {
+			claims = generateUserClaims(userId);
+		}
+
+		return claims;
+	}
+
+	//accessToken을 갱신한다.
 	public String renewAccessToken(String refreshToken) {
 		RefreshToken getRefreshToken = refreshTokenRepository.findById(refreshToken)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.NEED_LOGIN));
@@ -95,26 +109,23 @@ public class JwTokenService {
 		User user = userRepository.findById(getRefreshToken.getUserId())
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 
-		Map<String, Object> claims = null;
-
-		if (user.getRole().getKey().equals(Role.MASTER.getKey())) {
-			claims = generateAdminClaims(user.getId());
-		} else {
-			claims = generateUserClaims(user.getId());
-		}
+		Map<String, Object> claims = generateClaims(user.getRoleKey(), user.getId());
 
 		String subject = "access token";
 		String secretKey = encodeBase64SecretKey(getSecretKey());
 		Date accessTokenExpiration = getTimeAfterMinutes(60);
 		String accessToken = generateAccessToken(claims, subject, accessTokenExpiration, secretKey);
+
 		return accessToken;
 	}
 
+	//redis에 RefreshToken을 저장한다.
 	@Transactional
-	public void saveTokenInfo(String refreshToken, String userId) {
+	public void saveRefreshToken(String refreshToken, String userId) {
 		refreshTokenRepository.save(new RefreshToken(refreshToken, userId));
 	}
 
+	//redis에서 RefreshToken을 삭제한다.
 	@Transactional
 	public void removeRefreshToken(String refreshToken, String userId) {
 		refreshTokenRepository.findById(refreshToken)

@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.moco.moco.config.argsResolver.UserInfo;
-import com.moco.moco.domain.OauthType;
-import com.moco.moco.domain.Role;
 import com.moco.moco.domain.User;
 import com.moco.moco.dto.UserDto;
 import com.moco.moco.dto.auth.TokenDto;
@@ -44,11 +42,11 @@ public class UserService {
 	}
 
 	public TokenDto.Response authenticateAndGenerateToken(TokenDto.OauthRequest tokenDto) {
-		String id = "";
+		String id;
 
 		try {
 
-			id = getOauth2UserId(tokenDto.getProvider(), tokenDto.getAccessToken());
+			id = oauthService.getOauth2UserId(tokenDto.getProvider(), tokenDto.getAccessToken());
 
 			Optional<User> user = userRepository.findById(id);
 
@@ -66,14 +64,6 @@ public class UserService {
 			log.error(e.getMessage(), UserService.class);
 			throw new CustomAuthenticationException(ErrorCode.INVALID_AUTH_TOKEN);
 		}
-	}
-
-	private String getOauth2UserId(OauthType oauthType, String accessToken) {
-		return switch (oauthType) {
-			case GOOGLE -> oauthService.requestGoogleUserInfo(accessToken);
-			case KAKAO -> oauthService.requestKaKaoUserInfo(accessToken);
-			case GITHUB -> oauthService.requestGithubUserInfo(accessToken);
-		};
 	}
 
 	@Transactional
@@ -105,13 +95,7 @@ public class UserService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 
-		Map<String, Object> claims;
-
-		if (user.getRole().getKey().equals(Role.MASTER.getKey())) {
-			claims = tokenService.generateAdminClaims(userId);
-		} else {
-			claims = tokenService.generateUserClaims(userId);
-		}
+		Map<String, Object> claims = tokenService.generateClaims(user.getRoleKey(), user.getId());
 
 		String subject = "access token";
 
@@ -124,7 +108,7 @@ public class UserService {
 		String refreshToken = tokenService.generateRefreshToken(subject, refreshTokenExpiration, secretKey);
 
 		//redis에 RefreshToken 저장 (refreshToken, 유저 ID)
-		tokenService.saveTokenInfo(refreshToken, userId);
+		tokenService.saveRefreshToken(refreshToken, userId);
 
 		return TokenDto.JwtResponse.builder()
 			.accessToken(accessToken)
