@@ -1,5 +1,7 @@
 package com.moco.moco.service.admin;
 
+import static com.moco.moco.common.Validation.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +30,8 @@ public class BannerService {
 	}
 
 	public BannerDto.Response getBanner(Long bannerId) {
+		validationBannertId(bannerId);
+
 		Banner banner = bannerRepository.findById(bannerId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.BANNER_NOT_FOUNT));
 		return new BannerDto.Response(banner);
@@ -41,6 +45,8 @@ public class BannerService {
 
 	@Transactional
 	public BannerDto.Response updateBanner(Long bannerId, BannerDto.Request request) {
+		validationBannertId(bannerId);
+
 		Banner banner = bannerRepository.findById(bannerId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.BANNER_NOT_FOUNT));
 
@@ -49,6 +55,8 @@ public class BannerService {
 
 	@Transactional
 	public void deleteBanner(Long bannerId) {
+		validationBannertId(bannerId);
+
 		Banner banner = bannerRepository.findById(bannerId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.BANNER_NOT_FOUNT));
 

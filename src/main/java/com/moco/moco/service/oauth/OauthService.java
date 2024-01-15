@@ -1,5 +1,7 @@
 package com.moco.moco.service.oauth;
 
+import static com.moco.moco.common.Constants.*;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,10 +23,6 @@ public class OauthService {
 
 	private final RestTemplate restTemplate = new RestTemplate();
 
-	private final String GOOGLE_USERINFO_REQUEST_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
-	private final String KAKAO_USERINFO_REQUEST_URL = "https://kapi.kakao.com/v2/user/me";
-	private final String GITHUB_USERINFO_REQUEST_URL = "https://api.github.com/user";
-
 	public String getOauth2UserId(OauthType oauthType, String accessToken) {
 		return switch (oauthType) {
 			case GOOGLE -> requestGoogleUserInfo(accessToken);
@@ -34,18 +32,18 @@ public class OauthService {
 	}
 
 	private String requestGoogleUserInfo(String accessToken) {
-		ResponseEntity<String> response = requestUserInfo(GOOGLE_USERINFO_REQUEST_URL, "Bearer " + accessToken);
-		return "google" + parseUserInfo(response);
+		ResponseEntity<String> response = requestUserInfo(GOOGLE_USERINFO_REQUEST_URL, BEARER + accessToken);
+		return OauthType.GOOGLE.name().toLowerCase() + parseUserInfo(response);
 	}
 
 	private String requestKaKaoUserInfo(String accessToken) {
-		ResponseEntity<String> response = requestUserInfo(KAKAO_USERINFO_REQUEST_URL, "Bearer " + accessToken);
-		return "kakao" + parseUserInfo(response);
+		ResponseEntity<String> response = requestUserInfo(KAKAO_USERINFO_REQUEST_URL, BEARER + accessToken);
+		return OauthType.KAKAO.name().toLowerCase() + parseUserInfo(response);
 	}
 
 	private String requestGithubUserInfo(String accessToken) {
-		ResponseEntity<String> response = requestUserInfo(GITHUB_USERINFO_REQUEST_URL, "token " + accessToken);
-		return "github" + parseUserInfo(response);
+		ResponseEntity<String> response = requestUserInfo(GITHUB_USERINFO_REQUEST_URL, TOKEN + accessToken);
+		return OauthType.GITHUB.name().toLowerCase() + parseUserInfo(response);
 	}
 
 	// 유저정보를 얻기위해 HTTP 요청한다.

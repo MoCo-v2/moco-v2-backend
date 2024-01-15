@@ -1,5 +1,7 @@
 package com.moco.moco.service.post;
 
+import static com.moco.moco.common.Validation.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +34,8 @@ public class CommentService {
 	private final PostRepository postRepository;
 
 	public List<CommentDto.Response> getComments(Long postId) {
+		validationPostId(postId);
+
 		postRepository.findByIdAndIsRemoved(postId, false)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 
@@ -41,6 +45,8 @@ public class CommentService {
 	}
 
 	public CommentDto.Count getCommentsCount(Long postId) {
+		validationPostId(postId);
+
 		postRepository.findByIdAndIsRemoved(postId, false)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 		Long totalCount = commentRepositoryCustom.getCommentsCount(postId);
@@ -49,6 +55,9 @@ public class CommentService {
 
 	@Transactional
 	public CommentDto.Response createComment(String userId, Long postId, CommentDto.Request commentDto) {
+		validationUserId(userId);
+		validationPostId(postId);
+
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 		Post post = postRepository.findById(postId)
@@ -76,6 +85,9 @@ public class CommentService {
 
 	@Transactional
 	public CommentDto.Response updateComment(String userId, Long commentId, CommentDto.Request commentDto) {
+		validationUserId(userId);
+		validationCommentId(commentId);
+
 		Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
 			new CustomAuthenticationException(ErrorCode.COMMENT_NOT_FOUND));
 
@@ -88,6 +100,9 @@ public class CommentService {
 
 	@Transactional
 	public void deleteComment(String userId, Long commentId) {
+		validationUserId(userId);
+		validationCommentId(commentId);
+
 		Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
 			new CustomAuthenticationException(ErrorCode.COMMENT_NOT_FOUND));
 
