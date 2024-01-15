@@ -1,5 +1,7 @@
 package com.moco.moco.service.post;
 
+import static com.moco.moco.common.Validation.*;
+
 import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,6 +30,9 @@ public class BookmarkService {
 	private final UserRepository userRepository;
 
 	public BookmarkDto.Response createBookmark(String userId, Long postId) {
+		validationUserId(userId);
+		validationPostId(postId);
+
 		boolean isExistsBookmark = bookmarkRepositoryCustom.isBookmarkExists(userId, postId);
 		if (isExistsBookmark) {
 			throw new CustomAuthenticationException(ErrorCode.DUPLICATE_RESOURCE);
@@ -51,6 +56,9 @@ public class BookmarkService {
 	}
 
 	public void removeBookmark(String userId, Long postId) {
+		validationUserId(userId);
+		validationPostId(postId);
+
 		Optional<Bookmark> bookmark = Optional.ofNullable(bookMarkRepository.findByUserIdAndPostId(userId, postId));
 
 		if (bookmark.isEmpty()) {

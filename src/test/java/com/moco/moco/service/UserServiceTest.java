@@ -43,7 +43,7 @@ public class UserServiceTest {
 
 	private void generateUserDto() {
 		userDto = new UserDto.Request();
-		userDto.setId("googel1234");
+		userDto.setId("google1234");
 		userDto.setName("test");
 		userDto.setCareer("1년차");
 		userDto.setIntro("1년차 백엔드 개발자입니다.");

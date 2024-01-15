@@ -1,5 +1,7 @@
 package com.moco.moco.service.post;
 
+import static com.moco.moco.common.Validation.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +57,8 @@ public class PostService {
 	// 특정 게시글을 가져온다.
 	@Transactional
 	public PostVo getPost(Long postId) {
+		validationPostId(postId);
+
 		return postRepositoryCustom.getPost(postId)
 			.orElseThrow(() -> new CustomAuthenticationException(
 				ErrorCode.POST_NOT_FOUND));
@@ -71,6 +75,8 @@ public class PostService {
 	// 게시글을 생성 한다.
 	@Transactional
 	public Long savePost(PostDto.Request postDto, String userId) {
+		validationUserId(userId);
+
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 		postDto.setUser(user);
@@ -81,6 +87,9 @@ public class PostService {
 	// 게시글을 수정한다.
 	@Transactional
 	public Long updatePost(Long postId, PostDto.Request postDto, String userId) {
+		validationPostId(postId);
+		validationUserId(userId);
+
 		userRepository.findById(userId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 
@@ -97,6 +106,9 @@ public class PostService {
 
 	@Transactional
 	public Long removePost(String userId, Long postId) {
+		validationUserId(userId);
+		validationPostId(postId);
+
 		Post post = postRepository.findByIdAndIsRemoved(postId, false)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
 

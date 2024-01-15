@@ -1,5 +1,8 @@
 package com.moco.moco.service.user;
 
+import static com.moco.moco.common.Constants.*;
+import static com.moco.moco.common.Validation.*;
+
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
@@ -30,12 +33,16 @@ public class UserService {
 	private final OauthService oauthService;
 
 	public UserDto.Response getUser(String userId) {
+		validationUserId(userId);
+
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 		return new UserDto.Response(user);
 	}
 
 	public UserDto.Response getMyInfo(UserInfo userInfo) {
+		validationUserId(userInfo.getId());
+
 		User user = userRepository.findById(userInfo.getId())
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 		return new UserDto.Response(user);
@@ -68,6 +75,8 @@ public class UserService {
 
 	@Transactional
 	public TokenDto.JwtResponse join(UserDto.Request userDto) {
+		validationUserId(userDto.getId());
+
 		boolean isExistId = userRepository.existsById(userDto.getId());
 		if (isExistId) {
 			throw new CustomAuthenticationException(ErrorCode.DUPLICATE_RESOURCE);
@@ -78,6 +87,8 @@ public class UserService {
 
 	@Transactional
 	public UserDto.Response updateUserInfo(UserDto.Request userDto) {
+		validationUserId(userDto.getId());
+
 		User user = userRepository.findById(userDto.getId())
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 
@@ -92,12 +103,14 @@ public class UserService {
 	}
 
 	private TokenDto.JwtResponse getUserIdAndGenerateToken(String userId) {
+		validationUserId(userId);
+
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 
 		Map<String, Object> claims = tokenService.generateClaims(user.getRoleKey(), user.getId());
 
-		String subject = "access token";
+		String subject = SUBJECT;
 
 		String secretKey = tokenService.encodeBase64SecretKey(tokenService.getSecretKey());
 
