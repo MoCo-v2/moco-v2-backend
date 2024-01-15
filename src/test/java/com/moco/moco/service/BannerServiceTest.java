@@ -37,7 +37,7 @@ public class BannerServiceTest {
 		BannerDto.Response bannerDto = new BannerDto.Response(banner);
 		//given
 		given(bannerRepository.findById(anyLong())).willReturn(Optional.of(banner));
-		given(service.getBanner(anyLong())).willReturn(bannerDto);
+		given(service.getBanner(1L)).willReturn(bannerDto);
 
 		//when
 		BannerDto.Response result = service.getBanner(1L);
