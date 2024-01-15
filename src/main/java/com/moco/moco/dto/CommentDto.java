@@ -8,6 +8,7 @@ import com.moco.moco.domain.Comment;
 import com.moco.moco.domain.Post;
 import com.moco.moco.domain.User;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,7 @@ public class CommentDto {
 	@Getter
 	public static class Request {
 		private Long parentId;
+		@NotBlank(message = "내용을 입력해주세요.")
 		private String content;
 		private User user;
 		private Post post;

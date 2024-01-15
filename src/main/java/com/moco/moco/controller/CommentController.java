@@ -19,6 +19,7 @@ import com.moco.moco.config.argsResolver.UserInfo;
 import com.moco.moco.dto.CommentDto;
 import com.moco.moco.service.post.CommentService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -40,7 +41,7 @@ public class CommentController {
 
 	@PostMapping("/private/comments/{postId}")
 	public ResponseEntity<CommentDto.Response> createComment(@PathVariable Long postId,
-		@RequestBody CommentDto.Request request,
+		@Valid @RequestBody CommentDto.Request request,
 		@CurrentLoginUser UserInfo userInfo) {
 		CommentDto.Response commentDto = commentService.createComment(userInfo.getId(), postId, request);
 		return ResponseEntity.status(HttpStatus.CREATED)
@@ -49,7 +50,7 @@ public class CommentController {
 
 	@PutMapping("/private/comments/{commentId}")
 	public ResponseEntity<CommentDto.Response> commentUpdate(@PathVariable Long commentId,
-		@RequestBody CommentDto.Request request,
+		@Valid @RequestBody CommentDto.Request request,
 		@CurrentLoginUser UserInfo userInfo) {
 		CommentDto.Response commentDto = commentService.updateComment(userInfo.getId(), commentId, request);
 		return ResponseEntity.status(HttpStatus.OK)
