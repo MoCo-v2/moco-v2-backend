@@ -85,6 +85,7 @@ public class PostDto {
 		private Integer view;
 		private Integer commentCnt;
 		private LocalDateTime createdDate;
+		private String userId;
 		private String writer;
 		private String picture;
 
@@ -102,6 +103,7 @@ public class PostDto {
 			this.view = postVo.getView();
 			this.commentCnt = postVo.getCommentCnt();
 			this.createdDate = postVo.getCreatedDate();
+			this.userId = postVo.getUserId();
 			this.writer = postVo.getWriter();
 			this.picture = postVo.getPicture();
 		}
