@@ -32,7 +32,7 @@ public class PostRepositoryCustom {
 			.select(
 				new QPostVo(post.id, post.title, post.content, post.type, post.capacity, post.mode, post.duration,
 					post.techStack, post.recruitmentPosition, post.deadLine, post.contactMethod, post.link, post.view,
-					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.name, user.picture))
+					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.id, user.name, user.picture))
 			.from(post)
 			.innerJoin(post.user, user)
 			.where(
@@ -64,7 +64,7 @@ public class PostRepositoryCustom {
 			.select(
 				new QPostVo(post.id, post.title, post.content, post.type, post.capacity, post.mode, post.duration,
 					post.techStack, post.recruitmentPosition, post.deadLine, post.contactMethod, post.link, post.view,
-					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.name, user.picture))
+					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.id, user.name, user.picture))
 			.from(post)
 			.innerJoin(post.user, user)
 			.on(post.user.id.eq(user.id))
@@ -102,7 +102,7 @@ public class PostRepositoryCustom {
 			.select(
 				new QPostVo(post.id, post.title, post.content, post.type, post.capacity, post.mode, post.duration,
 					post.techStack, post.recruitmentPosition, post.deadLine, post.contactMethod, post.link, post.view,
-					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.name, user.picture))
+					post.commentCnt, post.createdDate, post.isRemoved, post.isFull, user.id, user.name, user.picture))
 			.from(post)
 			.innerJoin(post.user, user)
 			.on(post.user.id.eq(user.id))
