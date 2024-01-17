@@ -46,7 +46,7 @@
             </rollingPolicy>
         </appender>
 
-        <root>
+        <root level="info">
             <appender-ref ref="ERROR_FILE"/>
             <appender-ref ref="INFO_FILE"/>
         </root>
