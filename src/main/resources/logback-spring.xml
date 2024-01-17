@@ -22,7 +22,7 @@
 
     <!-- 운영환경 로그 설정 -->
     <springProfile name="prod">
-        <file>${LOG_PATH}</file>
+        <file>${LOG_PATH}/app.log</file>
         <!-- ERROR 레벨 로그 디렉토리 설정 -->
         <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <encoder>
