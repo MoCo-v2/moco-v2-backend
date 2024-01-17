@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.moco.moco.domain.Bookmark;
 import com.moco.moco.domain.Post;
@@ -29,6 +30,7 @@ public class BookmarkService {
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 
+	@Transactional
 	public BookmarkDto.Response createBookmark(String userId, Long postId) {
 		validationUserId(userId);
 		validationPostId(postId);
@@ -55,6 +57,7 @@ public class BookmarkService {
 		return new BookmarkDto.Response(saveBookmark);
 	}
 
+	@Transactional
 	public void removeBookmark(String userId, Long postId) {
 		validationUserId(userId);
 		validationPostId(postId);

@@ -22,6 +22,7 @@ public class BannerService {
 
 	private final BannerRepository bannerRepository;
 
+	@Transactional(readOnly = true)
 	public List<BannerDto.Response> getBanners() {
 		List<Banner> banners = bannerRepository.findAll();
 		return banners.stream()
@@ -29,6 +30,7 @@ public class BannerService {
 			.collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
 	public BannerDto.Response getBanner(Long bannerId) {
 		validationBannertId(bannerId);
 

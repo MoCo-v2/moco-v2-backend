@@ -133,6 +133,10 @@ public class Post extends Time {
 		this.isRemoved = true;
 		return this.id;
 	}
+
+	public void close() {
+		this.isFull = true;
+	}
 }
 
 
