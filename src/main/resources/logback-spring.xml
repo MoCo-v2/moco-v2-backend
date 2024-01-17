@@ -1,7 +1,7 @@
 <configuration>
 
-    <property name="LOG_PATTERN" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n">
-    </property>
+    <property name="LOG_PATTERN" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+    <property name="LOG_PATH" value="/home/ec2-user/logs"/>
 
     <springProfile name="dev">
         <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
@@ -22,13 +22,14 @@
 
     <!-- 운영환경 로그 설정 -->
     <springProfile name="prod">
+        <file>${LOG_PATH}</file>
         <!-- ERROR 레벨 로그 디렉토리 설정 -->
         <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <encoder>
                 <pattern>${LOG_PATTERN}</pattern>
             </encoder>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-                <fileNamePattern>/home/ec2-user/logs/ERROR/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <fileNamePattern>${LOG_PATH}/ERROR/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
                 <maxFileSize>10MB</maxFileSize>
                 <maxHistory>5</maxHistory>
             </rollingPolicy>
@@ -40,7 +41,7 @@
                 <pattern>${LOG_PATTERN}</pattern>
             </encoder>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-                <fileNamePattern>/home/ec2-user/logs/INFO/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <fileNamePattern>${LOG_PATH}/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
                 <maxFileSize>10MB</maxFileSize>
                 <maxHistory>5</maxHistory>
             </rollingPolicy>
