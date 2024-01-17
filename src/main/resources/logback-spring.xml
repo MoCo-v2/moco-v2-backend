@@ -3,31 +3,22 @@
     <property name="LOG_PATTERN" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n">
     </property>
 
-    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- encoders are assigned the type
-             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
-    </appender>
-    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>/home/ec2-user/logs/%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxFileSize>500MB</maxFileSize>
-            <maxHistory>5</maxHistory>
-        </rollingPolicy>
-    </appender>
+    <springProfile name="dev">
+        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+            <!-- encoders are assigned the type
+                 ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
 
-    <root level="info">
-        <appender-ref ref="console"/>
-    </root>
+        <root level="info">
+            <appender-ref ref="console"/>
+        </root>
 
-    <!-- Logger -->
-    <logger name="com.*" level="DEBUG" appender-ref="console"/>
-
+        <!-- Logger -->
+        <logger name="com.*" level="DEBUG" appender-ref="console"/>
+    </springProfile>
 
     <!-- 운영환경 로그 설정 -->
     <springProfile name="prod">
@@ -54,6 +45,12 @@
                 <maxHistory>5</maxHistory>
             </rollingPolicy>
         </appender>
+
+        <root>
+            <appender-ref ref="ERROR_FILE"/>
+            <appender-ref ref="INFO_FILE"/>
+        </root>
+
     </springProfile>
 
 </configuration>
