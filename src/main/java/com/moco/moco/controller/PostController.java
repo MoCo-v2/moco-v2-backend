@@ -1,11 +1,14 @@
 package com.moco.moco.controller;
 
+import static com.moco.moco.common.ResponseEntityConstants.*;
+
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -84,6 +87,13 @@ public class PostController {
 		@CurrentLoginUser UserInfo userInfo) {
 		Long removedPostId = postService.removePost(userInfo.getId(), postId);
 		return ResponseEntity.status(HttpStatus.OK).body(removedPostId);
+	}
+
+	@PatchMapping("/private/posts/{postId}")
+	public ResponseEntity<HttpStatus> closeRecruitment(@PathVariable("postId") Long postId,
+		@CurrentLoginUser UserInfo userInfo) {
+		postService.closeRecruitment(postId, userInfo.getId());
+		return RESPONSE_ENTITY_OK;
 	}
 }
 

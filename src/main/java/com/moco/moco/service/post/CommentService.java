@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.moco.moco.domain.Comment;
 import com.moco.moco.domain.Post;
@@ -20,7 +21,6 @@ import com.moco.moco.jpaRepository.CommentRepositoryCustom;
 import com.moco.moco.jpaRepository.PostRepository;
 import com.moco.moco.jpaRepository.UserRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +44,7 @@ public class CommentService {
 		return convertNestedStructure(comments);
 	}
 
+	@Transactional(readOnly = true)
 	public CommentDto.Count getCommentsCount(Long postId) {
 		validationPostId(postId);
 
@@ -131,7 +132,7 @@ public class CommentService {
 		return comment; // 삭제해야하는 댓글 반환
 	}
 
-	public List<CommentDto.Response> convertNestedStructure(List<Comment> comments) {
+	private List<CommentDto.Response> convertNestedStructure(List<Comment> comments) {
 		List<CommentDto.Response> result = new ArrayList<>();
 		Map<Long, CommentDto.Response> map = new HashMap<>();
 

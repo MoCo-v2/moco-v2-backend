@@ -19,6 +19,11 @@ public class Validation {
 		}
 	}
 
+	public static void validationUserIdAndPostId(String userId, Long postId) {
+		validationUserId(userId);
+		validationPostId(postId);
+	}
+
 	public static void validationCommentId(Long commentId) {
 		if (commentId == 0 || commentId < 0) {
 			throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);

@@ -55,7 +55,7 @@ public class PostService {
 	}
 
 	// 특정 게시글을 가져온다.
-	@Transactional
+	@Transactional(readOnly = true)
 	public PostVo getPost(Long postId) {
 		validationPostId(postId);
 
@@ -65,6 +65,7 @@ public class PostService {
 	}
 
 	// 마감이 얼마남지 않은 게시글을 가져온다
+	@Transactional(readOnly = true)
 	public List<PostDto.PostList> getPostsNearDeadline() {
 		List<PostVo> postsNearDeadline = postRepositoryCustom.getPostsNearDeadline();
 		return postsNearDeadline.stream()
@@ -87,8 +88,7 @@ public class PostService {
 	// 게시글을 수정한다.
 	@Transactional
 	public Long updatePost(Long postId, PostDto.Request postDto, String userId) {
-		validationPostId(postId);
-		validationUserId(userId);
+		validationUserIdAndPostId(userId, postId);
 
 		userRepository.findById(userId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
@@ -106,8 +106,7 @@ public class PostService {
 
 	@Transactional
 	public Long removePost(String userId, Long postId) {
-		validationUserId(userId);
-		validationPostId(postId);
+		validationUserIdAndPostId(userId, postId);
 
 		Post post = postRepository.findByIdAndIsRemoved(postId, false)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
@@ -121,4 +120,19 @@ public class PostService {
 		return post.delete();
 	}
 
+	@Transactional
+	public void closeRecruitment(Long postId, String userId) {
+		validationUserIdAndPostId(userId, postId);
+
+		Post post = postRepository.findByIdAndIsRemoved(postId, false)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.POST_NOT_FOUND));
+
+		boolean isWriter = post.getUser().getId().equals(userId);
+
+		if (!isWriter) {
+			throw new CustomAuthenticationException(ErrorCode.UNAUTHORIZED_WRITER);
+		}
+
+		post.close();
+	}
 }
