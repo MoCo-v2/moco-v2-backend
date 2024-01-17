@@ -1,11 +1,24 @@
 <configuration>
 
+    <property name="LOG_PATTERN" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n">
+    </property>
+
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <!-- encoders are assigned the type
              ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
+    </appender>
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>/home/ec2-user/logs/%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxFileSize>500MB</maxFileSize>
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
     </appender>
 
     <root level="info">
@@ -14,5 +27,33 @@
 
     <!-- Logger -->
     <logger name="com.*" level="DEBUG" appender-ref="console"/>
+
+
+    <!-- 운영환경 로그 설정 -->
+    <springProfile name="prod">
+        <!-- ERROR 레벨 로그 디렉토리 설정 -->
+        <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>/home/ec2-user/logs/ERROR/%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxFileSize>10MB</maxFileSize>
+                <maxHistory>5</maxHistory>
+            </rollingPolicy>
+        </appender>
+
+        <!-- INFO 레벨 로그 디렉토리 설정 -->
+        <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>/home/ec2-user/logs/INFO/%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxFileSize>10MB</maxFileSize>
+                <maxHistory>5</maxHistory>
+            </rollingPolicy>
+        </appender>
+    </springProfile>
 
 </configuration>
