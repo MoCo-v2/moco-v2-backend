@@ -15,13 +15,21 @@
         </root>
     </springProfile>
 
-    <!-- Logger -->
-    <logger name="com.*" level="DEBUG" appender-ref="console"/>
+    <springProfile name="dev">
+        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+        </appender>
 
+        <root level="info">
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
 
     <!-- 운영환경 로그 설정 -->
     <springProfile name="prod">
-        <file>${LOG_PATH}/app.log</file>
+        <file>${LOG_PATH}/moco.log</file>
 
         <!-- INFO 레벨 로그 디렉토리 설정 -->
         <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -40,7 +48,7 @@
             </rollingPolicy>
         </appender>
 
-        <!-- ERROR 레벨 로그 디렉토리 설정 -->
+      <!-- ERROR 레벨 로그 디렉토리 설정 -->
         <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <filter class="ch.qos.logback.classic.filter.LevelFilter">
                 <level>ERROR</level>
@@ -52,8 +60,10 @@
             </encoder>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
                 <fileNamePattern>${LOG_PATH}/ERROR/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+
                 <maxFileSize>5MB</maxFileSize>
                 <maxHistory>3</maxHistory>
+
             </rollingPolicy>
         </appender>
 
