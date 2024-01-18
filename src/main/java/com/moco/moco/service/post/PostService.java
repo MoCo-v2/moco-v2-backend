@@ -55,7 +55,7 @@ public class PostService {
 	}
 
 	// 특정 게시글을 가져온다.
-	@Transactional(readOnly = true)
+	@Transactional
 	public PostVo getPost(Long postId) {
 		validationPostId(postId);
 
