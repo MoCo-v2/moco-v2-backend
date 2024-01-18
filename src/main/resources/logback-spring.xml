@@ -1,29 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-
-    <property name="LOG_PATTERN" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n">
-    </property>
+    <property name="LOG_PATTERN" value="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"/>
+    <property name="LOG_PATH" value="logs"/>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- encoders are assigned the type
-             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
         <encoder>
             <pattern>${LOG_PATTERN}</pattern>
         </encoder>
-    </appender>
-    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <encoder>
-            <pattern>${LOG_PATTERN}</pattern>
-        </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>/home/ec2-user/logs/%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxFileSize>500MB</maxFileSize>
-            <maxHistory>5</maxHistory>
-        </rollingPolicy>
     </appender>
 
-    <root level="info">
-        <appender-ref ref="console"/>
-    </root>
+    <springProfile name="dev">
+        <root level="info">
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
 
     <!-- Logger -->
     <logger name="com.*" level="DEBUG" appender-ref="console"/>
@@ -31,29 +21,60 @@
 
     <!-- 운영환경 로그 설정 -->
     <springProfile name="prod">
-        <!-- ERROR 레벨 로그 디렉토리 설정 -->
-        <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <encoder>
-                <pattern>${LOG_PATTERN}</pattern>
-            </encoder>
-            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-                <fileNamePattern>/home/ec2-user/logs/ERROR/%d{yyyy-MM-dd}.log</fileNamePattern>
-                <maxFileSize>10MB</maxFileSize>
-                <maxHistory>5</maxHistory>
-            </rollingPolicy>
-        </appender>
+        <file>${LOG_PATH}/app.log</file>
 
         <!-- INFO 레벨 로그 디렉토리 설정 -->
         <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>INFO</level>
+                <onMatch>ACCEPT</onMatch> <!-- 해당 레벨만 기록한다. -->
+                <onMismatch>DENY</onMismatch> <!-- 다른 수준의 레벨은 기록하지 않는다 -->
+            </filter>
             <encoder>
                 <pattern>${LOG_PATTERN}</pattern>
             </encoder>
             <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-                <fileNamePattern>/home/ec2-user/logs/INFO/%d{yyyy-MM-dd}.log</fileNamePattern>
-                <maxFileSize>10MB</maxFileSize>
-                <maxHistory>5</maxHistory>
+                <fileNamePattern>${LOG_PATH}/INFO/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxFileSize>5MB</maxFileSize>
+                <maxHistory>3</maxHistory>
             </rollingPolicy>
         </appender>
-    </springProfile>
 
+        <!-- ERROR 레벨 로그 디렉토리 설정 -->
+        <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>ACCEPT</onMatch> <!-- 해당 레벨만 기록한다. -->
+                <onMismatch>DENY</onMismatch> <!-- 다른 수준의 레벨은 기록하지 않는다 -->
+            </filter>
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/ERROR/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxFileSize>5MB</maxFileSize>
+                <maxHistory>3</maxHistory>
+            </rollingPolicy>
+        </appender>
+
+        <!-- WARN 레벨 로그 디렉토리 설정 -->
+        <appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>WARN</level>
+                <onMatch>ACCEPT</onMatch> <!-- 해당 레벨만 기록한다. -->
+                <onMismatch>DENY</onMismatch> <!-- 다른 수준의 레벨은 기록하지 않는다 -->
+            </filter>
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/WARN/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxFileSize>5MB</maxFileSize>
+                <maxHistory>3</maxHistory>
+            </rollingPolicy>
+        </appender>
+        <root level="info">
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
 </configuration>
