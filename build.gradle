@@ -53,23 +53,27 @@ dependencies {
     // Util
     implementation 'com.google.code.gson:gson:2.9.0'
 
-    // lombok
+    // Lombok
     annotationProcessor 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    // postgresql
+    // Postgresql
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
 
-    // redis
+    // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    //Marvin (image Resize)
+    // Marvin (image Resize)
     implementation 'com.github.downgoon:marvin:1.5.5'
     implementation 'com.github.downgoon:MarvinPlugins:1.5.5'
     implementation 'org.springframework:spring-test'
+
+    // Slack
+    implementation 'com.github.maricn:logback-slack-appender:1.4.0'
+
 
     compileOnly 'org.jetbrains:annotations:13.0'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
