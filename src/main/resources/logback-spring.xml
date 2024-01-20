@@ -10,7 +10,7 @@
     </appender>
 
     <!-- slack -->
-    <property resource="application-dev.yml"/>
+    <property resource="application-prod.yml"/>
     <appender name="SLACK_ERROR" class="com.github.maricn.logback.SlackAppender">
         <webhookUri>${webhook-uri}</webhookUri>
         <channel>#${channel}</channel>
