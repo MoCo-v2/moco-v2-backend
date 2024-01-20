@@ -69,7 +69,7 @@ public class PostRepositoryCustom {
 			.innerJoin(post.user, user)
 			.on(post.user.id.eq(user.id))
 			.where(post.isRemoved.eq(false)
-				.and(post.isFull.eq(recruit))
+				.and(recruitEq(recruit))
 				.and(usernameEq(username))
 				.and(typeEq(type))
 				.and(positionEq(position))
@@ -113,6 +113,13 @@ public class PostRepositoryCustom {
 			.orderBy(post.createdDate.desc())
 			.limit(6)
 			.fetch();
+	}
+
+	private BooleanExpression recruitEq(boolean recruit) {
+		if (recruit) {
+			return null;
+		}
+		return post.isFull.eq(recruit);
 	}
 
 	private BooleanExpression usernameEq(String username) {
