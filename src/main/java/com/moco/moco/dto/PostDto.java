@@ -82,6 +82,7 @@ public class PostDto {
 		private String recruitmentPosition;
 		private LocalDate deadLine;
 		private String contactMethod;
+		private boolean isFull;
 		private Integer view;
 		private Integer commentCnt;
 		private LocalDateTime createdDate;
@@ -100,6 +101,7 @@ public class PostDto {
 			this.recruitmentPosition = postVo.getRecruitmentPosition();
 			this.deadLine = postVo.getDeadLine();
 			this.contactMethod = postVo.getContactMethod();
+			this.isFull = postVo.isFull();
 			this.view = postVo.getView();
 			this.commentCnt = postVo.getCommentCnt();
 			this.createdDate = postVo.getCreatedDate();
