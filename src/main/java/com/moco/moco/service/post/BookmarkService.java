@@ -46,7 +46,7 @@ public class BookmarkService {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 
-		Bookmark bookmark = Bookmark.builder().post(post).user(user).build();
+		Bookmark bookmark = Bookmark.builder().post(post).user(user).postCreatedDate(post.getCreatedDate()).build();
 
 		Bookmark saveBookmark;
 		try {

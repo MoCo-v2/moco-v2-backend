@@ -1,5 +1,8 @@
 package com.moco.moco.domain;
 
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -37,9 +40,13 @@ public class Bookmark {
 	@JoinColumn(name = "post_id")
 	private Post post;
 
+	@Column(updatable = false, name = "postCreatedDate")
+	private LocalDateTime postCreatedDate;
+
 	@Builder
-	public Bookmark(User user, Post post) {
+	public Bookmark(User user, Post post, LocalDateTime postCreatedDate) {
 		this.user = user;
 		this.post = post;
+		this.postCreatedDate = postCreatedDate;
 	}
 }
