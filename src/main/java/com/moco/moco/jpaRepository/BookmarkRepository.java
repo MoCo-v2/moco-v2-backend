@@ -7,4 +7,5 @@ import com.moco.moco.domain.Bookmark;
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
 	Bookmark findByUserIdAndPostId(String userId, Long postId);
+
 }

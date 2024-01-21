@@ -2,6 +2,7 @@ package com.moco.moco.service.post;
 
 import static com.moco.moco.common.Validation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -73,5 +74,12 @@ public class BookmarkService {
 		}
 
 		bookMarkRepository.delete(bookmark.get());
+	}
+
+	public BookmarkDto.MyBookmark getMyBookmarks(String userId) {
+		validationUserId(userId);
+
+		List<Long> myBookmarks = bookmarkRepositoryCustom.getMyBookmarks(userId);
+		return new BookmarkDto.MyBookmark(myBookmarks);
 	}
 }
