@@ -135,4 +135,17 @@ public class PostService {
 
 		post.close();
 	}
+
+	public PostDto.Response getMyBookmarkPosts(Integer offset, Integer limit, String recruit, String userId) {
+		boolean isRecruit = "true".equalsIgnoreCase(recruit);
+
+		PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "postCreatedDate"));
+		Page<PostVo> posts = postRepositoryCustom.getMyBookmarkPosts(pageRequest, isRecruit, userId);
+
+		List<PostDto.PostList> postLists = posts.getContent().stream()
+			.map(PostDto.PostList::new)
+			.collect(Collectors.toList());
+
+		return new PostDto.Response(postLists, posts.getTotalPages(), posts.getTotalElements());
+	}
 }

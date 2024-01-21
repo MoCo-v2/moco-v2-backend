@@ -158,6 +158,21 @@ public class PostServiceTest {
 	}
 
 	@Test
+	public void getMyBookmarkPosts_나의_북마크_게시글_페이징_조회_성공() {
+		//given
+		PostVo post = generatePostVo();
+		Page<PostVo> expectedPage = new PageImpl<>(Collections.singletonList(post));
+		given(postRepositoryCustom.getMyBookmarkPosts(any(), anyBoolean(), anyString())).willReturn(expectedPage);
+
+		//when
+		Page<PostVo> resultPage = postRepositoryCustom.getMyBookmarkPosts(any(), anyBoolean(), anyString());
+
+		//then
+		assertThat(resultPage).isEqualTo(expectedPage);
+		verify(postRepositoryCustom).getMyBookmarkPosts(any(), anyBoolean(), anyString());
+	}
+
+	@Test
 	public void createPost_게시글_추가_성공() {
 		//given
 		PostDto.Request postDto = generatePostDto();

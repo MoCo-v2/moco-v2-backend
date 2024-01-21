@@ -52,6 +52,17 @@ public class PostController {
 			.body(postDto);
 	}
 
+	@GetMapping("/private/posts")
+	public ResponseEntity<PostDto.Response> getMyBookmarkPosts(
+		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
+		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
+		@RequestParam(value = "recruit", required = false, defaultValue = RECRUIT) String recruit,
+		@CurrentLoginUser UserInfo userInfo) {
+		PostDto.Response postDto = postService.getMyBookmarkPosts(offset, limit, recruit, userInfo.getId());
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(postDto);
+	}
+
 	@GetMapping("/public/posts/{postId}")
 	public ResponseEntity<PostVo> getPost(@PathVariable Long postId) {
 		PostVo postDto = postService.getPost(postId);
