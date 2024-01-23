@@ -17,6 +17,7 @@ import com.moco.moco.dto.PostDto;
 import com.moco.moco.dto.queryDslDto.PostVo;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
+import com.moco.moco.jpaRepository.BookmarkRepositoryCustom;
 import com.moco.moco.jpaRepository.PostRepository;
 import com.moco.moco.jpaRepository.PostRepositoryCustom;
 import com.moco.moco.jpaRepository.UserRepository;
@@ -30,6 +31,7 @@ public class PostService {
 	private UserRepository userRepository;
 	private PostRepository postRepository;
 	private PostRepositoryCustom postRepositoryCustom;
+	private BookmarkRepositoryCustom bookmarkRepositoryCustom;
 
 	// 게시글을 페이징 한다.
 	@Transactional(readOnly = true)
@@ -117,7 +119,9 @@ public class PostService {
 			throw new CustomAuthenticationException(ErrorCode.UNAUTHORIZED_WRITER);
 		}
 
-		return post.delete();
+		Long deletedPostId = post.delete();
+		bookmarkRepositoryCustom.deleteBookmarkedPost(deletedPostId);
+		return deletedPostId;
 	}
 
 	@Transactional
@@ -136,6 +140,7 @@ public class PostService {
 		post.close();
 	}
 
+	@Transactional(readOnly = true)
 	public PostDto.Response getMyBookmarkPosts(Integer offset, Integer limit, String recruit, String userId) {
 		boolean isRecruit = "true".equalsIgnoreCase(recruit);
 
