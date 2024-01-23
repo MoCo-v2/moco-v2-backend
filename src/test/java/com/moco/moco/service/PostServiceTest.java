@@ -22,6 +22,7 @@ import com.moco.moco.dto.PostDto;
 import com.moco.moco.dto.queryDslDto.PostVo;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
+import com.moco.moco.jpaRepository.BookmarkRepositoryCustom;
 import com.moco.moco.jpaRepository.PostRepository;
 import com.moco.moco.jpaRepository.PostRepositoryCustom;
 import com.moco.moco.jpaRepository.UserRepository;
@@ -38,6 +39,8 @@ public class PostServiceTest {
 	PostRepository postRepository;
 	@Mock
 	UserRepository userRepository;
+	@Mock
+	BookmarkRepositoryCustom bookmarkRepositoryCustom;
 
 	User user;
 	Post post;
