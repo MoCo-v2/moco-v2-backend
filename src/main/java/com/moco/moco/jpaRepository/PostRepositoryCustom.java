@@ -133,7 +133,6 @@ public class PostRepositoryCustom {
 	//마감이 얼마남지 않은 게시글을 가져온다.
 	public List<PostVo> getPostsNearDeadline() {
 		LocalDate startDate = LocalDate.now();
-		LocalDate endDate = startDate.plusDays(14);
 
 		return queryFactory
 			.select(
