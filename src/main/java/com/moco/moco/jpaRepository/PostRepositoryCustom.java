@@ -126,7 +126,7 @@ public class PostRepositoryCustom {
 			.from(bookmark)
 			.join(post).on(post.id.eq(bookmark.post.id))
 			.where(bookmark.user.id.eq(userId).and(post.isRemoved.eq(false)).and(recruitEq(recruit)));
-		
+
 		return PageableExecutionUtils.getPage(posts, pageable, countQuery::fetchOne);
 	}
 
@@ -145,10 +145,10 @@ public class PostRepositoryCustom {
 			.on(post.user.id.eq(user.id))
 			.where(post.isRemoved.eq(false)
 				.and(post.isFull.eq(false))
-				.and(post.deadLine.between(startDate, endDate))
+				.and(post.deadLine.after(startDate))
 			)
-			.orderBy(post.createdDate.desc())
-			.limit(6)
+			.orderBy(post.deadLine.asc())
+			.limit(8)
 			.fetch();
 	}
 
