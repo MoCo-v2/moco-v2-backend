@@ -9,6 +9,8 @@ import com.moco.moco.domain.User;
 import com.moco.moco.dto.queryDslDto.PostVo;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,8 +22,12 @@ public class PostDto {
 		@NotBlank(message = "제목을 입력해주세요.")
 		private String title;
 		private String content;
+		@NotEmpty
+		@Pattern(regexp = "^(project|study|lesson|moco)$", message = "유효한 type이 아닙니다.")
 		private String type;
 		private String capacity;
+		@NotEmpty
+		@Pattern(regexp = "^(all|online|offline)$", message = "유효한 mode가 아닙니다.")
 		private String mode;
 		private String duration;
 		private String techStack;

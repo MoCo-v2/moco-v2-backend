@@ -2,6 +2,8 @@ package com.moco.moco.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,7 +21,13 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	protected ResponseEntity<ErrorResponse> methodArgNotValidException(MethodArgumentNotValidException e) {
-		return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, "유효하지 않은 요청입니다.");
+		BindingResult bindingResult = e.getBindingResult();
+		StringBuilder builder = new StringBuilder();
+		for (FieldError fieldError : bindingResult.getFieldErrors()) {
+			builder.append(fieldError.getDefaultMessage());
+			builder.append("\n");
+		}
+		return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, builder.toString());
 	}
 
 	@ExceptionHandler(RuntimeException.class)
