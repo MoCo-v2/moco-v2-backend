@@ -16,7 +16,7 @@ public class UserDto {
 		@NotEmpty
 		@Pattern(regexp = "^(google|kakao|github).*", message = "유효한 ID가 아닙니다.")
 		private String id;
-		@Pattern(regexp = "^[ㄱ-ㅎ가-힣a-z0-9-_]{2,10}$", message = "닉네임은 특수문자를 제외한 2~10자리여야 합니다.")
+		@Pattern(regexp = "^[a-zA-Z가-힣\s]{2,10}$", message = "닉네임은 특수문자를 제외한 2~10자리여야 합니다.")
 		private String name;
 		private String intro;
 		private String position;
