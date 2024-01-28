@@ -15,5 +15,5 @@ public class Constants {
 	public final static String SUBJECT = "access Token";
 
 	// 검색 조건
-	public final static String ALL = "ALL";
+	public final static String ALL = "all";
 }

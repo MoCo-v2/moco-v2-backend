@@ -167,28 +167,28 @@ public class PostRepositoryCustom {
 	}
 
 	private BooleanExpression typeEq(String type) {
-		if (type == null || type.equals(ALL)) {
+		if (type == null || type.equalsIgnoreCase(ALL)) {
 			return null;
 		}
 		return post.type.eq(type);
 	}
 
 	private BooleanExpression positionEq(String position) {
-		if (position == null || position.equals(ALL)) {
+		if (position == null || position.equalsIgnoreCase(ALL)) {
 			return null;
 		}
 		return post.recruitmentPosition.contains(position);
 	}
 
 	private BooleanExpression modeEq(String mode) {
-		if (mode == null || mode.equals(ALL)) {
+		if (mode == null || mode.equalsIgnoreCase(ALL)) {
 			return null;
 		}
 		return post.mode.eq(mode);
 	}
 
 	private BooleanExpression languageEq(String language) {
-		if (language == null || language.equals(ALL)) {
+		if (language == null || language.equalsIgnoreCase(ALL)) {
 			return null;
 		}
 
