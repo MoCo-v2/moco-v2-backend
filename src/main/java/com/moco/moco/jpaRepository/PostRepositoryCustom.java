@@ -1,5 +1,6 @@
 package com.moco.moco.jpaRepository;
 
+import static com.moco.moco.common.Constants.*;
 import static com.moco.moco.domain.QBookmark.*;
 import static com.moco.moco.domain.QPost.*;
 import static com.moco.moco.domain.QUser.*;
@@ -166,28 +167,28 @@ public class PostRepositoryCustom {
 	}
 
 	private BooleanExpression typeEq(String type) {
-		if (type == null) {
+		if (type == null || type.equals(ALL)) {
 			return null;
 		}
 		return post.type.eq(type);
 	}
 
 	private BooleanExpression positionEq(String position) {
-		if (position == null) {
+		if (position == null || position.equals(ALL)) {
 			return null;
 		}
 		return post.recruitmentPosition.contains(position);
 	}
 
 	private BooleanExpression modeEq(String mode) {
-		if (mode == null) {
+		if (mode == null || mode.equals(ALL)) {
 			return null;
 		}
 		return post.mode.eq(mode);
 	}
 
 	private BooleanExpression languageEq(String language) {
-		if (language == null) {
+		if (language == null || language.equals(ALL)) {
 			return null;
 		}
 
