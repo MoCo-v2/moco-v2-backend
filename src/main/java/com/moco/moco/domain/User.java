@@ -28,6 +28,10 @@ public class User extends Time {
 	@Id
 	private String id;
 
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private Role role;
+
 	@NotBlank
 	@Length(min = 2, max = 10)
 	@Pattern(regexp = "^([a-zA-Z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]).{1,10}$") //한글, 영문, 숫자만 가능하며 2-10자리 가능
@@ -49,9 +53,8 @@ public class User extends Time {
 	@Column
 	private String picture;
 
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
-	private Role role;
+	@Column
+	private boolean isDeleted = false;
 
 	public User update(UserDto.Request userDto) {
 		this.name = userDto.getName();
@@ -68,9 +71,17 @@ public class User extends Time {
 		return this.role.getKey();
 	}
 
+	public void delete() {
+		this.isDeleted = true;
+	}
+
+	public void join() {
+		this.isDeleted = false;
+	}
+
 	@Builder
 	public User(String id, String name, String intro, String position, String stack, String career, String picture,
-		Role role) {
+		Role role, boolean isDeleted) {
 		this.id = id;
 		this.name = name;
 		this.intro = intro;
@@ -79,5 +90,6 @@ public class User extends Time {
 		this.career = career;
 		this.picture = picture;
 		this.role = role;
+		this.isDeleted = isDeleted;
 	}
 }
