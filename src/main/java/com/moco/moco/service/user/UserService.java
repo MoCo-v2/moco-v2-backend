@@ -49,18 +49,17 @@ public class UserService {
 	}
 
 	public TokenDto.Response authenticateAndGenerateToken(TokenDto.OauthRequest tokenDto) {
-		String id;
 
 		try {
 
-			id = oauthService.getOauth2UserId(tokenDto.getProvider(), tokenDto.getAccessToken());
+			String userId = oauthService.getOauth2UserId(tokenDto.getProvider(), tokenDto.getAccessToken());
 
-			Optional<User> user = userRepository.findById(id);
+			Optional<User> user = userRepository.findById(userId);
 
 			//새로운 사용자라면 유저 ID를 반환하여 회원가입을 진행한다.
-			if (user.isEmpty()) {
+			if (shouldProceedWithRegistration(user)) {
 				return TokenDto.IdResponse.builder()
-					.id(id)
+					.id(userId)
 					.result(false)
 					.build();
 			}
@@ -77,12 +76,19 @@ public class UserService {
 	public TokenDto.JwtResponse join(UserDto.Request userDto) {
 		validationUserId(userDto.getId());
 
-		boolean isExistId = userRepository.existsById(userDto.getId());
-		if (isExistId) {
-			throw new CustomAuthenticationException(ErrorCode.DUPLICATE_RESOURCE);
+		Optional<User> existingUser = userRepository.findById(userDto.getId());
+
+		if (existingUser.isPresent()) {
+			User user = existingUser.get();
+			if (!user.isDeleted()) {
+				throw new CustomAuthenticationException(ErrorCode.DUPLICATE_RESOURCE);
+			}
+			user.join();
+			return getUserIdAndGenerateToken(user.getId());
 		}
-		User user = userRepository.save(userDto.toEntity());
-		return getUserIdAndGenerateToken(user.getId());
+
+		User savedUser = userRepository.save(userDto.toEntity());
+		return getUserIdAndGenerateToken(savedUser.getId());
 	}
 
 	@Transactional
@@ -128,5 +134,18 @@ public class UserService {
 			.refreshToken(refreshToken)
 			.result(true)
 			.build();
+	}
+
+	@Transactional
+	public void deleteUser(String userId) {
+		validationUserId(userId);
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
+		user.delete();
+	}
+
+	private boolean shouldProceedWithRegistration(Optional<User> user) {
+		return user.isEmpty() || user.get().isDeleted();
 	}
 }

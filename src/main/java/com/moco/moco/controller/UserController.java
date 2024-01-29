@@ -78,4 +78,10 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(userInfoDto);
 	}
 
+	@DeleteMapping("/private/users")
+	public ResponseEntity<HttpStatus> deleteAccount(@CurrentLoginUser UserInfo userInfo) {
+		userService.deleteUser(userInfo.getId());
+		return RESPONSE_ENTITY_OK;
+	}
+
 }

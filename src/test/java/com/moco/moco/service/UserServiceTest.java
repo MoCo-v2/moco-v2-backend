@@ -38,6 +38,7 @@ public class UserServiceTest {
 			.position("백엔드")
 			.role(Role.USER)
 			.picture("www.moco.run")
+			.isDeleted(false)
 			.build();
 	}
 
@@ -84,7 +85,9 @@ public class UserServiceTest {
 	public void createUser_유저_추가_실패_ID_중복_케이스() {
 		//given
 		generateUserDto();
-		given(userRepository.existsById(anyString())).willReturn(true);
+		generateUser();
+		
+		given(userRepository.findById(anyString())).willReturn(Optional.ofNullable(user));
 
 		//when
 		assertThatThrownBy(() -> service.join(userDto))
