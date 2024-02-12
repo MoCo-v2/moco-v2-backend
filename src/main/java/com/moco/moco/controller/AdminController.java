@@ -24,6 +24,12 @@ import lombok.AllArgsConstructor;
 public class AdminController {
 	private final BannerService bannerService;
 
+	@GetMapping("/public/banners")
+	public ResponseEntity<BannerDto.Response> getBanner() {
+		BannerDto.Response bannerDto = bannerService.getBanner(1L);
+		return ResponseEntity.ok().body(bannerDto);
+	}
+
 	@GetMapping("/admin/banners")
 	public ResponseEntity<List<BannerDto.Response>> getBanners() {
 		List<BannerDto.Response> bannersDto = bannerService.getBanners();
