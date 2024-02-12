@@ -23,7 +23,7 @@ public class OauthService {
 
 	private final RestTemplate restTemplate = new RestTemplate();
 
-	public String getOauth2UserId(OauthType oauthType, String accessToken) {
+	public String getUserIdFromOauthService(OauthType oauthType, String accessToken) {
 		return switch (oauthType) {
 			case GOOGLE -> requestGoogleUserInfo(accessToken);
 			case KAKAO -> requestKaKaoUserInfo(accessToken);

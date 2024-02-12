@@ -48,23 +48,26 @@ public class UserService {
 		return new UserDto.Response(user);
 	}
 
+	@Transactional
 	public TokenDto.Response authenticateAndGenerateToken(TokenDto.OauthRequest tokenDto) {
 
 		try {
 
-			String userId = oauthService.getOauth2UserId(tokenDto.getProvider(), tokenDto.getAccessToken());
+			String userId = oauthService.getUserIdFromOauthService(tokenDto.getProvider(), tokenDto.getAccessToken());
 
-			Optional<User> user = userRepository.findById(userId);
+			Optional<User> userOptional = userRepository.findById(userId);
 
-			//새로운 사용자라면 유저 ID를 반환하여 회원가입을 진행한다.
-			if (shouldProceedWithRegistration(user)) {
-				return TokenDto.IdResponse.builder()
-					.id(userId)
-					.result(false)
-					.build();
+			//새로운 사용자라면 탈퇴 상태로 가입 시킨다.
+			if (userOptional.isEmpty()) {
+				return registerNewUser(userId);
 			}
 
-			return getUserIdAndGenerateToken(user.get().getId());
+			User user = userOptional.get();
+			if (user.isDeleted()) {
+				return buildIdResponse(userId, false);
+			}
+
+			return getUserIdAndGenerateToken(userId);
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), UserService.class);
@@ -72,23 +75,34 @@ public class UserService {
 		}
 	}
 
+	private TokenDto.Response registerNewUser(String userId) {
+		User newUser = User.builder().id(userId).name(userId).isDeleted(true).build();
+		userRepository.save(newUser);
+		return buildIdResponse(userId, false);
+	}
+
+	private TokenDto.Response buildIdResponse(String userId, boolean result) {
+		return TokenDto.IdResponse.builder()
+			.id(userId)
+			.result(result)
+			.build();
+	}
+
 	@Transactional
 	public TokenDto.JwtResponse join(UserDto.Request userDto) {
 		validationUserId(userDto.getId());
 
-		Optional<User> existingUser = userRepository.findById(userDto.getId());
+		User user = userRepository.findById(userDto.getId())
+			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.USER_NOT_FOUND));
 
-		if (existingUser.isPresent()) {
-			User user = existingUser.get();
-			if (!user.isDeleted()) {
-				throw new CustomAuthenticationException(ErrorCode.DUPLICATE_RESOURCE);
-			}
-			user.join();
-			return getUserIdAndGenerateToken(user.getId());
+		if (!user.isDeleted()) {
+			throw new CustomAuthenticationException(ErrorCode.DUPLICATE_RESOURCE);
 		}
 
-		User savedUser = userRepository.save(userDto.toEntity());
-		return getUserIdAndGenerateToken(savedUser.getId());
+		user.join();
+		user.update(userDto);
+
+		return getUserIdAndGenerateToken(user.getId());
 	}
 
 	@Transactional
@@ -145,7 +159,4 @@ public class UserService {
 		user.delete();
 	}
 
-	private boolean shouldProceedWithRegistration(Optional<User> user) {
-		return user.isEmpty() || user.get().isDeleted();
-	}
 }
