@@ -21,7 +21,7 @@ public class UserDto {
 		private String name;
 		private String intro;
 		@NotEmpty
-		@Pattern(regexp = "^(fe|be|de|ios|and|dev)$", message = "유효한 포지션 유형이 아닙니다.")
+		@Pattern(regexp = "^(fe|be|de|ios|and|dev|plan|pm)$", message = "유효한 포지션 유형이 아닙니다.")
 		private String position;
 		private String career;
 		private String stack;
