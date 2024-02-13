@@ -1,13 +1,7 @@
 package com.moco.moco.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.hibernate.annotations.Type;
-
 import com.moco.moco.dto.BannerDto;
 
-import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,26 +24,51 @@ public class Banner extends Time {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column
-	private String bannerName;
+	@Column(name = "ordering", nullable = false)
+	private Integer ordering;
 
-	@Type(ListArrayType.class)
-	@Column(columnDefinition = "text[]")
-	private List<String> imageList = new ArrayList<>();
+	@Column(name = "memo")
+	private String memo;
 
-	@Column
+	@Column(name = "title")
+	private String title;
+
+	@Column(name = "content")
+	private String content;
+
+	@Column(name = "description")
+	private String description;
+
+	@Column(name = "backgroundColor")
+	private String backgroundColor;
+
+	@Column(name = "imageLink")
+	private String imageLink;
+
+	@Column(name = "expose")
 	private boolean expose = false;
 
 	@Builder
-	public Banner(String bannerName, List<String> imageList, boolean expose) {
-		this.bannerName = bannerName;
-		this.imageList = imageList;
+	public Banner(int ordering, String memo, String title, String content, String description, String backgroundColor,
+		String imageLink, boolean expose) {
+		this.ordering = ordering;
+		this.memo = memo;
+		this.title = title;
+		this.content = content;
+		this.description = description;
+		this.backgroundColor = backgroundColor;
+		this.imageLink = imageLink;
 		this.expose = expose;
 	}
 
 	public Banner update(BannerDto.Request request) {
-		this.bannerName = request.getBannerName();
-		this.imageList = request.getItems();
+		this.ordering = request.getOrdering();
+		this.memo = request.getMemo();
+		this.title = request.getTitle();
+		this.content = request.getContent();
+		this.description = request.getDescription();
+		this.backgroundColor = request.getBackgroundColor();
+		this.imageLink = request.getImageLink();
 		this.expose = request.isExpose();
 		return this;
 	}

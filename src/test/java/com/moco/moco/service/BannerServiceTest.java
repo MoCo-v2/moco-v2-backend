@@ -33,7 +33,7 @@ public class BannerServiceTest {
 
 	@Test
 	void getBanner_배너_조회_성공() {
-		Banner banner = Banner.builder().bannerName("배너이름").expose(false).build();
+		Banner banner = Banner.builder().imageLink("moco.run/image/123").expose(false).build();
 		BannerDto.Response bannerDto = new BannerDto.Response(banner);
 		//given
 		given(bannerRepository.findById(anyLong())).willReturn(Optional.of(banner));
@@ -62,7 +62,7 @@ public class BannerServiceTest {
 
 	@Test
 	void getBanners_배너_목록_조회_성공() {
-		Banner banner = Banner.builder().bannerName("배너이름").expose(false).build();
+		Banner banner = Banner.builder().imageLink("moco.run/image/123").expose(false).build();
 		BannerDto.Response bannerDto = new BannerDto.Response(banner);
 		List<BannerDto.Response> bannerDtos = new ArrayList<>();
 		bannerDtos.add(bannerDto);
@@ -79,8 +79,9 @@ public class BannerServiceTest {
 
 	@Test
 	void createBanner_배너_생성_성공() {
-		Banner banner = Banner.builder().bannerName("배너이름").expose(false).build();
+		Banner banner = Banner.builder().ordering(100).imageLink("moco.run/image/123").expose(false).build();
 		BannerDto.Request request = new BannerDto.Request();
+		request.setOrdering(100);
 
 		//given
 		given(bannerRepository.save(any())).willReturn(banner);
@@ -89,15 +90,15 @@ public class BannerServiceTest {
 		BannerDto.Response result = service.saveBanner(request);
 
 		//then
-		assertThat(result.getBannerName()).isEqualTo(banner.getBannerName());
+		assertThat(result.getImageLink()).isEqualTo(banner.getImageLink());
 	}
 
 	@Test
 	void updateBanner_배너_수정_성공() {
-		Banner banner = Banner.builder().bannerName("배너이름").expose(false).build();
+		Banner banner = Banner.builder().ordering(100).imageLink("moco.run/image/123").expose(false).build();
 		BannerDto.Request request = new BannerDto.Request();
-		request.setBannerName("배너이름수정");
-		request.setItems(new ArrayList<>());
+		request.setOrdering(100);
+		request.setImageLink("moco.run/image/111");
 		request.setExpose(false);
 
 		//given
@@ -107,14 +108,13 @@ public class BannerServiceTest {
 		BannerDto.Response result = service.updateBanner(1L, request);
 
 		//then
-		assertThat(result.getBannerName()).isEqualTo(request.getBannerName());
+		assertThat(result.getImageLink()).isEqualTo(request.getImageLink());
 	}
 
 	@Test
 	void updateBanner_배너_수정_실패() {
 		BannerDto.Request request = new BannerDto.Request();
-		request.setBannerName("배너이름수정");
-		request.setItems(new ArrayList<>());
+		request.setImageLink("moco.run/image/123");
 		request.setExpose(false);
 
 		//given

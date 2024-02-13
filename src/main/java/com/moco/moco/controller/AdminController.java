@@ -17,18 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.moco.moco.dto.BannerDto;
 import com.moco.moco.service.admin.BannerService;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
 public class AdminController {
 	private final BannerService bannerService;
-
-	@GetMapping("/public/banners")
-	public ResponseEntity<BannerDto.Response> getBanner() {
-		BannerDto.Response bannerDto = bannerService.getBanner(1L);
-		return ResponseEntity.ok().body(bannerDto);
-	}
 
 	@GetMapping("/admin/banners")
 	public ResponseEntity<List<BannerDto.Response>> getBanners() {
@@ -43,14 +38,14 @@ public class AdminController {
 	}
 
 	@PostMapping("/admin/banners")
-	public ResponseEntity<BannerDto.Response> saveBanner(@RequestBody BannerDto.Request request) {
+	public ResponseEntity<BannerDto.Response> saveBanner(@Valid @RequestBody BannerDto.Request request) {
 		BannerDto.Response bannerDto = bannerService.saveBanner(request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(bannerDto);
 	}
 
 	@PutMapping("/admin/banners/{bannerId}")
 	public ResponseEntity<BannerDto.Response> updateBanner(@PathVariable Long bannerId,
-		@RequestBody BannerDto.Request request) {
+		@Valid @RequestBody BannerDto.Request request) {
 		BannerDto.Response bannerDto = bannerService.updateBanner(bannerId, request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(bannerDto);
 	}

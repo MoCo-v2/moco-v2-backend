@@ -64,4 +64,12 @@ public class BannerService {
 
 		bannerRepository.delete(banner);
 	}
+
+	@Transactional(readOnly = true)
+	public List<BannerDto.Response> getExposeBanners() {
+		List<Banner> banners = bannerRepository.findByExposeTrueOrderByOrderingAsc();
+		return banners.stream()
+			.map(BannerDto.Response::new)
+			.collect(Collectors.toList());
+	}
 }
