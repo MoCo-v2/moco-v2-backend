@@ -55,8 +55,10 @@ public class BannerDto {
 			this.id = banner.getId();
 			this.ordering = banner.getOrdering();
 			this.memo = banner.getMemo();
+			this.title = banner.getTitle();
 			this.content = banner.getContent();
 			this.description = banner.getDescription();
+			this.backgroundColor = banner.getBackgroundColor();
 			this.imageLink = banner.getImageLink();
 			this.expose = banner.isExpose();
 		}
