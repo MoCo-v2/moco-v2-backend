@@ -30,7 +30,7 @@ public class Validation {
 		}
 	}
 
-	public static void validationBannertId(Long bannerId) {
+	public static void validationBannerId(Long bannerId) {
 		if (bannerId == 0 || bannerId < 0) {
 			throw new CustomAuthenticationException(ErrorCode.BAD_REQUEST);
 		}

@@ -32,7 +32,7 @@ public class BannerService {
 
 	@Transactional(readOnly = true)
 	public BannerDto.Response getBanner(Long bannerId) {
-		validationBannertId(bannerId);
+		validationBannerId(bannerId);
 
 		Banner banner = bannerRepository.findById(bannerId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.BANNER_NOT_FOUNT));
@@ -47,7 +47,7 @@ public class BannerService {
 
 	@Transactional
 	public BannerDto.Response updateBanner(Long bannerId, BannerDto.Request request) {
-		validationBannertId(bannerId);
+		validationBannerId(bannerId);
 
 		Banner banner = bannerRepository.findById(bannerId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.BANNER_NOT_FOUNT));
@@ -57,7 +57,7 @@ public class BannerService {
 
 	@Transactional
 	public void deleteBanner(Long bannerId) {
-		validationBannertId(bannerId);
+		validationBannerId(bannerId);
 
 		Banner banner = bannerRepository.findById(bannerId)
 			.orElseThrow(() -> new CustomAuthenticationException(ErrorCode.BANNER_NOT_FOUNT));

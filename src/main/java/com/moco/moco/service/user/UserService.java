@@ -2,6 +2,7 @@ package com.moco.moco.service.user;
 
 import static com.moco.moco.common.Constants.*;
 import static com.moco.moco.common.Validation.*;
+import static com.moco.moco.util.NineCharacterUUIDGenerator.*;
 
 import java.util.Date;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.moco.moco.config.argsResolver.UserInfo;
+import com.moco.moco.domain.Role;
 import com.moco.moco.domain.User;
 import com.moco.moco.dto.UserDto;
 import com.moco.moco.dto.auth.TokenDto;
@@ -76,7 +78,10 @@ public class UserService {
 	}
 
 	private TokenDto.Response registerNewUser(String userId) {
-		User newUser = User.builder().id(userId).name(userId).isDeleted(true).build();
+		String randomUUID = generateNineCharacterUUID();
+
+		User newUser = User.builder().id(userId).name(randomUUID).isDeleted(true).role(Role.USER).build();
+
 		userRepository.save(newUser);
 		return buildIdResponse(userId, false);
 	}
