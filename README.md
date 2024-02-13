@@ -1,6 +1,6 @@
 # MOCO v2
 
-> study platform
+> study, project, mentoring platform
 
 # index
 
@@ -10,6 +10,8 @@
 # outline
 
 Study, project, and mentoring platform used by programmers, planners, and designers
+
+<br/><br/>
 
 # Architecture
 
