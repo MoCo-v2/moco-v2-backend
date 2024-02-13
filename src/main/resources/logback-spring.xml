@@ -35,7 +35,6 @@
 
         <root level="info">
             <appender-ref ref="console"/>
-            <appender-ref ref="SLACK_ERROR"/>
         </root>
     </springProfile>
 
