@@ -20,6 +20,7 @@ public class BannerDto {
 		private String description;
 		private String backgroundColor;
 		private String imageLink;
+		private String pageLink;
 		private boolean expose;
 
 		public Banner toEntity() {
@@ -32,6 +33,7 @@ public class BannerDto {
 				.description(description)
 				.backgroundColor(backgroundColor)
 				.imageLink(imageLink)
+				.pageLink(pageLink)
 				.expose(expose)
 				.build();
 		}
@@ -48,6 +50,7 @@ public class BannerDto {
 		private String description;
 		private String backgroundColor;
 		private String imageLink;
+		private String pageLink;
 		private boolean expose;
 
 		@Builder
@@ -60,6 +63,7 @@ public class BannerDto {
 			this.description = banner.getDescription();
 			this.backgroundColor = banner.getBackgroundColor();
 			this.imageLink = banner.getImageLink();
+			this.pageLink = banner.getPageLink();
 			this.expose = banner.isExpose();
 		}
 	}
