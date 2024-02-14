@@ -45,12 +45,15 @@ public class Banner extends Time {
 	@Column(name = "imageLink")
 	private String imageLink;
 
+	@Column(name = "pageLink")
+	private String pageLink;
+
 	@Column(name = "expose")
 	private boolean expose = false;
 
 	@Builder
 	public Banner(int ordering, String memo, String title, String content, String description, String backgroundColor,
-		String imageLink, boolean expose) {
+		String imageLink, String pageLink, boolean expose) {
 		this.ordering = ordering;
 		this.memo = memo;
 		this.title = title;
@@ -58,6 +61,7 @@ public class Banner extends Time {
 		this.description = description;
 		this.backgroundColor = backgroundColor;
 		this.imageLink = imageLink;
+		this.pageLink = pageLink;
 		this.expose = expose;
 	}
 
@@ -69,6 +73,7 @@ public class Banner extends Time {
 		this.description = request.getDescription();
 		this.backgroundColor = request.getBackgroundColor();
 		this.imageLink = request.getImageLink();
+		this.pageLink = request.getPageLink();
 		this.expose = request.isExpose();
 		return this;
 	}
