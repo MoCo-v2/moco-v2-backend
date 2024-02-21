@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.moco.moco.domain.Comment;
 import com.moco.moco.domain.Post;
 import com.moco.moco.domain.User;
 import com.moco.moco.dto.PostDto;
@@ -18,6 +19,7 @@ import com.moco.moco.dto.queryDslDto.PostVo;
 import com.moco.moco.exception.CustomAuthenticationException;
 import com.moco.moco.exception.ErrorCode;
 import com.moco.moco.jpaRepository.BookmarkRepositoryCustom;
+import com.moco.moco.jpaRepository.CommentRepository;
 import com.moco.moco.jpaRepository.PostRepository;
 import com.moco.moco.jpaRepository.PostRepositoryCustom;
 import com.moco.moco.jpaRepository.UserRepository;
@@ -32,6 +34,7 @@ public class PostService {
 	private PostRepository postRepository;
 	private PostRepositoryCustom postRepositoryCustom;
 	private BookmarkRepositoryCustom bookmarkRepositoryCustom;
+	private CommentRepository commentRepository;
 
 	// 게시글을 페이징 한다.
 	@Transactional(readOnly = true)
@@ -106,6 +109,7 @@ public class PostService {
 		return post.update(postDto);
 	}
 
+	//게시글을 삭제한다.
 	@Transactional
 	public Long removePost(String userId, Long postId) {
 		validationUserIdAndPostId(userId, postId);
@@ -120,10 +124,13 @@ public class PostService {
 		}
 
 		Long deletedPostId = post.delete();
+		commentRepository.findAllByPostId(deletedPostId).forEach(Comment::remove);
+		
 		bookmarkRepositoryCustom.deleteBookmarkedPost(deletedPostId);
 		return deletedPostId;
 	}
 
+	//게시글 모집을 마감한다.
 	@Transactional
 	public void closeRecruitment(Long postId, String userId) {
 		validationUserIdAndPostId(userId, postId);
