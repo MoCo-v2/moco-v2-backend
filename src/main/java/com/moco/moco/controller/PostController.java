@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,12 +24,14 @@ import com.moco.moco.dto.queryDslDto.PostVo;
 import com.moco.moco.service.post.PostService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @AllArgsConstructor
 @RestController
+@Validated
 public class PostController {
 	private final PostService postService;
 
@@ -39,7 +42,7 @@ public class PostController {
 	@GetMapping("/public/posts")
 	public ResponseEntity<PostDto.Response> getPosts(
 		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
-		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
+		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) @Max(value = 100) Integer limit,
 		@RequestParam(value = "recruit", required = false, defaultValue = RECRUIT) String recruit,
 		@RequestParam(value = "username", required = false) String username,
 		@RequestParam(value = "type", required = false) String type,
@@ -55,7 +58,7 @@ public class PostController {
 	@GetMapping("/private/posts")
 	public ResponseEntity<PostDto.Response> getMyBookmarkPosts(
 		@RequestParam(value = "offset", required = false, defaultValue = OFFSET) Integer offset,
-		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) Integer limit,
+		@RequestParam(value = "limit", required = false, defaultValue = LIMIT) @Max(100) Integer limit,
 		@RequestParam(value = "recruit", required = false, defaultValue = RECRUIT) String recruit,
 		@CurrentLoginUser UserInfo userInfo) {
 		PostDto.Response postDto = postService.getMyBookmarkPosts(offset, limit, recruit, userInfo.getId());
