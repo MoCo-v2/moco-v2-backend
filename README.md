@@ -1,5 +1,11 @@
 # MOCO v2
 
+<center>
+
+![CI/CD](https://github.com/MoCo-v2/moco-v2-backend/actions/workflows/gradle.yml/badge.svg)
+
+</center>
+
 > study, project, mentoring platform
 
 # index
