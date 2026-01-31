@@ -62,4 +62,4 @@ gitGraph
 
 # Architecture
 
-![aws-architecture](https://github.com/wlswo/wlswo.github.io/blob/main/assets/images/SideProject/side%236/moco-aws-architecture.png?raw=true)
+![aws-architecture](https://github.com/wlswo/wlswo.github.io/blob/main/assets/images/moco-aws-architecture.png?raw=true)
